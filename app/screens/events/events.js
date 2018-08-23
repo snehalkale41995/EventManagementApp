@@ -13,15 +13,15 @@ import { Avatar } from '../../components';
 import * as eventServices from '../../serviceActions/event';
 
 var firestoreDB = firebase.firestore();
-export class Speakers extends RkComponent {
+export class Events extends RkComponent {
     static navigationOptions = {
-        title: 'Speakers'.toUpperCase()
+        title: 'Events'.toUpperCase()
     };
     constructor(props) {
         super(props);
 
         this.state = {
-            Speakers: [],
+            Events: [],
             isLoaded: false,
             isOffline: false
         }
@@ -31,7 +31,7 @@ export class Speakers extends RkComponent {
         if (Platform.OS !== 'ios') {
             NetInfo.isConnected.fetch().then(isConnected => {
                 if (isConnected) {
-                    this.getSpeakersList();
+                    this.getEventsList();
                     this.setState({
                         isLoading: true
                     });
@@ -46,7 +46,7 @@ export class Speakers extends RkComponent {
                 });
             });
         }
-        this.getSpeakersList();
+        this.getEventsList();
         NetInfo.addEventListener(
             'connectionChange',
             this.handleFirstConnectivityChange
@@ -55,7 +55,7 @@ export class Speakers extends RkComponent {
 
     handleFirstConnectivityChange = (connectionInfo) => {
         if (connectionInfo.type != 'none') {
-            this.getSpeakersList();
+            this.getEventsList();
             this.setState({
                 isLoading: true
             });
@@ -77,76 +77,75 @@ export class Speakers extends RkComponent {
         );
     }
 
-    getSpeakersList() {
-        // eventServices.getData().then(function(response) {
-        //  console.log("Success!", response);
-        // }, function(error) {
-        //  console.error("Failed!", error);
-        // })
+    getEventsList() {
         let thisRef = this;
-        let speakerCollection = [];
-        firestoreDB.collection("Attendee").orderBy("firstName", "asc")
-            .get()
-            .then(function (doc) {
-                doc.forEach(fItem => {
-                    let itemData = fItem.data();
-                    let itemId = fItem.id;
-                    if (itemData.profileServices != undefined) {
-                        itemData.profileServices.forEach(tItem => {
-                            if (tItem == 'Speaker') {
-                                speakerCollection.push({ speakerData: itemData, speakerId: itemId });
-                            }
-                        })
-                    }
-                })
-                thisRef.setState({
-                    Speakers: speakerCollection,
-                    isLoaded: true
-                })
-                thisRef.displaySpeakers();
-            })
-            .catch(function (error) {
-                console.log("error", error);
-            });
+        let Events = [];
+        eventServices.getEvents().then(function(response) {
+         console.log("Success!", response);
+          Events = response;
+          thisRef.setState({
+             Events : Events,
+             isLoaded :true
+          });
+          thisRef.displayEvents();
+        }, function(error) {
+         console.error("Failed!", error);
+        })
+      
     }
-    displaySpeakers = () => {
-        return this.state.Speakers.map((speaker, index) => {
+
+   displayEvents = () => {
+   return this.state.Events.map((event, index) => {
             let avatar;
-            if (speaker.speakerData.profileImageURL) {
-                avatar = <Avatar rkType='small' style={{ width: 44, height: 44, borderRadius: 60 }} imagePath={speaker.speakerData.profileImageURL} />
+            if (event.eventLogo) {
+                avatar = <Image style={{ width: 60, height: 60 }} source={{ uri: event.eventLogo }} />
             } else {
-                avatar = <Image style={{ width: 34, height: 34 }} source={require('../../assets/images/defaultUserImg.png')} />
+                avatar = <Image style={{ width: 60, height: 60 }} source={require('../../assets/images/defaultSponsorImg.png')} />
             }
+            //   <Text style={styles.headerText}>{event.eventName}</Text>
+            //                     <Text style={styles.infoText}>{event.description}</Text>
+            //                 <View>
+                                
+            //                 </View>
+
+            //                 <Icon style={[styles.textColor]} name="calendar"/>
             return (
-                <TouchableOpacity
-                    key={index} onPress={() => this.props.navigation.navigate('SpeakerDetailsTabs', { speakerDetails: speaker.speakerData, speakersId: [speaker.speakerId] })}
-                >
-                    <RkCard rkType='shadowed' style={styles.card}>
+                <TouchableOpacity>
+                    <RkCard rkType='shadowed' style={[styles.card]}>
                         <View style={{ flexDirection: 'row' }}>
-                            <View style={{ flexDirection: 'column', alignItems: 'flex-start', marginVertical: 10, marginLeft: 5, width: 50, flex: 2 }}>
+                            <View style={{ flexDirection: 'column', alignItems: 'flex-start', marginVertical: 10, flex: 3, alignSelf: 'center', marginLeft: 10 }}>
                                 {avatar}
                             </View>
-                            <View style={{ flexDirection: 'column', marginVertical: 10, flex: 7, marginLeft: 5 }}>
-                                <Text style={styles.headerText}>{speaker.speakerData.fullName}</Text>
-                                <Text style={styles.infoText}>{speaker.speakerData.briefInfo}</Text>
+                            <View style={{ flexDirection: 'column', alignItems: 'flex-start', marginVertical: 10, flex: 6, marginLeft: -10 }}>
+                              
+                        <View style={{flexDirection : 'row'}}>
+                          <Text style={styles.infoText}>{event.eventName}</Text>  
+                        </View>
+   
+                         <View style={{flexDirection : 'row'}}>
+                        <View style={{flexDirection : 'column', alignItems: 'flex-start', marginVertical: 10, flex: 1}}>
+                          <Icon name="calendar"/>
+                        </View>
+                         <View style={{flexDirection : 'column', alignItems: 'flex-start', marginVertical: 10, flex: 2}}>
+                          <Text style={styles.infoText}>{event.eventName}</Text>  
+                        </View>
+                        </View>
                             </View >
-                            <View style={{ flexDirection: 'column', alignContent: 'flex-end', marginRight: 5, marginVertical: 15, flex: 3 }}>
-                                <RkText style={{ alignSelf: 'flex-end' }} ><Icon name="ios-arrow-forward" /></RkText>
-                            </View>
                         </View >
                     </RkCard>
                 </TouchableOpacity>
             )
         });
     }
+
     render() {
-        let speakerList = this.displaySpeakers();
+        let eventList = this.displayEvents();
         if (this.state.isLoaded) {
             return (
                 <Container style={[styles.root]}>
-                    <ScrollView>
+                     <ScrollView>
                         <View>
-                            {speakerList}
+                            {eventList}
                         </View>
                     </ScrollView>
                     <View style={[styles.footerOffline]}>
@@ -157,14 +156,14 @@ export class Speakers extends RkComponent {
                     <View style={[styles.footer]}>
                         <RkText rkType="small" style={[styles.footerText]}>Powered by</RkText>
                         <RkText rkType="small" style={[styles.companyName]}> Eternus Solutions Pvt. Ltd. </RkText>
-                    </View>
+                    </View> 
                 </Container>
             )
         }
         else {
             return (
                 <Container style={[styles.root]}>
-                    <ScrollView>
+                     <ScrollView>
                     <View style={[styles.loading]}>
                         <ActivityIndicator size='small' />
                     </View>
@@ -177,13 +176,15 @@ export class Speakers extends RkComponent {
                     <View style={[styles.footer]}>
                         <RkText rkType="small" style={[styles.footerText]}>Powered by</RkText>
                         <RkText rkType="small" style={[styles.companyName]}> Eternus Solutions Pvt. Ltd. </RkText>
-                    </View>
+                    </View> 
                 </Container>
             )
         }
 
     }
 }
+
+
 let styles = RkStyleSheet.create(theme => ({
     root: {
         backgroundColor: theme.colors.screen.base

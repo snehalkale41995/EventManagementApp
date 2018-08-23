@@ -7,3 +7,4 @@ export * from './scanner';
 export * from './speakers';
 export * from './sponsors';
 export * from './static';
+export * from './events';

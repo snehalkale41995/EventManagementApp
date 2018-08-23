@@ -285,8 +285,14 @@ export const MainRoutes = [
     screen: Screens.AboutEternus,
     children: []
   },
+  {
+    id: 'Events',
+    title: 'Events',
+    icon: 'md-information-circle',
+    screen: Screens.Events,
+    children: []
+  },
 ];
-
 let menuRoutes = _.cloneDeep(MainRoutes);
 menuRoutes.unshift({
   id: 'GridV2',

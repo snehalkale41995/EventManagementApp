@@ -48,7 +48,7 @@ export class LoginV2 extends React.Component {
         'Invalid Password',
         'Invalid length of password.',
         [
-          { text: 'Ok', onPress: () => {} },
+          { text: 'Ok', onPress: () => {}},
         ],
         { cancelable: false }
       );
@@ -58,7 +58,7 @@ export class LoginV2 extends React.Component {
     this.setState({isLoading: true});
 
     firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password).catch((error) => {
-			let errorCode = error.code;
+      let errorCode = error.code;
       let errorMessage = error.message;
       this.setState({isLoading: false});
       Alert.alert(
@@ -66,9 +66,9 @@ export class LoginV2 extends React.Component {
         'Error',
         errorMessage,
         [
-          { text: 'Cancel', onPress: () => {} },
+          { text: 'Cancel', onPress: () => {}},
         ],
-        { cancelable: false }
+        {cancelable: false}
       );
 		});
   }
