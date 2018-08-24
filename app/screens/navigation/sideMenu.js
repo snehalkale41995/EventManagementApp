@@ -45,24 +45,18 @@ export class SideMenu extends React.Component {
   }
 
   _onLogout() {
+    let navigation = this.props.navigation;
     Alert.alert(
       'Logout',
       'Are you sure you want to logout?',
       [
         { text: 'Yes', onPress: () => {
-            firebase.auth().signOut().then(function() {
-              // Sign-out successful.
               let keysToRemove = ['USER_DETAILS', 'USER_LINKEDIN_TOKEN', 'SESSIONS'];
-              AsyncStorage.multiRemove(keysToRemove, (err) => {
-                // keys k1 & k2 removed, if they existed
-                // do most stuff after removal (if you want)
-              });
-            }).catch(function(error) {
-              // An error happened.
-            });
+              AsyncStorage.multiRemove(keysToRemove, (err) => {});
+              navigation.navigate('Auth');
           } 
         },
-        { text: 'No', onPress: () => {} },
+        { text: 'No', onPress: () => {}},
       ],
       { cancelable: false }
     );
@@ -70,6 +64,7 @@ export class SideMenu extends React.Component {
 
   render() {
     let menu = MainRoutes.map((route, index) => {
+      console.log("route", route);
       if (this.state.userDetails && this.state.userDetails.roleName && route.roleNames) {
         let foundIndex = route.roleNames.indexOf(this.state.userDetails.roleName);
         if(foundIndex == -1){

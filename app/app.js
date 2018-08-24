@@ -38,12 +38,17 @@ const AppStack = DrawerNavigator({
   drawerToggleRoute: 'DrawerToggle',
   contentComponent: (props) => <SideMenu {...props}/>
 });
+
+//added event screen
+const EventStack = StackNavigator({ EventList : { screen: Screens.Events } });
+
 const AuthStack = StackNavigator({ SignIn: { screen: Screens.LoginV2 } });
 
 const SwitchStack = SwitchNavigator(
   {
     AuthLoading: Screens.SplashScreen,
     App: AppStack,
+    Event : EventStack,
     Auth: AuthStack,
   },
   {

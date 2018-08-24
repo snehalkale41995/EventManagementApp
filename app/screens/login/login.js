@@ -1,11 +1,13 @@
 import React from 'react';
-import { View, Image, Alert, Keyboard, ActivityIndicator } from 'react-native';
+import { View, Image, Alert, Keyboard, ActivityIndicator, AsyncStorage } from 'react-native';
 import { RkButton, RkText, RkTextInput, RkAvoidKeyboard, RkStyleSheet } from 'react-native-ui-kitten';
 import {FontAwesome} from '../../assets/icons';
 import {GradientButton} from '../../components/gradientButton';
 import {RkTheme} from 'react-native-ui-kitten';
 import {scale, scaleModerate, scaleVertical} from '../../utils/scale';
 import firebase from '../../config/firebase';
+import * as loginService from '../../serviceActions/login';
+
 
 function renderIf(condition, content) {
   if (condition) {
@@ -14,7 +16,6 @@ function renderIf(condition, content) {
       return null;
   }
 }
-
 export class LoginV2 extends React.Component {
   static navigationOptions = {
     header: null
@@ -30,6 +31,12 @@ export class LoginV2 extends React.Component {
   }
 
   _onAuthenticate() {
+     let navigation = this.props.navigation;
+     console.log("navigation", navigation);
+    let user = {
+      email : this.state.email,
+      password : this.state.password
+    }
     var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     if (!this.state.email || !re.test(this.state.email)) {
       Alert.alert(
@@ -54,15 +61,19 @@ export class LoginV2 extends React.Component {
       );
       return;
     }
+    
+   this.setState({isLoading: true});
 
-    this.setState({isLoading: true});
-
-    firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password).catch((error) => {
-      let errorCode = error.code;
-      let errorMessage = error.message;
+   loginService.loginUser(user)
+   .then(response => {
+    console.log("response",response)
+    let userInfo = JSON.stringify(response);
+    AsyncStorage.setItem("USER_DETAILS", userInfo);
+    navigation.navigate('Event');
+   }).catch((error)=>{
+      let errorMessage = error;
       this.setState({isLoading: false});
       Alert.alert(
-        // errorCode,
         'Error',
         errorMessage,
         [
@@ -70,7 +81,7 @@ export class LoginV2 extends React.Component {
         ],
         {cancelable: false}
       );
-		});
+   })
   }
 
   render() {

@@ -23,57 +23,21 @@ export class SplashScreen extends React.Component {
 
   // Fetch the token from storage then navigate to our appropriate place
   _bootstrapAsync = async () => {
+    console.log("in splash");
     let navigation = this.props.navigation;
-    firebase.auth().onAuthStateChanged(function(user) {
-      if (user) {
         AsyncStorage.getItem("USER_DETAILS").then((userDetails)=>{
           if(userDetails) {
-            navigation.navigate('App');
+            navigation.navigate('Event');
           } else {
-            var db = firebase.firestore();
-            var docRef = db.collection("Attendee").doc(user.uid);
-            docRef.get().then(function(doc) {
-              if (doc.exists) {
-                  let data = doc.data();
-                  data.uid = user.uid;
-                  let userInfo = JSON.stringify(data);
-                  AsyncStorage.setItem("USER_DETAILS", userInfo);
-                  navigation.navigate('App');
-              } else {
-                Alert.alert(
-                  'Error',
-                  'Unable to get user information. Please contact system administrator.',
-                  [
-                    { text: 'Ok', onPress: () => { } },
-                  ],
-                  { cancelable: false }
-                );
-                let keysToRemove = ['USER_DETAILS', 'USER_LINKEDIN_TOKEN', 'SESSIONS'];
-                AsyncStorage.multiRemove(keysToRemove, (err) => {});
-                navigation.navigate('Auth');
-              }
-            }).catch(function(error) {
-              Alert.alert(
-                'Error',
-                error,
-                [
-                  { text: 'Ok', onPress: () => { } },
-                ],
-                { cancelable: false }
-              );
-              let keysToRemove = ['USER_DETAILS', 'USER_LINKEDIN_TOKEN', 'SESSIONS'];
-              AsyncStorage.multiRemove(keysToRemove, (err) => {});
-              navigation.navigate('Auth');
-            });
+           let keysToRemove = ['USER_DETAILS', 'USER_LINKEDIN_TOKEN', 'SESSIONS'];
+           AsyncStorage.multiRemove(keysToRemove, (err) => {});
+           navigation.navigate('Auth');
           }
         }).catch(function(error) {
+           navigation.navigate('Auth');
           console.warn('Error reading local storage.');
         });
-        //navigation.navigate('App');
-      } else {
-        navigation.navigate('Auth');
-      }
-    });
+  
   };
 
   componentDidMount() {

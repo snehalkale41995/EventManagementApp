@@ -10,7 +10,7 @@ import { Service } from '../../services';
 import Moment from 'moment';
 import firebase from './../../config/firebase';
 import { Avatar } from '../../components';
-import * as eventServices from '../../serviceActions/event';
+import * as eventService from '../../serviceActions/event';
 
 var firestoreDB = firebase.firestore();
 export class Events extends RkComponent {
@@ -80,7 +80,7 @@ export class Events extends RkComponent {
     getEventsList() {
         let thisRef = this;
         let Events = [];
-        eventServices.getEvents().then(function(response) {
+        eventService.getEvents().then(function(response) {
          console.log("Success!", response);
           Events = response;
           thisRef.setState({
@@ -95,6 +95,7 @@ export class Events extends RkComponent {
     }
 
    displayEvents = () => {
+       console.log("in event moduleeeee")
    return this.state.Events.map((event, index) => {
             let avatar;
             if (event.eventLogo) {
@@ -103,6 +104,7 @@ export class Events extends RkComponent {
                 avatar = <Image style={{ width: 60, height: 60 }} source={require('../../assets/images/defaultSponsorImg.png')} />
             }
             //   <Text style={styles.headerText}>{event.eventName}</Text>
+   
             //                     <Text style={styles.infoText}>{event.description}</Text>
             //                 <View>
                                 
