@@ -32,7 +32,6 @@ export class LoginV2 extends React.Component {
 
   _onAuthenticate() {
      let navigation = this.props.navigation;
-     console.log("navigation", navigation);
     let user = {
       email : this.state.email,
       password : this.state.password
@@ -43,7 +42,7 @@ export class LoginV2 extends React.Component {
         'Invalid Email',
         'Please enter valid email.',
         [
-          { text: 'Ok', onPress: () => {} },
+          { text: 'Ok', onPress: () => {}},
         ],
         { cancelable: false }
       );
@@ -66,7 +65,6 @@ export class LoginV2 extends React.Component {
 
    loginService.loginUser(user)
    .then(response => {
-    console.log("response",response)
     let userInfo = JSON.stringify(response);
     AsyncStorage.setItem("USER_DETAILS", userInfo);
     navigation.navigate('Event');

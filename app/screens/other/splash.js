@@ -23,7 +23,6 @@ export class SplashScreen extends React.Component {
 
   // Fetch the token from storage then navigate to our appropriate place
   _bootstrapAsync = async () => {
-    console.log("in splash");
     let navigation = this.props.navigation;
         AsyncStorage.getItem("USER_DETAILS").then((userDetails)=>{
           if(userDetails) {
