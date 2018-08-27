@@ -4,11 +4,12 @@ import {AsyncStorage} from 'react-native';
 
   export const  loginUser = (user) =>{
       let promise = new Promise((resolve, reject) => {
-         axios.post(`${AppConfig.serverURL}/api/authenticate`, user)
+         axios.post(`${AppConfig.serverURL}/api/authenticate/appAuth`, user)
          .then(response => {
            resolve(response.data);
          })
          .catch(error => {
+             console.log("error.response.data",error.response.data);
             reject(error.response.data);
          })
       })
