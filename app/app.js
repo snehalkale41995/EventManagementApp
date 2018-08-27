@@ -41,6 +41,7 @@ const AppStack = DrawerNavigator({
 
 //added event screen
 const EventStack = StackNavigator({ EventList : { screen: Screens.Events } });
+const EventDetailsStack = StackNavigator({ EventDetails : { screen: Screens.EventDetails } });
 
 const AuthStack = StackNavigator({ SignIn: { screen: Screens.LoginV2 } });
 
@@ -49,6 +50,7 @@ const SwitchStack = SwitchNavigator(
     AuthLoading: Screens.SplashScreen,
     App: AppStack,
     Event : EventStack,
+    EventDetails : EventDetailsStack,
     Auth: AuthStack,
   },
   {
