@@ -19,7 +19,6 @@ export class Events extends RkComponent {
     };
     constructor(props) {
         super(props);
-
         this.state = {
             Events: [],
             isLoaded: false,
@@ -81,7 +80,6 @@ export class Events extends RkComponent {
         let thisRef = this;
         let Events = [];
         eventService.getEvents().then(function(response) {
-         console.log("Success!", response);
           Events = response;
           thisRef.setState({
              Events : Events,
@@ -91,11 +89,20 @@ export class Events extends RkComponent {
         }, function(error) {
          console.error("Failed!", error);
         })
-      
+    }
+
+   storeEventDetails(event){
+     if(event){
+         let eventInfo = JSON.stringify(event);
+         AsyncStorage.setItem("EVENT_DETAILS", eventInfo);
+        this.props.navigation.navigate('EventDetails');
+     }
+      else{
+        AsyncStorage.setItem("EVENT_DETAILS", {});
+      }
     }
 
    displayEvents = () => {
-       console.log("in event moduleeeee")
    return this.state.Events.map((event, index) => {
             let avatar;
             if (event.eventLogo) {
@@ -103,6 +110,7 @@ export class Events extends RkComponent {
             } else {
                 avatar = <Image style={{ width: 60, height: 60 }} source={require('../../assets/images/defaultSponsorImg.png')} />
             }
+
             //   <Text style={styles.headerText}>{event.eventName}</Text>
    
             //                     <Text style={styles.infoText}>{event.description}</Text>
@@ -111,8 +119,10 @@ export class Events extends RkComponent {
             //                 </View>
 
             //                 <Icon style={[styles.textColor]} name="calendar"/>
+
+          
             return (
-                <TouchableOpacity>
+                 <TouchableOpacity key={index} onPress={() => this.storeEventDetails(event)}>
                     <RkCard rkType='shadowed' style={[styles.card]}>
                         <View style={{ flexDirection: 'row' }}>
                             <View style={{ flexDirection: 'column', alignItems: 'flex-start', marginVertical: 10, flex: 3, alignSelf: 'center', marginLeft: 10 }}>
@@ -185,7 +195,6 @@ export class Events extends RkComponent {
 
     }
 }
-
 
 let styles = RkStyleSheet.create(theme => ({
     root: {

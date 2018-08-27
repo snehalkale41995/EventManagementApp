@@ -101,6 +101,7 @@ export class HomePageMenuScreen extends React.Component {
       this.handleFirstConnectivityChange
     );
   }
+
   getCurrentUser() {
     Service.getCurrentUser((userDetails) => {
       let Uid = userDetails.uid;
@@ -118,6 +119,7 @@ export class HomePageMenuScreen extends React.Component {
       }
     });
   }
+  
   getQuestionsData = (Uid) => {
     Service.getDocRef("QuestionsHome")
       .where("ResponseBy", "==", Uid)
@@ -290,8 +292,15 @@ export const MainRoutes = [
     title: 'Events',
     icon: 'md-information-circle',
     screen: Screens.Events,
-    children: []
-  },
+    children: [
+       {
+        id: 'EventDetails',
+        title: 'EventDetails',
+        screen: Screens.EventDetails,
+        children: []
+      },
+    ]
+  }
 ];
 let menuRoutes = _.cloneDeep(MainRoutes);
 menuRoutes.unshift({
