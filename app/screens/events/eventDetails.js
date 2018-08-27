@@ -77,7 +77,7 @@ export class EventDetails extends React.Component {
   }
 
   _authenticateUser(){
-    let event =this.state.event
+    let event = this.state.event;
       loginService.getCurrentUser((userDetails) => {
        if(event._id === userDetails.event){
        this.props.navigation.navigate('App');

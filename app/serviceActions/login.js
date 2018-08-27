@@ -9,7 +9,6 @@ import {AsyncStorage} from 'react-native';
            resolve(response.data);
          })
          .catch(error => {
-             console.log("error.response.data",error.response.data);
             reject(error.response.data);
          })
       })
@@ -24,7 +23,6 @@ import {AsyncStorage} from 'react-native';
                 if(errorFn){
                     errorFn(err);
                 }
-                
         });
     }
  

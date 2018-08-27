@@ -3,6 +3,8 @@ import { RkText, RkStyleSheet } from 'react-native-ui-kitten';
 import { Container } from 'native-base';
 import { Image, ScrollView, View, StyleSheet, Alert, AsyncStorage, ActivityIndicator, Text, Linking, TouchableOpacity,Platform,NetInfo } from 'react-native';
 import { scale, scaleModerate, scaleVertical } from '../../utils/scale';
+import * as infoService from '../../serviceActions/staticPages';
+import * as eventService from '../../serviceActions/event';
 
 function renderIf(condition, content) {
   if (condition) {
@@ -20,7 +22,9 @@ export class AboutEternus extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      isOffline: false
+      isOffline: false,
+      eternusInfo : [],
+      isLoaded: false
     }
   }
 
@@ -28,6 +32,7 @@ export class AboutEternus extends React.Component {
     if (Platform.OS !== 'ios') {
       NetInfo.isConnected.fetch().then(isConnected => {
         if (isConnected) {
+          this.getEternusInfo();
           this.setState({
             isLoading: true
           });
@@ -42,6 +47,7 @@ export class AboutEternus extends React.Component {
         });
       });
     }
+     this.getEternusInfo();
     NetInfo.addEventListener(
       'connectionChange',
       this.handleFirstConnectivityChange
@@ -50,6 +56,7 @@ export class AboutEternus extends React.Component {
 
   handleFirstConnectivityChange = (connectionInfo) => {
     if (connectionInfo.type != 'none') {
+       this.getEternusInfo();
       this.setState({
         isLoading: true
       });
@@ -71,7 +78,28 @@ export class AboutEternus extends React.Component {
     );
   }
 
-  render() {
+  getEternusInfo(){
+    eventService.getCurrentEvent((eventInfo)=>{
+      if(eventInfo){
+       infoService.getEternusInfo().then((response)=>{
+        console.log(response);
+        this.setState(
+          {eternusInfo: response, 
+            isLoaded: true}
+        )
+      }).catch((error)=>{
+        console.log(error);
+       })
+      }
+      else{
+        return;
+      }
+    })
+  }
+
+
+     displayInformation = () => {
+    let eternusInfo = this.state.eternusInfo;
     return (
       <Container>
         <ScrollView style={styles.root}>
@@ -85,14 +113,12 @@ export class AboutEternus extends React.Component {
                   fontSize: 15,
                   textAlign: 'justify'
                 }}>
-                Eternus Solutions is an IT Consulting Services and outsourcing company providing a range of IT Services to enterprises across various domains globally.
-             Eternus Solutions has carved a niche for itself in the IT industry and cemented its place as India’s leading IT services provider by acquiring elite clientele.
-             The organization has made a mark for itself in the industry in a relatively short span of time through its ability and adherence to commitments to its clients.
+              {eternusInfo.info}
              </Text>
             </View >
             <TouchableOpacity onPress={() => Linking.openURL('https://www.eternussolutions.com/')}>
               <Text style={{ color: 'blue', fontSize: 15, textAlign: 'center', marginTop: 10 }}>
-                https://www.eternussolutions.com/
+               {eternusInfo.url}
         </Text>
             </TouchableOpacity>
           </View>
@@ -102,6 +128,7 @@ export class AboutEternus extends React.Component {
             this.state.isOffline ? <RkText rkType="small" style={styles.footerText}>The Internet connection appears to be offline. </RkText> : null
           }
         </View>
+
         <View style={styles.footer}>
           <RkText rkType="small" style={styles.footerText}>Powered by</RkText>
           <RkText rkType="small" style={styles.companyName}> Eternus Solutions Pvt. Ltd. </RkText>
@@ -109,6 +136,50 @@ export class AboutEternus extends React.Component {
       </Container>
     );
   }
+
+  render() {
+  let Info = this.displayInformation();
+        if (this.state.isLoaded) {
+            return (
+                <Container style={[styles.root]}>
+                    <ScrollView>
+                        <View>
+                           {Info}
+                        </View>
+                    </ScrollView>
+                    <View style={[styles.footerOffline]}>
+                        {
+                            this.state.isOffline ? <RkText rkType="small" style={[styles.footerText]}>The Internet connection appears to be offline. </RkText> : null
+                        }
+                    </View>
+                    <View style={[styles.footer]}>
+                        <RkText rkType="small" style={[styles.footerText]}>Powered by</RkText>
+                        <RkText rkType="small" style={[styles.companyName]}> Eternus Solutions Pvt. Ltd. </RkText>
+                    </View>
+                </Container>
+            )
+        }
+        else {
+            return (
+                <Container style={[styles.root]}>
+                    <ScrollView>
+                    <View style={[styles.loading]}>
+                        <ActivityIndicator size='small' />
+                    </View>
+                    </ScrollView>
+                    <View style={[styles.footerOffline]}>
+                        {
+                            this.state.isOffline ? <RkText rkType="small" style={[styles.footerText]}>The Internet connection appears to be offline. </RkText> : null
+                        }
+                    </View>
+                    <View style={[styles.footer]}>
+                        <RkText rkType="small" style={[styles.footerText]}>Powered by</RkText>
+                        <RkText rkType="small" style={[styles.companyName]}> Eternus Solutions Pvt. Ltd. </RkText>
+                    </View>
+                </Container>
+            )
+        }
+}
 }
 
 let styles = RkStyleSheet.create(theme => ({

@@ -109,6 +109,7 @@ export class Speakers extends RkComponent {
                 console.log("error", error);
             });
     }
+
     displaySpeakers = () => {
         return this.state.Speakers.map((speaker, index) => {
             let avatar;

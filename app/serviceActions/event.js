@@ -1,5 +1,6 @@
 import axios from 'axios';
 import AppConfig from "../constants/AppConfig";
+import {AsyncStorage} from 'react-native';
 
   export const  getEvents = () =>{
       let promise = new Promise((resolve, reject) => {
@@ -28,12 +29,16 @@ import AppConfig from "../constants/AppConfig";
      }
 
 
-    /////////// In component
-    //    eventServices.getData().then(function(response) {
-    //      console.log("Success!", response);
-    //     }, function(error) {
-    //      console.error("Failed!", error);
-    //     })
-
+      export const getCurrentEvent = (successFn, errorFn)=>{
+        AsyncStorage.getItem("EVENT_DETAILS").then((eventDetails)=>{
+            successFn(JSON.parse(eventDetails));
+            }).catch(err => {
+                console.warn('Errors');
+                if(errorFn){
+                    errorFn(err);
+                }
+                
+        });
+    }
 
 
