@@ -15,9 +15,11 @@ import AppConfig from "../constants/AppConfig";
      }
 
  export const getEventInfo = (eventId) =>{
+   console.log("in getEventInfo service ",eventId);
       let promise = new Promise((resolve, reject) => {
          axios.get(`${AppConfig.serverURL}/api/aboutUs/eventId/${eventId}`)
          .then(response => {
+           console.log()
            resolve(response.data);
          })
          .catch(error => {

@@ -23,7 +23,7 @@ export class AboutEternus extends React.Component {
     super(props);
     this.state = {
       isOffline: false,
-      eternusInfo : [],
+      eternusInfo :{},
       isLoaded: false
     }
   }
@@ -80,11 +80,11 @@ export class AboutEternus extends React.Component {
 
   getEternusInfo(){
     eventService.getCurrentEvent((eventInfo)=>{
+      console.log("eventInfo",eventInfo);
       if(eventInfo){
        infoService.getEternusInfo().then((response)=>{
-        console.log(response);
         this.setState(
-          {eternusInfo: response, 
+          {eternusInfo: response[0], 
             isLoaded: true}
         )
       }).catch((error)=>{
@@ -96,16 +96,16 @@ export class AboutEternus extends React.Component {
       }
     })
   }
-
-
-     displayInformation = () => {
+    displayInformation = () => {
     let eternusInfo = this.state.eternusInfo;
+    console.log("eternusInfo",eternusInfo)
     return (
       <Container>
         <ScrollView style={styles.root}>
           <View style={styles.header}>
             <Image style={styles.eternusLogo} source={require('../../assets/images/eternusLogoMain.png')} />
           </View>
+          
           <View style={styles.section} pointerEvents='auto'>
             <View style={[styles.row]}>
               <Text
@@ -117,7 +117,7 @@ export class AboutEternus extends React.Component {
              </Text>
             </View >
             <TouchableOpacity onPress={() => Linking.openURL('https://www.eternussolutions.com/')}>
-              <Text style={{ color: 'blue', fontSize: 15, textAlign: 'center', marginTop: 10 }}>
+              <Text style={{ color: 'blue', fontSize: 15, textAlign: 'center', marginTop: 15 }}>
                {eternusInfo.url}
         </Text>
             </TouchableOpacity>

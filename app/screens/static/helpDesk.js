@@ -1,27 +1,31 @@
 import React from 'react';
-import { RkCard, RkStyleSheet, RkText } from 'react-native-ui-kitten';
-import { Text, View, Container } from 'native-base';
-import { ScrollView,Platform,NetInfo, ActivityIndicator } from 'react-native';
+import { RkText, RkStyleSheet, RkCard} from 'react-native-ui-kitten';
+import { Container } from 'native-base';
+import { Image, ScrollView, View, StyleSheet, Alert, AsyncStorage, ActivityIndicator, Text, Linking, TouchableOpacity,Platform,NetInfo } from 'react-native';
+import { scale, scaleModerate, scaleVertical } from '../../utils/scale';
+import * as infoService from '../../serviceActions/staticPages';
+import * as eventService from '../../serviceActions/event';
 import Autolink from 'react-native-autolink';
-
 
 function renderIf(condition, content) {
   if (condition) {
-      return content;
+    return content;
   } else {
-      return null;
+    return null;
   }
 }
 
 export class HelpDesk extends React.Component {
   static navigationOptions = {
-    title: 'Help Desk'.toUpperCase()
+    title: 'HELP DESK'.toUpperCase()
   };
 
   constructor(props) {
     super(props);
     this.state = {
-      isOffline :false
+      isOffline: false,
+      deskInfo :{},
+      isLoaded: false
     }
   }
 
@@ -29,6 +33,7 @@ export class HelpDesk extends React.Component {
     if (Platform.OS !== 'ios') {
       NetInfo.isConnected.fetch().then(isConnected => {
         if (isConnected) {
+          this.getHelpDeskInfo();
           this.setState({
             isLoading: true
           });
@@ -43,6 +48,7 @@ export class HelpDesk extends React.Component {
         });
       });
     }
+     this.getHelpDeskInfo();
     NetInfo.addEventListener(
       'connectionChange',
       this.handleFirstConnectivityChange
@@ -51,6 +57,7 @@ export class HelpDesk extends React.Component {
 
   handleFirstConnectivityChange = (connectionInfo) => {
     if (connectionInfo.type != 'none') {
+       this.getHelpDeskInfo();
       this.setState({
         isLoading: true
       });
@@ -71,35 +78,50 @@ export class HelpDesk extends React.Component {
       this.handleFirstConnectivityChange
     );
   }
-  render() {
+
+  getHelpDeskInfo(){
+    eventService.getCurrentEvent((deskInfo)=>{
+      if(deskInfo){
+       let eventId = deskInfo._id;
+       infoService.getHelpDeskInfo(eventId).then((response)=>{
+         console.log("response",response)
+        this.setState(
+          {
+            deskInfo: response[0],
+            isLoaded: true
+          }
+        )
+      }).catch((error)=>{
+        console.log(error);
+       })
+       }
+      else{
+        return;
+      }
+    })
+  }
+
+    displayInformation = () => {
+    let deskInfo = this.state.deskInfo;
+    console.log("deskInfo",deskInfo);
     return (
-      <Container style={[styles.root]}>
-        <ScrollView>
+      <Container>
+      <ScrollView>
           <View>
             {/* {speakerTile} */}
-            
             <RkCard rkType='shadowed' style={[styles.card]}>
-           
-            <Text style={{ fontSize: 19, fontWeight: 'bold',marginBottom:6 }}>TiECon Support</Text> 
+            <Text style={{ fontSize: 19, fontWeight: 'bold',marginBottom:10 }}>Event Support</Text> 
             <Text style={{ fontSize: 16, color:'grey' }}>Phone: <Autolink text="+91-9673806519"></Autolink></Text>      
             <Text style={{ fontSize: 16, color:'grey' }}>Email: <Autolink text="tieoffice.pune@gmail.com"></Autolink></Text> 
-           
             </RkCard>
-
             <RkCard rkType='shadowed' style={[styles.card]}>
-           
-            <Text style={{ fontSize: 19, fontWeight: 'bold',justifyContent: 'center', marginBottom:6}}>Technical Support</Text>
+            <Text style={{ fontSize: 19, fontWeight: 'bold',justifyContent: 'center', marginBottom:10}}>Technical Support</Text>
             {/* <Text style={{ fontSize: 20 }}>Eternus Solutions Pvt. Ltd.</Text> */}
             <Text style={{ fontSize: 16, color:'grey' }}>Phone: <Autolink text="+91-9168883355"></Autolink></Text> 
             <Text style={{ fontSize: 16, color:'grey' }}>Email: <Autolink text="tieappsupport@eternussolutions.com"></Autolink></Text>          
-           
             </RkCard>
-
-
             <Text/>
             <Text/>
-            
-                                                              
           </View>
         </ScrollView>
         <View style={styles.footerOffline}>
@@ -112,13 +134,61 @@ export class HelpDesk extends React.Component {
           <RkText rkType="small" style={styles.companyName}> Eternus Solutions Pvt. Ltd. </RkText>
         </View>
       </Container>
-    )
+    );
   }
+
+  render() {
+  let Info = this.displayInformation();
+        if (this.state.isLoaded) {
+            return (
+                <Container style={[styles.root]}>
+                    <ScrollView>
+                        <View>
+                           {Info}
+                        </View>
+                    </ScrollView>
+                    <View style={[styles.footerOffline]}>
+                        {
+                            this.state.isOffline ? <RkText rkType="small" style={[styles.footerText]}>The Internet connection appears to be offline. </RkText> : null
+                        }
+                    </View>
+                    <View style={[styles.footer]}>
+                        <RkText rkType="small" style={[styles.footerText]}>Powered by</RkText>
+                        <RkText rkType="small" style={[styles.companyName]}> Eternus Solutions Pvt. Ltd. </RkText>
+                    </View>
+                </Container>
+            )
+        }
+        else {
+            return (
+                <Container style={[styles.root]}>
+                    <ScrollView>
+                    <View style={[styles.loading]}>
+                        <ActivityIndicator size='small' />
+                    </View>
+                    </ScrollView>
+                    <View style={[styles.footerOffline]}>
+                        {
+                            this.state.isOffline ? <RkText rkType="small" style={[styles.footerText]}>The Internet connection appears to be offline. </RkText> : null
+                        }
+                    </View>
+                    <View style={[styles.footer]}>
+                        <RkText rkType="small" style={[styles.footerText]}>Powered by</RkText>
+                        <RkText rkType="small" style={[styles.companyName]}> Eternus Solutions Pvt. Ltd. </RkText>
+                    </View>
+                </Container>
+            )
+        }
+}
 }
 
 let styles = RkStyleSheet.create(theme => ({
   root: {
-      backgroundColor: theme.colors.screen.base
+    backgroundColor: theme.colors.screen.base
+  },
+  header: {
+    backgroundColor: theme.colors.screen.base,
+    paddingVertical: 25
   },
   footer: {
     flexDirection: 'row',
@@ -143,7 +213,7 @@ let styles = RkStyleSheet.create(theme => ({
     fontSize: 12,
     fontWeight: 'bold'
   },
-  card: {
+   card: {
     margin: 2,
     padding: 6,
     justifyContent:'flex-start'
