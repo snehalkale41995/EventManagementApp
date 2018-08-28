@@ -1,4 +1,5 @@
 import React from 'react';
+import moment from 'moment';
 import { ScrollView, Platform, Image, NetInfo } from 'react-native';
 import { Text, View, Icon, Container, Label } from 'native-base';
 import { StyleSheet, FlatList, TouchableOpacity, Keyboard, Alert, AsyncStorage, ActivityIndicator } from 'react-native';
@@ -6,16 +7,17 @@ import { RkComponent, RkTheme, RkStyleSheet, RkText, RkAvoidKeyboard, RkButton, 
 import { NavigationActions } from 'react-navigation';
 import ReactMoment from 'react-moment';
 import { GradientButton } from '../../components/gradientButton';
-import { Service } from '../../services';
-import Moment from 'moment';
-import firebase from './../../config/firebase';
 import { Avatar } from '../../components';
 import * as eventService from '../../serviceActions/event';
 
-var firestoreDB = firebase.firestore();
 export class Events extends RkComponent {
     static navigationOptions = {
-        title: 'Events'.toUpperCase()
+      title: 'UPCOMING EVENTS'.toUpperCase(),
+      headerStyle: {
+        backgroundColor: '#ed1b24'
+      },
+      textAlign:'center',
+      headerTintColor: '#fff'
     };
     constructor(props) {
         super(props);
@@ -110,17 +112,6 @@ export class Events extends RkComponent {
             } else {
                 avatar = <Image style={{ width: 60, height: 60 }} source={require('../../assets/images/defaultSponsorImg.png')} />
             }
-
-            //   <Text style={styles.headerText}>{event.eventName}</Text>
-   
-            //                     <Text style={styles.infoText}>{event.description}</Text>
-            //                 <View>
-                                
-            //                 </View>
-
-            //                 <Icon style={[styles.textColor]} name="calendar"/>
-
-          
             return (
                  <TouchableOpacity key={index} onPress={() => this.storeEventDetails(event)}>
                     <RkCard rkType='shadowed' style={[styles.card]}>
@@ -128,22 +119,31 @@ export class Events extends RkComponent {
                             <View style={{ flexDirection: 'column', alignItems: 'flex-start', marginVertical: 10, flex: 3, alignSelf: 'center', marginLeft: 10 }}>
                                 {avatar}
                             </View>
-                            <View style={{ flexDirection: 'column', alignItems: 'flex-start', marginVertical: 10, flex: 6, marginLeft: -10 }}>
-                              
+
+                        <View style={{ flexDirection: 'column', alignItems: 'flex-start', marginVertical: 10, flex: 6, marginLeft: -10 }}>
                         <View style={{flexDirection : 'row'}}>
-                          <Text style={styles.infoText}>{event.eventName}</Text>  
+                        <Text style={styles.headerText}>{event.eventName}</Text>  
                         </View>
-   
                          <View style={{flexDirection : 'row'}}>
                         <View style={{flexDirection : 'column', alignItems: 'flex-start', marginVertical: 10, flex: 1}}>
-                          <Icon name="calendar"/>
+                          <Icon style={[styles.iconStyle]}  name='calendar'  />
                         </View>
-                         <View style={{flexDirection : 'column', alignItems: 'flex-start', marginVertical: 10, flex: 2}}>
-                          <Text style={styles.infoText}>{event.eventName}</Text>  
+                         <View style={{flexDirection : 'column', alignItems: 'flex-start', marginVertical: 10, flex: 7}}>
+                          <Text style={styles.infoText}> {moment(event.startDate).format(
+                                "DD.MM.YYYY"
+                              )} - {moment(event.endDate).format("DD.MM.YYYY")} </Text>  
                         </View>
                         </View>
-                            </View >
-                        </View >
+                      <View style={{flexDirection : 'row', marginTop: 0}}>
+                       <View style={{flexDirection : 'column', alignItems: 'flex-start', marginVertical: 0, flex: 1}}>
+                          <Icon style={[styles.iconStyle]}  name='pin'/>
+                        </View>
+                         <View style={{flexDirection : 'column', alignItems: 'flex-start', marginVertical: 0, flex: 7}}>
+                          <Text style={styles.infoText}>{event.venue}</Text>  
+                        </View>
+                         </View>
+                        </View>
+                        </View>
                     </RkCard>
                 </TouchableOpacity>
             )
@@ -216,8 +216,7 @@ let styles = RkStyleSheet.create(theme => ({
     },
     card: {
         margin: 1,
-        padding: 4,
-        height: 75
+        padding: 4
     },
     header: {
         flexDirection: 'row'
@@ -279,4 +278,8 @@ let styles = RkStyleSheet.create(theme => ({
         fontSize: 12,
         fontWeight: 'bold'
     },
+     iconStyle : {
+    color: '#ed1b24',
+    fontSize: 15
+  },
 }));

@@ -62,15 +62,14 @@ export class LoginV2 extends React.Component {
     }
     
    this.setState({isLoading: true});
-
    loginService.loginUser(user)
    .then(response => {
     let userInfo = JSON.stringify(response);
     AsyncStorage.setItem("USER_DETAILS", userInfo);
     navigation.navigate('Event');
    }).catch((error)=>{
-      let errorMessage = error;
       this.setState({isLoading: false});
+      let errorMessage = error;
       Alert.alert(
         'Error',
         errorMessage,
