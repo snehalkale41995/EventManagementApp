@@ -56,7 +56,7 @@ export class AboutUs extends React.Component {
 
   handleFirstConnectivityChange = (connectionInfo) => {
     if (connectionInfo.type != 'none') {
-       this.getEventInfo();
+      this.getEventInfo();
       this.setState({
         isLoading: true
       });
@@ -83,7 +83,6 @@ export class AboutUs extends React.Component {
       if(eventInfo){
        let eventId = eventInfo._id;
        infoService.getEventInfo(eventId).then((response)=>{
-         console.log("response",response)
         this.setState(
           {
             eventInfo: response[0],
@@ -92,7 +91,7 @@ export class AboutUs extends React.Component {
           }
         )
       }).catch((error)=>{
-        console.log(error);
+       // console.log(error);
        })
        }
       else{
@@ -104,16 +103,15 @@ export class AboutUs extends React.Component {
     displayInformation = () => {
     let eventInfo = this.state.eventInfo;
     let eventLogo = this.state.eventLogo;
+    let url = eventInfo.url;
      let avatar;
             if (eventLogo) {
                 avatar = <Image style={styles.eternusLogo} source={{ uri: eventLogo }} />
             } else {
                 avatar = <Image style={styles.eternusLogo} source={require('../../assets/images/defaultSponsorImg.png')} />
             }
-    console.log("eventInfo",eventInfo)
     return (
       <Container>
-
         <ScrollView style={styles.root}>
           <View style={styles.header}>
             {avatar}
@@ -128,7 +126,7 @@ export class AboutUs extends React.Component {
               {eventInfo.info}
              </Text>
             </View >
-            <TouchableOpacity onPress={() => Linking.openURL('https://www.eternussolutions.com/')}>
+            <TouchableOpacity onPress={() => Linking.openURL(url)}>
               <Text style={{ color: 'blue', fontSize: 15, textAlign: 'center', marginTop: 15 }}>
                {eventInfo.url}
         </Text>
@@ -140,7 +138,6 @@ export class AboutUs extends React.Component {
             this.state.isOffline ? <RkText rkType="small" style={styles.footerText}>The Internet connection appears to be offline. </RkText> : null
           }
         </View>
-
         <View style={styles.footer}>
           <RkText rkType="small" style={styles.footerText}>Powered by</RkText>
           <RkText rkType="small" style={styles.companyName}> Eternus Solutions Pvt. Ltd. </RkText>

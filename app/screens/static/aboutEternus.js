@@ -33,12 +33,8 @@ export class AboutEternus extends React.Component {
       NetInfo.isConnected.fetch().then(isConnected => {
         if (isConnected) {
           this.getEternusInfo();
-          this.setState({
-            isLoading: true
-          });
         } else {
           this.setState({
-            isLoading: false,
             isOffline: true
           });
         }
@@ -57,12 +53,8 @@ export class AboutEternus extends React.Component {
   handleFirstConnectivityChange = (connectionInfo) => {
     if (connectionInfo.type != 'none') {
        this.getEternusInfo();
-      this.setState({
-        isLoading: true
-      });
     } else {
       this.setState({
-        isLoading: false,
         isOffline: true
       });
     }
@@ -80,7 +72,6 @@ export class AboutEternus extends React.Component {
 
   getEternusInfo(){
     eventService.getCurrentEvent((eventInfo)=>{
-      console.log("eventInfo",eventInfo);
       if(eventInfo){
        infoService.getEternusInfo().then((response)=>{
         this.setState(
@@ -88,7 +79,7 @@ export class AboutEternus extends React.Component {
             isLoaded: true}
         )
       }).catch((error)=>{
-        console.log(error);
+       // console.log(error);
        })
       }
       else{
@@ -96,16 +87,15 @@ export class AboutEternus extends React.Component {
       }
     })
   }
+  
     displayInformation = () => {
     let eternusInfo = this.state.eternusInfo;
-    console.log("eternusInfo",eternusInfo)
     return (
       <Container>
         <ScrollView style={styles.root}>
           <View style={styles.header}>
             <Image style={styles.eternusLogo} source={require('../../assets/images/eternusLogoMain.png')} />
           </View>
-          
           <View style={styles.section} pointerEvents='auto'>
             <View style={[styles.row]}>
               <Text
@@ -128,7 +118,6 @@ export class AboutEternus extends React.Component {
             this.state.isOffline ? <RkText rkType="small" style={styles.footerText}>The Internet connection appears to be offline. </RkText> : null
           }
         </View>
-
         <View style={styles.footer}>
           <RkText rkType="small" style={styles.footerText}>Powered by</RkText>
           <RkText rkType="small" style={styles.companyName}> Eternus Solutions Pvt. Ltd. </RkText>
