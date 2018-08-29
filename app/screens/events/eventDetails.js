@@ -112,7 +112,7 @@ onPress={ () => { navigation.navigate('Event') }} />,
            <View style={{ flexDirection: 'row' }}>
             <View style={{ flexDirection: 'column', alignItems: 'flex-start', marginVertical: 10, flex: 3, alignSelf: 'center', marginLeft: 10 }}>
                 {avatar}
-                            </View>
+                     </View>
                         <View style={{ flexDirection: 'column', alignItems: 'flex-start', marginVertical: 10, flex: 6, marginLeft: -10 }}>
                         <View style={{flexDirection : 'row'}}>
                         <Text style={styles.headerText}>{event.eventName}</Text>  
@@ -135,10 +135,12 @@ onPress={ () => { navigation.navigate('Event') }} />,
                           <Text style={styles.infoText}>{event.venue}</Text>  
                         </View>
                          </View>
+
+                    <View style={{flexDirection : 'row', marginTop: 20}}>
+                        <Text style={styles.infoText}>{event.venue}</Text>  
+                    </View>
+
                         </View>
-                         <View style={{flexDirection : 'row', marginTop: 10}}> 
-                          <Text style={styles.infoText}>{event.description}</Text>  
-                         </View>
                         </View>
                     </RkCard>
          <GradientButton colors={['#E7060E', '#f55050']} rkType='large' text='JOIN' onPress={() => this._authenticateUser()} /> 
