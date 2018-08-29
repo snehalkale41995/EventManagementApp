@@ -14,7 +14,6 @@ function renderIf(condition, content) {
     return null;
   }
 }
-
 export class HelpDesk extends React.Component {
   static navigationOptions = {
     title: 'HELP DESK'.toUpperCase()
@@ -25,7 +24,9 @@ export class HelpDesk extends React.Component {
     this.state = {
       isOffline: false,
       deskInfo :{},
-      isLoaded: false
+      isLoaded: false,
+      eventContact : "",
+      techContact : ""
     }
   }
 
@@ -84,10 +85,11 @@ export class HelpDesk extends React.Component {
       if(deskInfo){
        let eventId = deskInfo._id;
        infoService.getHelpDeskInfo(eventId).then((response)=>{
-         console.log("response",response)
         this.setState(
           {
             deskInfo: response[0],
+            eventContact : response[0].eventSupportContact.toString(),
+            techContact : response[0].techSupportContact.toString(),
             isLoaded: true
           }
         )
@@ -102,23 +104,22 @@ export class HelpDesk extends React.Component {
   }
 
     displayInformation = () => {
+    let eventContact= "+91-"+this.state.eventContact+" ";
+    let techContact= "+91-"+this.state.techContact+" ";
     let deskInfo = this.state.deskInfo;
-    console.log("deskInfo",deskInfo);
     return (
       <Container>
       <ScrollView>
           <View>
-            {/* {speakerTile} */}
             <RkCard rkType='shadowed' style={[styles.card]}>
             <Text style={{ fontSize: 19, fontWeight: 'bold',marginBottom:10 }}>Event Support</Text> 
-            <Text style={{ fontSize: 16, color:'grey' }}>Phone: <Autolink text="+91-9673806519"></Autolink></Text>      
-            <Text style={{ fontSize: 16, color:'grey' }}>Email: <Autolink text="tieoffice.pune@gmail.com"></Autolink></Text> 
+            <Text style={{ fontSize: 16, color:'grey' }}>Phone: <Autolink text={eventContact}></Autolink></Text>      
+            <Text style={{ fontSize: 16, color:'grey' }}>Email: <Autolink text={deskInfo.eventSupportEmail}></Autolink></Text> 
             </RkCard>
             <RkCard rkType='shadowed' style={[styles.card]}>
             <Text style={{ fontSize: 19, fontWeight: 'bold',justifyContent: 'center', marginBottom:10}}>Technical Support</Text>
-            {/* <Text style={{ fontSize: 20 }}>Eternus Solutions Pvt. Ltd.</Text> */}
-            <Text style={{ fontSize: 16, color:'grey' }}>Phone: <Autolink text="+91-9168883355"></Autolink></Text> 
-            <Text style={{ fontSize: 16, color:'grey' }}>Email: <Autolink text="tieappsupport@eternussolutions.com"></Autolink></Text>          
+            <Text style={{ fontSize: 16, color:'grey' }}>Phone: <Autolink text={techContact}></Autolink></Text> 
+            <Text style={{ fontSize: 16, color:'grey' }}>Email: <Autolink text={deskInfo.techSupportEmail}></Autolink></Text>          
             </RkCard>
             <Text/>
             <Text/>
@@ -136,7 +137,6 @@ export class HelpDesk extends React.Component {
       </Container>
     );
   }
-
   render() {
   let Info = this.displayInformation();
         if (this.state.isLoaded) {
