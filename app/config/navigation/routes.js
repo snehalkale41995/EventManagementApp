@@ -238,13 +238,13 @@ export const MainRoutes = [
     children: [],
     roleNames: ['Admin', 'Volunteer']
   },
-  // {
-  //   id: 'MyProfile',
-  //   title: 'My Profile',
-  //   icon: 'ios-person',
-  //   screen: Screens.ProfileSettings,
-  //   children: [],
-  // },
+  {
+    id: 'MyProfile',
+    title: 'My Profile',
+    icon: 'ios-person',
+    screen: Screens.UserProfile,
+    children: [],
+  },
   {
     id: 'Speakers',
     title: 'Speakers',

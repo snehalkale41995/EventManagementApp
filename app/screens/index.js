@@ -8,3 +8,4 @@ export * from './speakers';
 export * from './sponsors';
 export * from './static';
 export * from './events';
+export * from './userProfile';
