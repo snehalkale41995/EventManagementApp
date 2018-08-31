@@ -13,7 +13,6 @@ function renderIf(condition, content) {
     return null;
   }
 }
-
 export class UserProfile extends React.Component {
   static navigationOptions = {
     title: 'Profile'.toUpperCase()
@@ -116,17 +115,12 @@ export class UserProfile extends React.Component {
                  <View style={{marginTop:10}}>
                    <RkText style={{fontSize : 15, textAlign: 'center'}}>{attendeeCode}</RkText>
                  </View>
+                  <View style={{marginTop:25,backgroundColor:'#E7060E',height:40}}>
+                   <RkText style={{fontSize : 25, textAlign: 'center', color:'white'}}>{userInfo.roleName}</RkText>
+                 </View>
               </View>
         </ScrollView>
-        <View style={styles.footerOffline}>
-          {
-            this.state.isOffline ? <RkText rkType="small" style={styles.footerText}>The Internet connection appears to be offline. </RkText> : null
-          }
-        </View>
-        <View style={styles.footer}>
-          <RkText rkType="small" style={styles.footerText}>Powered by</RkText>
-          <RkText rkType="small" style={styles.companyName}> Eternus Solutions Pvt. Ltd. </RkText>
-        </View>
+       
       </Container>
     );
   }
@@ -141,7 +135,16 @@ export class UserProfile extends React.Component {
                             {Info} 
                         </View>
                     </ScrollView>
-                </Container>
+          <View style={styles.footerOffline}>
+          {
+            this.state.isOffline ? <RkText rkType="small" style={styles.footerText}>The Internet connection appears to be offline. </RkText> : null
+          }
+        </View>
+        <View style={styles.footer}>
+          <RkText rkType="small" style={styles.footerText}>Powered by</RkText>
+          <RkText rkType="small" style={styles.companyName}> Eternus Solutions Pvt. Ltd. </RkText>
+        </View>
+         </Container>
             )
         }
         else {
