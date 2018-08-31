@@ -156,15 +156,6 @@ displayMap(){
             description={eventInfo.address}
           />
         </MapView>
-        <View style={styles.footerOffline}>
-          {
-            this.state.isOffline ? <RkText rkType="small" style={styles.footerText}>The Internet connection appears to be offline. </RkText> : null
-          }
-        </View>
-        <View style={styles.footer} style={{ flexDirection: 'row',justifyContent: 'center',  position:'absolute', backgroundColor:'red',bottom:0, alignSelf: 'stretch', width: '100%'}}>
-          <RkText rkType="small" style={styles.footerText}>Powered by</RkText>
-          <RkText rkType="small" style={styles.companyName}> Eternus Solutions Pvt. Ltd. </RkText>
-        </View>
       </Container>
     )
 }
