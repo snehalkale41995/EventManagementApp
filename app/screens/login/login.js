@@ -5,7 +5,6 @@ import {FontAwesome} from '../../assets/icons';
 import {GradientButton} from '../../components/gradientButton';
 import {RkTheme} from 'react-native-ui-kitten';
 import {scale, scaleModerate, scaleVertical} from '../../utils/scale';
-import firebase from '../../config/firebase';
 import * as loginService from '../../serviceActions/login';
 
 
@@ -60,12 +59,19 @@ export class LoginV2 extends React.Component {
       );
       return;
     }
-    
    this.setState({isLoading: true});
    loginService.loginUser(user)
    .then(response => {
     let userInfo = JSON.stringify(response);
     AsyncStorage.setItem("USER_DETAILS", userInfo);
+     Alert.alert(
+        'Login Successful',
+        'Welcome' +' '+ response.firstName +'',
+        [
+          { text: 'Ok', onPress: () => {}},
+        ],
+        { cancelable: false }
+      );
     navigation.navigate('Event');
    }).catch((error)=>{
       this.setState({isLoading: false});
