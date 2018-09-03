@@ -51,7 +51,7 @@ export class LoginV2 extends React.Component {
     if (!this.state.password || this.state.password.toString().trim().length < 6 ) {
       Alert.alert(
         'Invalid Password',
-        'Invalid length of password.',
+        '',
         [
           { text: 'Ok', onPress: () => {}},
         ],
@@ -59,6 +59,7 @@ export class LoginV2 extends React.Component {
       );
       return;
     }
+    
    this.setState({isLoading: true});
    loginService.loginUser(user)
    .then(response => {
