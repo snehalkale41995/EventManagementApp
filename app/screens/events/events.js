@@ -9,6 +9,8 @@ import ReactMoment from 'react-moment';
 import { GradientButton } from '../../components/gradientButton';
 import { Avatar } from '../../components';
 import * as eventService from '../../serviceActions/event';
+import {Loader} from '../../components/loader';
+import {Footer} from '../../components/footer';
 
 export class Events extends RkComponent {
     static navigationOptions = {
@@ -33,12 +35,8 @@ export class Events extends RkComponent {
             NetInfo.isConnected.fetch().then(isConnected => {
                 if (isConnected) {
                     this.getEventsList();
-                    this.setState({
-                        isLoading: true
-                    });
                 } else {
                     this.setState({
-                        isLoading: false,
                         isOffline: true
                     });
                 }
@@ -57,12 +55,8 @@ export class Events extends RkComponent {
     handleFirstConnectivityChange = (connectionInfo) => {
         if (connectionInfo.type != 'none') {
             this.getEventsList();
-            this.setState({
-                isLoading: true
-            });
         } else {
             this.setState({
-                isLoading: false,
                 isOffline: true
             });
         }
@@ -81,8 +75,14 @@ export class Events extends RkComponent {
     getEventsList() {
         let thisRef = this;
         let Events = [];
+        let today = new Date().setHours(0, 0, 0, 0);
         eventService.getEvents().then(function(response) {
-          Events = response;
+         response.forEach( (data)=> {
+        let endDate = new Date(data["endDate"]).setHours(0, 0, 0, 0);
+         if(today<=endDate){
+          Events.push(data);
+          }
+        });
           thisRef.setState({
              Events : Events,
              isLoaded :true
@@ -119,7 +119,6 @@ export class Events extends RkComponent {
                             <View style={{ flexDirection: 'column', alignItems: 'flex-start', marginVertical: 10, flex: 3, alignSelf: 'center', marginLeft: 10 }}>
                                 {avatar}
                             </View>
-
                         <View style={{ flexDirection: 'column', alignItems: 'flex-start', marginVertical: 10, flex: 6, marginLeft: -10 }}>
                         <View style={{flexDirection : 'row'}}>
                         <Text style={styles.headerText}>{event.eventName}</Text>  
@@ -160,35 +159,19 @@ export class Events extends RkComponent {
                             {eventList}
                         </View>
                     </ScrollView>
-                    <View style={[styles.footerOffline]}>
-                        {
-                            this.state.isOffline ? <RkText rkType="small" style={[styles.footerText]}>The Internet connection appears to be offline. </RkText> : null
-                        }
-                    </View>
-                    <View style={[styles.footer]}>
-                        <RkText rkType="small" style={[styles.footerText]}>Powered by</RkText>
-                        <RkText rkType="small" style={[styles.companyName]}> Eternus Solutions Pvt. Ltd. </RkText>
-                    </View> 
+                <View>
+                  <Footer isOffline ={this.state.isOffline}/>    
+                  </View>
                 </Container>
             )
         }
         else {
             return (
-                <Container style={[styles.root]}>
-                     <ScrollView>
-                    <View style={[styles.loading]}>
-                        <ActivityIndicator size='small' />
+               <Container style={[styles.root]}>
+                    <Loader/> 
+                    <View>
+                    <Footer isOffline ={this.state.isOffline}/> 
                     </View>
-                    </ScrollView>
-                    <View style={[styles.footerOffline]}>
-                        {
-                            this.state.isOffline ? <RkText rkType="small" style={[styles.footerText]}>The Internet connection appears to be offline. </RkText> : null
-                        }
-                    </View>
-                    <View style={[styles.footer]}>
-                        <RkText rkType="small" style={[styles.footerText]}>Powered by</RkText>
-                        <RkText rkType="small" style={[styles.companyName]}> Eternus Solutions Pvt. Ltd. </RkText>
-                    </View> 
                 </Container>
             )
         }
@@ -200,35 +183,9 @@ let styles = RkStyleSheet.create(theme => ({
     root: {
         backgroundColor: theme.colors.screen.base
     },
-    listContainer: {
-        flex: 1,
-        flexDirection: 'column'
-    },
-    loading: {
-        marginTop: 200,
-        left: 0,
-        opacity: 0.5,
-        right: 0,
-        top: 0,
-        bottom: 0,
-        alignItems: 'center',
-        justifyContent: 'center'
-    },
     card: {
         margin: 1,
         padding: 4
-    },
-    header: {
-        flexDirection: 'row'
-    },
-    mainHeader: {
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-        marginLeft: 5
-    },
-    roomName: {
-        fontSize: 15,
-        marginLeft: 5,
     },
     headerText: {
         fontWeight: 'bold',
@@ -237,48 +194,7 @@ let styles = RkStyleSheet.create(theme => ({
     infoText: {
         fontSize: 12
     },
-    content: {
-        margin: 2,
-        padding: 2
-    },
-    duration: {
-        fontSize: 15,
-        marginLeft: 5,
-        marginRight: 10
-    },
-    tileIcons: {
-        paddingLeft: 4,
-        paddingTop: 4,
-        fontSize: 16
-    },
-    tileFooter: {
-        flexDirection: 'row',
-        alignContent: 'space-between'
-    },
-    footer: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-        alignSelf: 'stretch',
-        backgroundColor: '#E7060E'
-    },
-    footerOffline: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-        alignSelf: 'stretch',
-        backgroundColor: '#545454'
-    },
-    footerText: {
-        color: '#f0f0f0',
-        fontSize: 11,
-    },
-    companyName: {
-        color: '#ffffff',
-        fontSize: 12,
-        fontWeight: 'bold'
-    },
-     iconStyle : {
+    iconStyle : {
     color: '#ed1b24',
     fontSize: 15
   },

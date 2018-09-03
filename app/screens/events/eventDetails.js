@@ -6,13 +6,15 @@ import { StyleSheet, FlatList, TouchableOpacity, Keyboard, Alert, AsyncStorage, 
 import { RkComponent, RkTheme, RkStyleSheet, RkText, RkAvoidKeyboard, RkButton, RkCard, RkChoice, RkTextInput, RkChoiceGroup } from 'react-native-ui-kitten';
 import * as loginService from '../../serviceActions/login';
 import { GradientButton } from '../../components/gradientButton';
+import {Loader} from '../../components/loader';
+import {Footer} from '../../components/footer';
 
 export class EventDetails extends React.Component {
 
   static navigationOptions = ({ navigation, screenProps }) => ({
     title:  'EVENT DETAILS',
     headerLeft: <Icon style={[styles.iconHeader]} name='ios-arrow-back'
-onPress={ () => { navigation.navigate('Event') }} />,
+    onPress={ () => { navigation.navigate('Event') }} />,
  headerStyle: {
         backgroundColor: '#ed1b24',
       },
@@ -23,7 +25,8 @@ onPress={ () => { navigation.navigate('Event') }} />,
     super(props);
     this.state = {
       isOffline : false,
-      event : {}
+      event : {},
+      isLoaded: false 
     }
   }
 
@@ -32,12 +35,8 @@ onPress={ () => { navigation.navigate('Event') }} />,
       NetInfo.isConnected.fetch().then(isConnected => {
         if(isConnected) {
          this.getCurrentEvent();
-          this.setState({
-            isLoading: true
-          });
         } else {
           this.setState({
-            isLoading: false,
             isOffline : true
           });
         }
@@ -56,12 +55,8 @@ onPress={ () => { navigation.navigate('Event') }} />,
   handleFirstConnectivityChange = (connectionInfo) => {
     if(connectionInfo.type != 'none') {
          this.getCurrentEvent();
-        this.setState({
-          isLoading: true
-        });
     } else {
       this.setState({
-        isLoading: false,
         isOffline : true
       });
     }
@@ -81,7 +76,7 @@ onPress={ () => { navigation.navigate('Event') }} />,
         AsyncStorage.getItem("EVENT_DETAILS").then((eventDetails)=>{
           if(eventDetails) {
           let event = JSON.parse(eventDetails);
-          this.setState({event:event})
+          this.setState({event:event, isLoaded:true})
           }
      })
   }
@@ -98,7 +93,7 @@ onPress={ () => { navigation.navigate('Event') }} />,
       })
   }
 
-  render() {
+    displayInformation = () => {
     let event = this.state.event;
      let avatar;
             if (event.eventLogo) {
@@ -107,9 +102,9 @@ onPress={ () => { navigation.navigate('Event') }} />,
                 avatar = <Image style={{ width: 60, height: 60 }} source={require('../../assets/images/defaultSponsorImg.png')} />
             }
     return (
-     <View>
-      <RkCard rkType='shadowed' style={[styles.card]}>
-           <View style={{ flexDirection: 'row' }}>
+      <Container>
+        <ScrollView style={styles.root}>
+        <View style={{ flexDirection: 'row' }}>
             <View style={{ flexDirection: 'column', alignItems: 'flex-start', marginVertical: 10, flex: 3, alignSelf: 'center', marginLeft: 10 }}>
                 {avatar}
                      </View>
@@ -135,106 +130,77 @@ onPress={ () => { navigation.navigate('Event') }} />,
                           <Text style={styles.infoText}>{event.venue}</Text>  
                         </View>
                          </View>
+                        </View>
+                        </View>  
+                  <View style={{marginLeft :5, alignItems: 'center', marginTop:18}}>
+                  <Text style={{marginLeft :5, fontSize : 15, textAlign: 'justify',marginRight :5}}>
+                    {event.description}
+                  </Text>
+                </View>
+                 </ScrollView>
+               </Container>
+           );
+        }
 
-                    <View style={{flexDirection : 'row', marginTop: 20}}>
-                        <Text style={styles.infoText}>{event.venue}</Text>  
+  render() {
+     let Info = this.displayInformation();
+        if (this.state.isLoaded) {
+            return (
+                <Container style={[styles.root]}>
+                    <ScrollView>
+                        <View>
+                           {Info}
+                        </View>
+                    </ScrollView>
+                   <View style={[styles.joinButton]}>
+                 <GradientButton colors={['#f20505', '#f55050']} text='Join Event' style={{width: Platform.OS === 'ios' ? 200 :220 , alignSelf : 'center'}}
+                   onPress={() => this._authenticateUser()}/>
+                  </View>
+                  <View>
+                  <Footer isOffline ={this.state.isOffline}/>    
+                  </View>
+                </Container>
+            )
+        }
+        else {
+            return (
+                <Container style={[styles.root]}>
+                    <Loader/> 
+                    <View>
+                    <Footer isOffline ={this.state.isOffline}/> 
                     </View>
-
-                        </View>
-                        </View>
-                    </RkCard>
-         <GradientButton colors={['#E7060E', '#f55050']} rkType='large' text='JOIN' onPress={() => this._authenticateUser()} /> 
-     </View>
-    );
-  }
+                </Container>
+            )
+        }
+     }
 }
-
 let styles = RkStyleSheet.create(theme => ({
     root: {
         backgroundColor: theme.colors.screen.base
     },
-    listContainer: {
-        flex: 1,
-        flexDirection: 'column'
-    },
-    loading: {
-        marginTop: 200,
-        left: 0,
-        opacity: 0.5,
-        right: 0,
-        top: 0,
-        bottom: 0,
-        alignItems: 'center',
-        justifyContent: 'center'
-    },
+    joinButton: {
+    alignItems: 'center',
+    flexDirection: 'column',
+    width: Platform.OS === 'ios' ? 320 : 380,
+    marginTop: 3,
+    marginBottom: 3,
+    alignSelf : 'center'
+   },
     card: {
         margin: 1,
         padding: 4,
         height : 200
     },
-    header: {
-        flexDirection: 'row'
-    },
-    mainHeader: {
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-        marginLeft: 5
-    },
-    roomName: {
-        fontSize: 15,
-        marginLeft: 5,
-    },
     headerText: {
         fontWeight: 'bold',
-        fontSize: 16
+        fontSize: 18
     },
     infoText: {
-        fontSize: 12
+        fontSize: 15
     },
-    content: {
-        margin: 2,
-        padding: 2
-    },
-    duration: {
-        fontSize: 15,
-        marginLeft: 5,
-        marginRight: 10
-    },
-    tileIcons: {
-        paddingLeft: 4,
-        paddingTop: 4,
-        fontSize: 16
-    },
-    tileFooter: {
-        flexDirection: 'row',
-        alignContent: 'space-between'
-    },
-    footer: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-        alignSelf: 'stretch',
-        backgroundColor: '#E7060E'
-    },
-    footerOffline: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-        alignSelf: 'stretch',
-        backgroundColor: '#545454'
-    },
-    footerText: {
-        color: '#f0f0f0',
-        fontSize: 11,
-    },
-    companyName: {
-        color: '#ffffff',
-        fontSize: 12,
-        fontWeight: 'bold'
-    },
-     iconStyle : {
+    iconStyle : {
     color: '#ed1b24',
-    fontSize: 15
+    fontSize: 18
   },
   iconHeader : {
     fontSize: 35,
