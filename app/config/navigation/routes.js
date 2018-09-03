@@ -255,7 +255,7 @@ export const MainRoutes = [
   {
     id: 'Sponsors',
     title: 'Sponsors',
-    icon: 'ios-people',
+    icon: 'md-cash',
     screen: Screens.Sponsors,
     children: []
   },
@@ -288,6 +288,7 @@ export const MainRoutes = [
     children: []
   }
 ];
+
 let menuRoutes = _.cloneDeep(MainRoutes);
 menuRoutes.unshift({
   id: 'GridV2',
