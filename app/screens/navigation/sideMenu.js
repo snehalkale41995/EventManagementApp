@@ -99,8 +99,6 @@ export class SideMenu extends React.Component {
             <RkText style={styles.tieName}>TiE Pune Events</RkText>
           </View>
           {menu}
-          
-
           <TouchableHighlight
             style={styles.container}
             key={'Logout'}
@@ -112,14 +110,12 @@ export class SideMenu extends React.Component {
                 <RkText style={[styles.icon, styles.sidebarIcon]}
                         rkType='moon primary xlarge'><Icon name="ios-exit"/></RkText>
                 <RkText style={styles.sidebarMenuName}>Logout </RkText>
-                <RkText style={styles.sidebarMenuName}> {this.state.userDetails.firstName}  {this.state.userDetails.lastName}</RkText>
+                <RkText style={styles.sidebarMenuName}> {this.state.userDetails.firstName}</RkText>
 
               </View>
               <RkText rkType='awesome secondaryColor small' style={styles.rightIcon}>{FontAwesome.chevronRight}</RkText>
             </View>
           </TouchableHighlight>
-
-
         </ScrollView>
       </View>
     )
