@@ -6,6 +6,8 @@ import { scale, scaleModerate, scaleVertical } from '../../utils/scale';
 import * as infoService from '../../serviceActions/staticPages';
 import * as eventService from '../../serviceActions/event';
 import Autolink from 'react-native-autolink';
+import {Loader} from '../../components/loader';
+import {Footer} from '../../components/footer';
 
 function renderIf(condition, content) {
   if (condition) {
@@ -35,12 +37,8 @@ export class HelpDesk extends React.Component {
       NetInfo.isConnected.fetch().then(isConnected => {
         if (isConnected) {
           this.getHelpDeskInfo();
-          this.setState({
-            isLoading: true
-          });
         } else {
           this.setState({
-            isLoading: false,
             isOffline: true
           });
         }
@@ -59,12 +57,8 @@ export class HelpDesk extends React.Component {
   handleFirstConnectivityChange = (connectionInfo) => {
     if (connectionInfo.type != 'none') {
        this.getHelpDeskInfo();
-      this.setState({
-        isLoading: true
-      });
     } else {
       this.setState({
-        isLoading: false,
         isOffline: true
       });
     }
@@ -138,34 +132,18 @@ export class HelpDesk extends React.Component {
                            {Info}
                         </View>
                     </ScrollView>
-                    <View style={[styles.footerOffline]}>
-                        {
-                            this.state.isOffline ? <RkText rkType="small" style={[styles.footerText]}>The Internet connection appears to be offline. </RkText> : null
-                        }
-                    </View>
-                    <View style={[styles.footer]}>
-                        <RkText rkType="small" style={[styles.footerText]}>Powered by</RkText>
-                        <RkText rkType="small" style={[styles.companyName]}> Eternus Solutions Pvt. Ltd. </RkText>
-                    </View>
+                    <View>
+                  <Footer isOffline ={this.state.isOffline}/>    
+                  </View>
                 </Container>
             )
         }
         else {
             return (
-                <Container style={[styles.root]}>
-                    <ScrollView>
-                    <View style={[styles.loading]}>
-                        <ActivityIndicator size='small' />
-                    </View>
-                    </ScrollView>
-                    <View style={[styles.footerOffline]}>
-                        {
-                            this.state.isOffline ? <RkText rkType="small" style={[styles.footerText]}>The Internet connection appears to be offline. </RkText> : null
-                        }
-                    </View>
-                    <View style={[styles.footer]}>
-                        <RkText rkType="small" style={[styles.footerText]}>Powered by</RkText>
-                        <RkText rkType="small" style={[styles.companyName]}> Eternus Solutions Pvt. Ltd. </RkText>
+               <Container style={[styles.root]}>
+                    <Loader/> 
+                    <View>
+                    <Footer isOffline ={this.state.isOffline}/> 
                     </View>
                 </Container>
             )
@@ -180,29 +158,6 @@ let styles = RkStyleSheet.create(theme => ({
   header: {
     backgroundColor: theme.colors.screen.base,
     paddingVertical: 25
-  },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    alignSelf: 'stretch',
-    backgroundColor: '#E7060E'
-  },
-  footerOffline: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    alignSelf: 'stretch',
-    backgroundColor: '#545454'
-  },
-  footerText: {
-    color: '#f0f0f0',
-    fontSize: 11,
-  },
-  companyName: {
-    color: '#ffffff',
-    fontSize: 12,
-    fontWeight: 'bold'
   },
    card: {
     margin: 2,

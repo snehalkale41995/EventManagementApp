@@ -5,6 +5,8 @@ import { Image, ScrollView, View, StyleSheet, Alert, AsyncStorage, ActivityIndic
 import { scale, scaleModerate, scaleVertical } from '../../utils/scale';
 import * as infoService from '../../serviceActions/staticPages';
 import * as eventService from '../../serviceActions/event';
+import {Loader} from '../../components/loader';
+import {Footer} from '../../components/footer';
 
 function renderIf(condition, content) {
   if (condition) {
@@ -127,14 +129,8 @@ export class AboutEternus extends React.Component {
                            {Info}
                         </View>
                     </ScrollView>
-                    <View style={[styles.footerOffline]}>
-                        {
-                            this.state.isOffline ? <RkText rkType="small" style={[styles.footerText]}>The Internet connection appears to be offline. </RkText> : null
-                        }
-                    </View>
-                    <View style={[styles.footer]}>
-                        <RkText rkType="small" style={[styles.footerText]}>Powered by</RkText>
-                        <RkText rkType="small" style={[styles.companyName]}> Eternus Solutions Pvt. Ltd. </RkText>
+                    <View>
+                    <Footer isOffline ={this.state.isOffline}/>    
                     </View>
                 </Container>
             )
@@ -142,19 +138,9 @@ export class AboutEternus extends React.Component {
         else {
             return (
                 <Container style={[styles.root]}>
-                    <ScrollView>
-                    <View style={[styles.loading]}>
-                        <ActivityIndicator size='small' />
-                    </View>
-                    </ScrollView>
-                    <View style={[styles.footerOffline]}>
-                        {
-                            this.state.isOffline ? <RkText rkType="small" style={[styles.footerText]}>The Internet connection appears to be offline. </RkText> : null
-                        }
-                    </View>
-                    <View style={[styles.footer]}>
-                        <RkText rkType="small" style={[styles.footerText]}>Powered by</RkText>
-                        <RkText rkType="small" style={[styles.companyName]}> Eternus Solutions Pvt. Ltd. </RkText>
+                    <Loader/> 
+                    <View>
+                    <Footer isOffline ={this.state.isOffline}/> 
                     </View>
                 </Container>
             )
@@ -193,28 +179,5 @@ let styles = RkStyleSheet.create(theme => ({
     resizeMode: 'contain',
     marginLeft: 'auto',
     marginRight: 'auto',
-  },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    alignSelf: 'stretch',
-    backgroundColor: '#E7060E'
-  },
-  footerOffline: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    alignSelf: 'stretch',
-    backgroundColor: '#545454'
-  },
-  footerText: {
-    color: '#f0f0f0',
-    fontSize: 11,
-  },
-  companyName: {
-    color: '#ffffff',
-    fontSize: 12,
-    fontWeight: 'bold'
-  },
+  }
 }));

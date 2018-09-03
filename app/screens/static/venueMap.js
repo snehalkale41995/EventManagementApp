@@ -8,6 +8,8 @@ import getDirections from 'react-native-google-maps-directions';
 import { Button } from 'react-native';
 import * as infoService from '../../serviceActions/staticPages';
 import * as eventService from '../../serviceActions/event';
+import {Loader} from '../../components/loader';
+import {Footer} from '../../components/footer';
 
 function renderIf(condition, content) {
   if (condition) {
@@ -58,12 +60,8 @@ export class VenueMap extends React.Component {
       NetInfo.isConnected.fetch().then(isConnected => {
         if (isConnected) {
           this.getLocationInfo();
-          this.setState({
-            isLoading: true
-          });
         } else {
           this.setState({
-            isLoading: false,
             isOffline: true
           });
         }
@@ -82,12 +80,8 @@ export class VenueMap extends React.Component {
   handleFirstConnectivityChange = (connectionInfo) => {
     if (connectionInfo.type != 'none') {
        this.getLocationInfo();
-      this.setState({
-        isLoading: true
-      });
     } else {
       this.setState({
-        isLoading: false,
         isOffline: true
       });
     }
@@ -170,34 +164,18 @@ displayMap(){
                            {map}
                         </View>
                     </ScrollView>
-                    <View style={[styles.footerOffline]}>
-                        {
-                            this.state.isOffline ? <RkText rkType="small" style={[styles.footerText]}>The Internet connection appears to be offline. </RkText> : null
-                        }
-                    </View>
-                    <View style={[styles.footer]}>
-                        <RkText rkType="small" style={[styles.footerText]}>Powered by</RkText>
-                        <RkText rkType="small" style={[styles.companyName]}> Eternus Solutions Pvt. Ltd. </RkText>
-                    </View>
+                  <View>
+                  <Footer isOffline ={this.state.isOffline}/>    
+                  </View>
                 </Container>
             )
         }
         else {
             return (
-                <Container style={[styles.root]}>
-                    <ScrollView>
-                    <View style={[styles.loading]}>
-                        <ActivityIndicator size='small' />
-                    </View>
-                    </ScrollView>
-                    <View style={[styles.footerOffline]}>
-                        {
-                            this.state.isOffline ? <RkText rkType="small" style={[styles.footerText]}>The Internet connection appears to be offline. </RkText> : null
-                        }
-                    </View>
-                    <View style={[styles.footer]}>
-                        <RkText rkType="small" style={[styles.footerText]}>Powered by</RkText>
-                        <RkText rkType="small" style={[styles.companyName]}> Eternus Solutions Pvt. Ltd. </RkText>
+                 <Container style={[styles.root]}>
+                    <Loader/> 
+                    <View>
+                    <Footer isOffline ={this.state.isOffline}/> 
                     </View>
                 </Container>
             )
@@ -228,29 +206,6 @@ const styles1 = StyleSheet.create({
 let styles = RkStyleSheet.create(theme => ({
   root: {
     backgroundColor: theme.colors.screen.base,
-  },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    alignSelf: 'stretch',
-    backgroundColor: '#E7060E'
-  },
-  footerOffline: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    alignSelf: 'stretch',
-    backgroundColor: '#545454'
-  },
-  footerText: {
-    color: '#f0f0f0',
-    fontSize: 11,
-  },
-  companyName: {
-    color: '#ffffff',
-    fontSize: 12,
-    fontWeight: 'bold'
   },
   card: {
     margin: 2,

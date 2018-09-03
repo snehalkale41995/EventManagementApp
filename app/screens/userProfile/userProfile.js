@@ -5,6 +5,8 @@ import { Image, ScrollView, View, StyleSheet, Alert, AsyncStorage, ActivityIndic
 import { scale, scaleModerate, scaleVertical } from '../../utils/scale';
 import * as loginService from '../../serviceActions/login';
 import QRCode from "react-native-qrcode";
+import {Loader} from '../../components/loader';
+import {Footer} from '../../components/footer';
 
 function renderIf(condition, content) {
   if (condition) {
@@ -32,12 +34,8 @@ export class UserProfile extends React.Component {
       NetInfo.isConnected.fetch().then(isConnected => {
         if (isConnected) {
           this.getUserInfo();
-          this.setState({
-            isLoading: true
-          });
         } else {
           this.setState({
-            isLoading: false,
             isOffline: true
           });
         }
@@ -56,12 +54,8 @@ export class UserProfile extends React.Component {
   handleFirstConnectivityChange = (connectionInfo) => {
     if (connectionInfo.type != 'none') {
       this.getUserInfo();
-      this.setState({
-        isLoading: true
-      });
     } else {
       this.setState({
-        isLoading: false,
         isOffline: true
       });
     }
@@ -120,7 +114,6 @@ export class UserProfile extends React.Component {
                  </View>
               </View>
         </ScrollView>
-       
       </Container>
     );
   }
@@ -135,34 +128,18 @@ export class UserProfile extends React.Component {
                             {Info} 
                         </View>
                     </ScrollView>
-          <View style={styles.footerOffline}>
-          {
-            this.state.isOffline ? <RkText rkType="small" style={styles.footerText}>The Internet connection appears to be offline. </RkText> : null
-          }
-        </View>
-        <View style={styles.footer}>
-          <RkText rkType="small" style={styles.footerText}>Powered by</RkText>
-          <RkText rkType="small" style={styles.companyName}> Eternus Solutions Pvt. Ltd. </RkText>
-        </View>
+                  <View>
+                  <Footer isOffline ={this.state.isOffline}/>    
+                  </View>
          </Container>
             )
         }
         else {
             return (
-                <Container style={[styles.root]}>
-                    <ScrollView>
-                    <View style={[styles.loading]}>
-                        <ActivityIndicator size='small' />
-                    </View>
-                    </ScrollView>
-                    <View style={[styles.footerOffline]}>
-                        {
-                            this.state.isOffline ? <RkText rkType="small" style={[styles.footerText]}>The Internet connection appears to be offline. </RkText> : null
-                        }
-                    </View>
-                    <View style={[styles.footer]}>
-                        <RkText rkType="small" style={[styles.footerText]}>Powered by</RkText>
-                        <RkText rkType="small" style={[styles.companyName]}> Eternus Solutions Pvt. Ltd. </RkText>
+               <Container style={[styles.root]}>
+                    <Loader/> 
+                    <View>
+                    <Footer isOffline ={this.state.isOffline}/> 
                     </View>
                 </Container>
             )
@@ -173,10 +150,6 @@ export class UserProfile extends React.Component {
 let styles = RkStyleSheet.create(theme => ({
   root: {
     backgroundColor: theme.colors.screen.base
-  },
-  header: {
-    backgroundColor: theme.colors.screen.base,
-    paddingVertical: 25
   },
   section: {
     backgroundColor: theme.colors.screen.base,
@@ -196,36 +169,5 @@ let styles = RkStyleSheet.create(theme => ({
     alignItems: 'center',
     marginTop: 40,
     borderColor :'black'
-  },
-  eternusLogo: {
-    height: 80,
-    width: 180,
-    /*height: scaleVertical(55),*/
-    resizeMode: 'contain',
-    marginLeft: 'auto',
-    marginRight: 'auto',
-  },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    alignSelf: 'stretch',
-    backgroundColor: '#E7060E'
-  },
-  footerOffline: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    alignSelf: 'stretch',
-    backgroundColor: '#545454'
-  },
-  footerText: {
-    color: '#f0f0f0',
-    fontSize: 11,
-  },
-  companyName: {
-    color: '#ffffff',
-    fontSize: 12,
-    fontWeight: 'bold'
-  },
+  }
 }));
