@@ -5,10 +5,10 @@ import { StyleSheet, FlatList, TouchableOpacity, Keyboard, Alert, AsyncStorage,A
 import { RkComponent, RkTheme,RkStyleSheet, RkText, RkAvoidKeyboard, RkButton, RkCard, RkChoice, RkTextInput, RkChoiceGroup } from 'react-native-ui-kitten';
 import { NavigationActions } from 'react-navigation';
 import ReactMoment from 'react-moment';
-import firebase from '../../config/firebase';
 import {GradientButton} from '../../components/gradientButton';
+import * as questionFormService from '../../serviceActions/questionForm';
+import * as eventService from '../../serviceActions/event';
 
-var firestoreDB = firebase.firestore();
 
 export class Questions extends React.Component {
     static navigationOptions = {
@@ -20,6 +20,7 @@ export class Questions extends React.Component {
         this.state = {
             questionsForm: [],
             userId: this.props.userId,
+            eventId : "",
             responses : [],
             queArray : [],
             isOffline :false,
@@ -80,27 +81,33 @@ export class Questions extends React.Component {
     
     getForm = () => {
         let thisRef = this;
-        firestoreDB.collection("QuestionsForm").doc("landingQuestions").get().then(function (doc) {
-            if( doc.data()  == undefined){
+        eventService.getCurrentEvent((eventInfo)=>{
+        if(eventInfo){
+        let eventId = eventInfo._id;
+        this.setState({eventId : eventId})
+        questionFormService.getHomeQuestionForm(eventId).then((response)=>{
+          if( response  == undefined){
                 thisRef.resetNavigation(thisRef.props.navigation, 'HomeMenu');
             }
-            else{
-                let form = doc.data();
-                thisRef.setState({
-                    questionsForm: form.Questions,
-                    isLoading :false
-                })
-                let questionSet = [];
-                form.Questions.forEach(question => {
-                   questionSet.push({ Question: question.QuestionTitle, Answer: new Set() });
+        else{
+            let questionForm = response[0].formData
+             thisRef.setState({
+                questionsForm: questionForm,
+                isLoading :false
+            })
+             let questionSet = [];
+                questionForm.forEach(que => {
+                   questionSet.push({ Question: que.question, Answer: new Set() });
                 })
                 thisRef.setState({
                     queArray: questionSet
                 })
-           }
-        }).catch(function (error) {
-            console.log("Error getting document:", error);
-        });
+        }
+      }).catch((error)=>{
+            this.setState({ isLoading: false})
+       })
+       }
+    })
     }
 
     resetNavigation =(navigation, targetRoute) => {
@@ -131,25 +138,24 @@ export class Questions extends React.Component {
                 isLoading : false
             })
             Alert.alert("Please fill all the fields");
-            
         }
         else{
             let thisRef = this;
-            firestoreDB.collection('QuestionsHome').add({
-                Responses: thisRef.state.queArray,
-                ResponseBy: thisRef.state.userId,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            })
-            .then(function (docRef) {
-                thisRef.setState({
+            let formResponse = {
+              event : this.state.eventId,
+              user : this.props.userId,
+              formResponse : this.state.queArray,
+              responseTime : new Date()
+            }
+            questionFormService.submitHomeQuestionForm(formResponse).then((response)=>{
+                 thisRef.setState({
                     isLoading : false
                 })
                 Alert.alert("Thanks for your response");
-                thisRef.resetNavigation(thisRef.props.navigation, 'HomeMenu');
+                thisRef.resetNavigation(thisRef.props.navigation, 'HomeMenu'); 
+            }).catch((error)=>{
+                Alert.alert("Something went Wrong"); 
             })
-            .catch(function (error) {
-                console.error("Error adding document: ", error);
-            });
         }
     }
     onFormSelectValue = (questionsForm) => {
@@ -157,53 +163,52 @@ export class Questions extends React.Component {
             this.resetNavigation(thisRef.props.navigation, 'HomeMenu');
         }
         else {
-            let renderQuestions = this.state.questionsForm.map(Fitem => {
-              //  this.state.queArray.push({ Question: Fitem.QuestionTitle, Answer: new Set() });
+            let renderQuestions = this.state.questionsForm.map( (Fitem, queId) => {
                 return (
                     <View style={{ marginLeft: 10, marginBottom: 10 }}>
-                        <Label style={{ flexDirection: 'row', fontFamily: RkTheme.current.fonts.family.regular, alignItems: 'center', marginTop: 3, marginBottom: 2, fontSize: 14 }}>{Fitem.QuestionTitle}</Label>
-                        {this.renderAnswerField(Fitem)}
+                        <Label style={{ flexDirection: 'row', fontFamily: RkTheme.current.fonts.family.regular, alignItems: 'center', marginTop: 3, marginBottom: 2, fontSize: 14 }}>{Fitem.question}</Label>
+                          {this.renderAnswerField(Fitem, queId)} 
                     </View>
                 );
             });
             return renderQuestions;
         }
     }
-    renderAnswerField = (item) => {
+    renderAnswerField = (item, queId) => {
         let answerInput = [];
-        if (item.AnswerFeild == "Input Text") {
+        if (item.inputType == "Text") {
            answerInput :
             return (
-                <RkTextInput type="text" placeholder="Answer" name="Answer" onChangeText={(text) => this.onTextChange(text, item.QueId)} id={item.QueId} />
+                <RkTextInput type="text" placeholder="Answer" name="Answer" onChangeText={(text) => this.onTextChange(text, queId)} id={queId} />
             )
-        } else if (item.AnswerFeild == "Mulitple Choice") {
+        } else if (item.inputType == "Check Box") {
             answerInput:
             return (
-                <RkChoiceGroup radio style={{ marginTop: 3, marginBottom: 3 }} onChange={(id) => { this.onMultiChoiceChange(item.value, item.QueId, id) }} >
-                    {this.onRenderMultiChoice(item.value, item.QueId)}
+                <RkChoiceGroup radio style={{ marginTop: 3, marginBottom: 3 }} onChange={(id) => { this.onMultiChoiceChange(item.options, queId , id) }} >
+                    {this.onRenderMultiChoice(item.options, queId)}
                 </RkChoiceGroup>
             )
         }
-        else if (item.AnswerFeild == "Check Box") {
-            answerInput:
-            return (
-                <RkChoiceGroup style={{ marginTop: 0, marginBottom: 3 }}>
-                    {this.onRenderCheckBox(item.value, item.QueId)}
-                </RkChoiceGroup >
-            )
-        }
+        // else if (item.inputType == "Check Box") {
+        //     answerInput:
+        //     return (
+        //         <RkChoiceGroup style={{ marginTop: 0, marginBottom: 3 }}>
+        //             {this.onRenderCheckBox(item.value, item.QueId)}
+        //         </RkChoiceGroup >
+        //     )
+        // }
        return  answerInput;
     }
-    onRenderMultiChoice = (value, Qid) => {
-        let MultiChoice = value.map(fItem => {
+    onRenderMultiChoice = (options, Qid) => {
+        let MultiChoice = options.map(fItem => {
             return (
                 <TouchableOpacity choiceTrigger >
                     <View style={{ flexDirection: 'row',marginBottom: 3,marginRight :15 ,alignItems: 'center' }}>
                         <RkChoice rkType='radio'
                             style = {{ borderWidth : 2 , borderRadius : 70 ,borderColor : '#c2c4c6'}}
-                            id={Qid} value={fItem.Value}
+                            id={Qid} value={fItem.value}
                             />
-                        <Text style={{fontSize: 13 ,marginLeft : 5}}>{fItem.Value}</Text>
+                        <Text style={{fontSize: 13 ,marginLeft : 5}}>{fItem.value}</Text>
                     </View>
                 </TouchableOpacity>
             )
@@ -232,9 +237,11 @@ export class Questions extends React.Component {
             this.state.queArray[Qid].Answer.add(label);
         }
     }
-    onMultiChoiceChange = (values, Qid, eventId) => {
-        this.state.queArray[Qid].Answer = values[eventId].Value;
+    onMultiChoiceChange = (options, Qid, id) => {
+
+        this.state.queArray[Qid].Answer = options[id].value;
     }
+
     onTextChange(text, Qid) {
         this.state.queArray[Qid].Answer = text;
     }

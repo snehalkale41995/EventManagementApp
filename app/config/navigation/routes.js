@@ -10,7 +10,9 @@ import _ from 'lodash';
 import { data } from '../../data';
 import { Avatar } from '../../components/avatar';
 import { Service } from './../../services';
-
+import * as loginService from '../../serviceActions/login';
+import * as homeQueService from '../../serviceActions/questionForm';
+import * as eventService from '../../serviceActions/event';
 export class HomePageMenuScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
     let renderAvatar = () => {
@@ -103,12 +105,12 @@ export class HomePageMenuScreen extends React.Component {
   }
 
   getCurrentUser() {
-    Service.getCurrentUser((userDetails) => {
-      let Uid = userDetails.uid;
-      this.setState({
+      loginService.getCurrentUser((userDetails) => {
+       let Uid = userDetails._id;
+       this.setState({
         userId: Uid
       })
-      if (this.state.showHome == false) {
+       if (this.state.showHome == false) {
         this.getQuestionsData(Uid);
       }
       else {
@@ -117,38 +119,38 @@ export class HomePageMenuScreen extends React.Component {
           showHomepage: true
         })
       }
-    });
-  }
-  
-  getQuestionsData = (Uid) => {
-    Service.getDocRef("QuestionsHome")
-      .where("ResponseBy", "==", Uid)
-      .get()
-      .then((snapshot) => {
-        if (snapshot.size == 0) {
-          this.setState({
-            showQuestions: true,
-            showHomepage: false
-          })
-        }
-        else {
-          this.setState({
-            showQuestions: false,
-            showHomepage: true
-          })
-        }
       })
-      .catch((error) => {
-        console.warn(error);
-      });
+    }
+
+  getQuestionsData = (Uid) => {
+    eventService.getCurrentEvent((eventDetails)=>{
+      let eventId = eventDetails._id;
+      homeQueService.getHomeQuestionResponse(eventId).then((response)=>{
+          response.forEach((data)=>{
+           if(data.user._id ===Uid){
+             this.setState({
+             showQuestions: false,
+             showHomepage: true})
+           }
+          else{
+             this.setState({
+             showQuestions: true,
+             showHomepage: false})
+          }
+          });
+      }).catch((error)=>{
+        console.warn(error)
+      })
+    })
   }
+
   render() {
     if (this.state.showQuestions == true && this.state.showHomepage == false) {
       return (
         <Questions navigation={this.props.navigation} userId={this.state.userId} />
       );
-    }
-    else if (this.state.showQuestions == false && this.state.showHomepage == true) {
+     }
+     if (this.state.showQuestions == false && this.state.showHomepage == true) {
       return (
         <View style={styles.mainView}>
           <HomePage navigation={this.props.navigation} />
@@ -164,7 +166,7 @@ export class HomePageMenuScreen extends React.Component {
         </View>
       );
     }
-    else if (!this.state.isLoading && this.state.isOffline) {
+     if (!this.state.isLoading && this.state.isOffline) {
       return (
         <Container style={styles.root}>
           <ScrollView>
