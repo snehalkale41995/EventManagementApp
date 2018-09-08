@@ -150,17 +150,7 @@ export default class EventCal extends Component {
     rowHasChanged = (r1, r2) => {
         return r1.name !== r2.name;
     }
-
-    /**
-     * get the time in string format
-     */
-    timeToString = (time) => {
-        const date = new Date(time);
-        return date
-            .toISOString()
-            .split('T')[0];
-    }
-    
+ 
     /**
      * Render method for component
      */

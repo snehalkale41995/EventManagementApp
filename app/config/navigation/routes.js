@@ -9,7 +9,6 @@ import { Questions } from '../../screens/index';
 import _ from 'lodash';
 import { data } from '../../data';
 import { Avatar } from '../../components/avatar';
-import { Service } from './../../services';
 import * as loginService from '../../serviceActions/login';
 import * as homeQueService from '../../serviceActions/questionForm';
 import * as eventService from '../../serviceActions/event';
