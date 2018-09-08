@@ -8,8 +8,8 @@ import ReactMoment from 'react-moment';
 import {GradientButton} from '../../components/gradientButton';
 import * as questionFormService from '../../serviceActions/questionForm';
 import * as eventService from '../../serviceActions/event';
-
-
+import {Loader} from '../../components/loader';
+import {Footer} from '../../components/footer';
 export class Questions extends React.Component {
     static navigationOptions = {
         title: 'Questions'.toUpperCase()
@@ -27,8 +27,9 @@ export class Questions extends React.Component {
             isLoading : true
         }
         this.onFormSelectValue = this.onFormSelectValue.bind(this);
-        this.onMultiChoiceChange = this.onMultiChoiceChange.bind(this);
+        this.onRadioButtonChange = this.onRadioButtonChange.bind(this);
     }
+
     componentWillMount() {
         if(Platform.OS !== 'ios'){
           NetInfo.isConnected.fetch().then(isConnected => {
@@ -121,6 +122,7 @@ export class Questions extends React.Component {
     }
 
     onSubmitResponse = () => {
+          let thisRef = this;
         this.setState({
             isLoading : true
         })
@@ -140,7 +142,6 @@ export class Questions extends React.Component {
             Alert.alert("Please fill all the fields");
         }
         else{
-            let thisRef = this;
             let formResponse = {
               event : this.state.eventId,
               user : this.props.userId,
@@ -158,7 +159,9 @@ export class Questions extends React.Component {
             })
         }
     }
+
     onFormSelectValue = (questionsForm) => {
+        let thisRef = this;
         if (this.state.questionsForm.length == 0) {
             this.resetNavigation(thisRef.props.navigation, 'HomeMenu');
         }
@@ -174,32 +177,34 @@ export class Questions extends React.Component {
             return renderQuestions;
         }
     }
+
     renderAnswerField = (item, queId) => {
         let answerInput = [];
         if (item.inputType == "Text") {
            answerInput :
             return (
-                <RkTextInput type="text" placeholder="Answer" name="Answer" onChangeText={(text) => this.onTextChange(text, queId)} id={queId} />
+        <RkTextInput type="text" placeholder="Answer" name="Answer" onChangeText={(text) => this.onTextChange(text, queId)} id={queId} />
             )
-        } else if (item.inputType == "Check Box") {
+        } else if (item.inputType == "Radio Button") {
             answerInput:
             return (
-                <RkChoiceGroup radio style={{ marginTop: 3, marginBottom: 3 }} onChange={(id) => { this.onMultiChoiceChange(item.options, queId , id) }} >
-                    {this.onRenderMultiChoice(item.options, queId)}
+                <RkChoiceGroup radio style={{ marginTop: 3, marginBottom: 3 }} onChange={(id) => { this.onRadioButtonChange(item.options, queId , id) }} >
+                    {this.onRenderRadioButton(item.options, queId)}
                 </RkChoiceGroup>
             )
         }
-        // else if (item.inputType == "Check Box") {
-        //     answerInput:
-        //     return (
-        //         <RkChoiceGroup style={{ marginTop: 0, marginBottom: 3 }}>
-        //             {this.onRenderCheckBox(item.value, item.QueId)}
-        //         </RkChoiceGroup >
-        //     )
-        // }
+        else if (item.inputType == "Check Box") {
+            answerInput:
+            return (
+                <RkChoiceGroup style={{ marginTop: 0, marginBottom: 3 }}>
+                    {this.onRenderCheckBox(item.options, queId)}
+                </RkChoiceGroup >
+            )
+        }
        return  answerInput;
     }
-    onRenderMultiChoice = (options, Qid) => {
+
+    onRenderRadioButton = (options, Qid) => {
         let MultiChoice = options.map(fItem => {
             return (
                 <TouchableOpacity choiceTrigger >
@@ -215,20 +220,21 @@ export class Questions extends React.Component {
         })
         return MultiChoice;
     }
-    onRenderCheckBox = (value, Qid) => {
-        let CheckBox1 = value.map(fItem => {
+    onRenderCheckBox = (options, Qid) => {
+        let CheckBox1 = options.map(fItem => {
             return (
                 <View style={{ flexDirection: 'row', marginBottom: 3,marginRight :15 ,marginTop: 1, alignItems: 'center' }}>
                     <RkChoice rkType='clear' style = {{  borderWidth : 2 ,borderColor : '#c2c4c6' }}
-                        id={Qid} value={fItem.Value} 
-                        onChange={(id) => {this.onCheckBoxChange(id ,fItem.Value,Qid)}} />
-                    <Text style={{fontSize: 13 ,marginLeft : 5}}>{fItem.Value}</Text>
+                        id={Qid} value={fItem.value} 
+                        onChange={(id) => {this.onCheckBoxChange(fItem.value,Qid)}} />
+                    <Text style={{fontSize: 13 ,marginLeft : 5}}>{fItem.value}</Text>
                 </View>
             )
         })
         return CheckBox1;
     }
-    onCheckBoxChange = (eventValue , value, Qid) => {
+
+    onCheckBoxChange = (value, Qid) => {
         let label = value;
         if(this.state.queArray[Qid].Answer.has(label)){
             this.state.queArray[Qid].Answer.delete(label);
@@ -237,31 +243,22 @@ export class Questions extends React.Component {
             this.state.queArray[Qid].Answer.add(label);
         }
     }
-    onMultiChoiceChange = (options, Qid, id) => {
 
+    onRadioButtonChange = (options, Qid, id) => {
         this.state.queArray[Qid].Answer = options[id].value;
     }
 
     onTextChange(text, Qid) {
         this.state.queArray[Qid].Answer = text;
     }
+
     render() {
         if (this.state.isLoading == true ){
             return (
                 <Container style={[styles.screen]}>
-                    <ScrollView>
-                        <View style={[styles.loading]} >
-                            <ActivityIndicator size='large' />
-                        </View>
-                    </ScrollView>
-                    <View style={[styles.footerOffline]}>
-                        {
-                            this.state.isOffline ? <RkText rkType="small" style={[styles.footerText]}>The Internet connection appears to be offline. </RkText> : null
-                        }
-                    </View>
-                    <View style={[styles.footer]}>
-                        <RkText rkType="small" style={[styles.footerText]}>Powered by</RkText>
-                        <RkText rkType="small" style={[styles.companyName]}> Eternus Solutions Pvt. Ltd. </RkText>
+                    <Loader/> 
+                    <View>
+                    <Footer isOffline ={this.state.isOffline}/> 
                     </View>
                 </Container>
             );
@@ -276,15 +273,9 @@ export class Questions extends React.Component {
                             onPress={() => this.onSubmitResponse()}
                         />
                     </ScrollView>
-                    <View style={[styles.footerOffline]}>
-                        {
-                            this.state.isOffline ? <RkText rkType="small" style={[styles.footerText]}>The Internet connection appears to be offline. </RkText> : null
-                        }
-                    </View>
-                    <View style={[styles.footer]}>
-                        <RkText rkType="small" style={[styles.footerText]}>Powered by</RkText>
-                        <RkText rkType="small" style={[styles.companyName]}> Eternus Solutions Pvt. Ltd. </RkText>
-                    </View>
+                    <View>
+                  <Footer isOffline ={this.state.isOffline}/>    
+                  </View>
                 </Container>
             );
         }      
@@ -295,47 +286,10 @@ let styles = RkStyleSheet.create(theme => ({
     screen: {
         backgroundColor: theme.colors.screen.base
       },
-      Card: {
-        width : Platform.OS === 'ios' ? 320 : 350, 
-        alignSelf:'center'
-      },
-    loading: {
-        marginTop: 250,
-        left: 0,
-        opacity: 0.5,
-        right: 0,
-        top: 0,
-        bottom: 0,
-        alignItems: 'center',
-        justifyContent: 'center'
-      },
       Gradbtn :{
           alignSelf: 'center',
           width: Platform.OS === 'ios' ? 280 : 340,
           marginTop: 3,
           marginBottom: 3
-      },
-      footer: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-        alignSelf: 'stretch', 
-        backgroundColor : '#E7060E'
-      },
-      footerOffline : {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-        alignSelf: 'stretch', 
-        backgroundColor : '#545454'
-      },
-      footerText: {
-        color : '#f0f0f0',
-        fontSize: 11,
-      },
-      companyName:{
-        color : '#ffffff',
-        fontSize: 12,
-        fontWeight: 'bold'
-      },
+      }
 }));
