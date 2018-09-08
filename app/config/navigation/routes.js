@@ -126,7 +126,13 @@ export class HomePageMenuScreen extends React.Component {
     eventService.getCurrentEvent((eventDetails)=>{
       let eventId = eventDetails._id;
       homeQueService.getHomeQuestionResponse(eventId).then((response)=>{
-          response.forEach((data)=>{
+        if(response.length==0){
+            this.setState({
+             showQuestions: true,
+             showHomepage: false})
+        }
+       else{
+           response.forEach((data)=>{
            if(data.user._id ===Uid){
              this.setState({
              showQuestions: false,
@@ -138,8 +144,9 @@ export class HomePageMenuScreen extends React.Component {
              showHomepage: false})
           }
           });
+       }
       }).catch((error)=>{
-        console.warn(error)
+        console.warn(error);
       })
     })
   }
