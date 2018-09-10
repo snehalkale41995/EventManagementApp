@@ -49,7 +49,8 @@ export class HomePageMenuScreen extends React.Component {
       userId: "",
       showHome: show,
       isLoading: false,
-      isOffline: false
+      isOffline: false,
+      eventDetails : {}
     }
   }
   /**check */
@@ -105,9 +106,11 @@ export class HomePageMenuScreen extends React.Component {
 
   getCurrentUser() {
       loginService.getCurrentUser((userDetails) => {
+      eventService.getCurrentEvent((eventDetails)=>{
        let Uid = userDetails._id;
        this.setState({
-        userId: Uid
+        userId: Uid,
+        eventDetails : eventDetails
       })
        if (this.state.showHome == false) {
         this.getQuestionsData(Uid);
@@ -118,6 +121,7 @@ export class HomePageMenuScreen extends React.Component {
           showHomepage: true
         })
       }
+      })
       })
     }
 
@@ -159,7 +163,7 @@ export class HomePageMenuScreen extends React.Component {
      if (this.state.showQuestions == false && this.state.showHomepage == true) {
       return (
         <View style={styles.mainView}>
-          <HomePage navigation={this.props.navigation} />
+          <HomePage navigation={this.props.navigation} eventDetails={this.state.eventDetails}/>
           <View style={styles.footerOffline}>
             {
               (!this.state.isLoading && this.state.isOffline) ? <RkText rkType="small" style={styles.footerText}>The Internet connection appears to be offline. </RkText> : null
