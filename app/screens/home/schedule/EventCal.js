@@ -2,10 +2,10 @@ import React, {Component} from 'react';
 import {Text, View} from 'react-native';
 import {Agenda} from 'react-native-calendars';
 import Moment from 'moment';
-
 import {Service} from '../../../services';
 import ScheduleTile from './Schedule-tile';
 import styleConstructor from './styles';
+import * as sessionService from '../../../serviceActions/session';
 
 const SESSIONS_TABLE = 'Sessions';
 const REGISTRATION_RESPONSE_TABLE = "RegistrationResponse";
@@ -13,6 +13,7 @@ const REGISTRATION_RESPONSE_TABLE = "RegistrationResponse";
 export default class EventCal extends Component {
     constructor(props) {
         super(props);
+      
         this.styles = styleConstructor();
         this.state = Object.assign(...props, {
             sessions: {},
@@ -29,30 +30,33 @@ export default class EventCal extends Component {
      */
     extractSession = (sessionObj) => {
         const {
-            eventName,
-           // extraServices,
-            isRegrequired,
-            room,
-            startTime,
-            speakers,
-            endTime,
-            description,
-            isBreak,
-            sessionType,
-        } = sessionObj.data();
+           sessionName,
+           event,
+           speakers,
+           volunteers,
+           room,
+           description,
+           sessionType,
+           sessionCapacity,
+           startTime,
+           endTime,
+           isBreak,
+           isRegistrationRequired
+        } = sessionObj;
         return {
-            key: sessionObj.id,
-            eventName,
-           // extraServices,
-            isRegrequired:!!isRegrequired,
-            room,
+            key: sessionObj._id,
+            sessionName,
+            event,
             speakers,
-            speakersDetails: [],
+            volunteers,
+            room,
+            description,
+            sessionType,
+            sessionCapacity,
             startTime,
             endTime,
-            description,
-            isBreak : !!isBreak,
-            sessionType
+            isBreak :!!isBreak,
+            isRegistrationRequired:!!isRegistrationRequired
         }
     }
     
@@ -60,19 +64,13 @@ export default class EventCal extends Component {
      * Database Query for Fetching Sessions
      */
     fetchSessions = (currentDate, successFn) => {
-        Service
-            .getDocRef(SESSIONS_TABLE)
-            .where("startTime", ">=", currentDate.toDate())
-            .where("startTime", "<=", currentDate.add(1, 'day').toDate())
-            .orderBy("startTime")
-            .orderBy("room")
-            .get()
-            .then(successFn)
-            .catch(err =>{
-                console.warn(err);
-            });
+        let eventId = this.props.eventDetails._id;
+        sessionService.getSessionsByEvent(eventId, currentDate).then(successFn)
+        .catch(err =>{
+            console.warn(err);
+        });
+
     }
-    
     /**
      *  Post mounting data fetch
      */
@@ -85,7 +83,7 @@ export default class EventCal extends Component {
             }));
         });
     }
-    
+
     /**
      * Hide date displayed on left side of panel
      */
@@ -96,21 +94,21 @@ export default class EventCal extends Component {
     /**
      * Fetch Sessions for selected date
      */
+
     loadSessions = (day) => {
         // This hardcoding Can be removed after below bug fix in react-native-calendars library
         // [https://github.com/wix/react-native-calendars/issues/24] 
         if(day.dateString == '2018-03-20'){
             return;
         }
-
          // Dynamically fetch Event start and end dates
         const currentDate = Moment(day.dateString);
         let index = 0;
-        this.fetchSessions(currentDate, (snapshot) => {
+        this.fetchSessions(currentDate, (sessionList) => {
             var sessions = [];
             let allSpeakers = [];
             let index = 0;
-            snapshot.forEach((sessionObj) => {
+            sessionList.forEach((sessionObj) => {
                 let __sessionObj = this.extractSession(sessionObj);
                 sessions.push(__sessionObj);
             });
@@ -132,7 +130,6 @@ export default class EventCal extends Component {
             user={this.state.user}
             session={item}/>);
     }
-    
     /**
      * Handle Session Rendering
      * when no event is present on selected date
@@ -155,8 +152,9 @@ export default class EventCal extends Component {
      * Render method for component
      */
     render() {
-        const __startDate = Moment(this.state.event.startDate).format("YYYY-MM-DD");
-        const __endDate = Moment(this.state.event.endDate).format("YYYY-MM-DD");
+        let event=this.props.eventDetails
+        const __startDate = Moment(event.startDate).format("YYYY-MM-DD");
+        const __endDate = Moment(event.endDate).format("YYYY-MM-DD");
         return (<Agenda
             items={this.state.sessions}
             hideKnob={true}

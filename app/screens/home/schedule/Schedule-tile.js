@@ -20,7 +20,7 @@ export default class ScheduleTile extends RkComponent {
         let __props = this.props;
         __props.session.displayColor = '#ffffff';
         switch (__props.session.sessionType) {
-            case 'break': {
+            case 'common': {
                 __props.session.displayColor = 'gray';
                 break;
             }
@@ -49,134 +49,134 @@ export default class ScheduleTile extends RkComponent {
                 user: userObj
             });
         });
-        this.fetchSpeakers();
-        this.fetchRegistrationStatus();
+       // this.fetchSpeakers();
+       // this.fetchRegistrationStatus();
     }
     /**
      * Fetch Registration Status
      */
 
-    fetchRegistrationStatus = () => {
-        const baseObj = this;
-        if (this.state.user) {
-            const attendeeId = this.state.user.uid;
-            Service.getDocRef(REGISTRATION_RESPONSE_TABLE)
-                .where("sessionId", "==", this.state.session.key)
-                .where("attendeeId", "==", attendeeId)
-                .onSnapshot((snapshot) => {
-                    if (snapshot.size > 0) {
-                        snapshot.forEach((doc) => {
-                            let regResponse = doc.data();
-                            let newSession = Object.assign(this.state.session, { regStatus: regResponse.status, regId: doc.id });
-                            baseObj.setState((prevState) => ({
-                                ...prevState,
-                                session: newSession
-                            }));
-                        });
-                    }
-                }, function (error) {
-                    console.warn(error);
-                });
-        } else {
-            //console.warn("User object is undefined");
-        }
-    }
+    // fetchRegistrationStatus = () => {
+    //     const baseObj = this;
+    //     if (this.state.user) {
+    //         const attendeeId = this.state.user.uid;
+    //         Service.getDocRef(REGISTRATION_RESPONSE_TABLE)
+    //             .where("sessionId", "==", this.state.session.key)
+    //             .where("attendeeId", "==", attendeeId)
+    //             .onSnapshot((snapshot) => {
+    //                 if (snapshot.size > 0) {
+    //                     snapshot.forEach((doc) => {
+    //                         let regResponse = doc.data();
+    //                         let newSession = Object.assign(this.state.session, { regStatus: regResponse.status, regId: doc.id });
+    //                         baseObj.setState((prevState) => ({
+    //                             ...prevState,
+    //                             session: newSession
+    //                         }));
+    //                     });
+    //                 }
+    //             }, function (error) {
+    //                 console.warn(error);
+    //             });
+    //     } else {
+    //         //console.warn("User object is undefined");
+    //     }
+    // }
     /**
      * Fetch Speaker Details
      */
-    fetchSpeakers = () => {
-        let speakerArray = [];
-        if (this.props.session.speakers) {
-            this.props.session.speakers.forEach((speaker, index) => {
-                Service.getDocument("Attendee", speaker, (data, id) => {
-                    data.id = id;
-                    //const prevSpeakersDetails = this.state.session.speakersDetails ? this.state.session.speakersDetails : {};
-                    speakerArray[index] = data;
-                    //const prevSpeakersDetails = this.state.session.speakersDetails;
-                    let newSession = Object.assign(this.state.session, {
-                        speakersDetails: speakerArray
-                    });
-                    // let newSession = Object.assign(this.state.session, {
-                    //     speakersDetails: [
-                    //         ...prevSpeakersDetails,
-                    //         data
-                    //     ]
-                    // });
-                    this.setState((prevState) => ({
-                        ...prevState,
-                        session: newSession
-                    }));
-                }, function (error) {
-                    console.warn(error);
-                });
-            });
-        }
-    }
+    // fetchSpeakers = () => {
+    //     let speakerArray = [];
+    //     if (this.props.session.speakers) {
+    //         this.props.session.speakers.forEach((speaker, index) => {
+    //             Service.getDocument("Attendee", speaker, (data, id) => {
+    //                 data.id = id;
+    //                 //const prevSpeakersDetails = this.state.session.speakersDetails ? this.state.session.speakersDetails : {};
+    //                 speakerArray[index] = data;
+    //                 //const prevSpeakersDetails = this.state.session.speakersDetails;
+    //                 let newSession = Object.assign(this.state.session, {
+    //                     speakersDetails: speakerArray
+    //                 });
+    //                 // let newSession = Object.assign(this.state.session, {
+    //                 //     speakersDetails: [
+    //                 //         ...prevSpeakersDetails,
+    //                 //         data
+    //                 //     ]
+    //                 // });
+    //                 this.setState((prevState) => ({
+    //                     ...prevState,
+    //                     session: newSession
+    //                 }));
+    //             }, function (error) {
+    //                 console.warn(error);
+    //             });
+    //         });
+    //     }
+    // }
     /**
     * On Cancel Request
     */
-    onCancelRequest = (event) => {
-        Service.getDocRef("RegistrationResponse").doc(this.state.session.regId).delete().then((req) => {
-            let newSession = Object.assign({}, this.state.session);
-            delete newSession['regStatus'];
-            delete newSession['regId'];
-            this.setState((prevState) => ({
-                ...prevState,
-                session: newSession
-            }));
-        }).catch((error) => {
-            console.warn(error);
-        });
-    }
+    // onCancelRequest = (event) => {
+    //     Service.getDocRef("RegistrationResponse").doc(this.state.session.regId).delete().then((req) => {
+    //         let newSession = Object.assign({}, this.state.session);
+    //         delete newSession['regStatus'];
+    //         delete newSession['regId'];
+    //         this.setState((prevState) => ({
+    //             ...prevState,
+    //             session: newSession
+    //         }));
+    //     }).catch((error) => {
+    //         console.warn(error);
+    //     });
+    // }
     /**
     * Session Attend Request raised by Attendee
     *
     */
-    onAttendRequest = (event) => {
-        const attendeeId = this.state.user.uid;
-        let attendRequest = {
-            sessionId: this.state.session.key,
-            session: this.state.session,
-            registeredAt: new Date(),
-            status: this.state.session.isRegrequired ? "Pending" : "Going",
-            attendee: {},
-            attendeeId: attendeeId
-        }
-        Service.getDocRef("RegistrationResponse").add(attendRequest).then((req) => {
-            let newSession = Object.assign(this.state.session, { regStatus: attendRequest.status, regId: req.id });
-            this.setState((prevState) => ({
-                ...prevState,
-                session: newSession
-            }));
-        }).catch((error) => {
-            console.warn(error);
-        });
-    }
+    // onAttendRequest = (event) => {
+    //     const attendeeId = this.state.user.uid;
+    //     let attendRequest = {
+    //         sessionId: this.state.session.key,
+    //         session: this.state.session,
+    //         registeredAt: new Date(),
+    //         status: this.state.session.isRegrequired ? "Pending" : "Going",
+    //         attendee: {},
+    //         attendeeId: attendeeId
+    //     }
+    //     Service.getDocRef("RegistrationResponse").add(attendRequest).then((req) => {
+    //         let newSession = Object.assign(this.state.session, { regStatus: attendRequest.status, regId: req.id });
+    //         this.setState((prevState) => ({
+    //             ...prevState,
+    //             session: newSession
+    //         }));
+    //     }).catch((error) => {
+    //         console.warn(error);
+    //     });
+    // }
     /**
      * Fetch Speaker Details
      */
-    getSpeakers = () => {
-        return this.props.session.speakersDetails
-            .map((speaker, index) => {
-                let avatar;
-                if (speaker.profileImageURL) {
-                    avatar = <Image style={this.styles.avatarImage} source={{ uri: speaker.profileImageURL }} />
-                } else {
-                    let firstLetter = speaker.firstName ? speaker.firstName[0] : '?';
-                    avatar = <Text style={this.styles.avatar}>{firstLetter}</Text>
-                }
-                return (
-                    <TouchableOpacity
-                        key={index}
-                        onPress={() => this.props.navigation.navigate('AttendeeProfile', { speaker: speaker })}
-                        style={this.styles.speaker}>
-                        {avatar}
-                        <Text style={this.styles.speakerName}>{speaker.firstName + ' ' + speaker.lastName}</Text>
-                    </TouchableOpacity>
-                )
-            });
+    // getSpeakers = () => {
+    //     return this.props.session.speakersDetails
+    //         .map((speaker, index) => {
+    //             let avatar;
+    //             if (speaker.profileImageURL) {
+    //                 avatar = <Image style={this.styles.avatarImage} source={{ uri: speaker.profileImageURL }} />
+    //             } else {
+    //                 let firstLetter = speaker.firstName ? speaker.firstName[0] : '?';
+    //                 avatar = <Text style={this.styles.avatar}>{firstLetter}</Text>
+    //             }
+    //             return (
+    //                 <TouchableOpacity
+    //                     key={index}
+    //                     onPress={() => this.props.navigation.navigate('AttendeeProfile', { speaker: speaker })}
+    //                     style={this.styles.speaker}>
+    //                     {avatar}
+    //                     <Text style={this.styles.speakerName}>{speaker.firstName + ' ' + speaker.lastName}</Text>
+    //                 </TouchableOpacity>
+    //             )
+    //         });
 
-    }
+    // }
     /**
     * Duration Details
     */
@@ -195,35 +195,34 @@ export default class ScheduleTile extends RkComponent {
         return (
             <View style={{ marginLeft: 20, flexDirection: 'row', alignSelf: 'flex-end' }}>
                 <Icon name="md-pin" style={this.styles.tileIcons} style={{ color: '#5d5e5f', fontSize: 16, marginTop: 2, marginRight: 5 }} />
-                <Text style={this.styles.roomName} style={{ color: '#5d5e5f', fontSize: 14 }}>{this.props.session.room}</Text>
+                <Text style={this.styles.roomName} style={{ color: '#5d5e5f', fontSize: 14 }}>{this.props.session.room.roomName}</Text>
             </View>
         );
     }
     /**
     * Attend request Status
     */
-    attendRequestStatus = () => {
-        if (this.state.session.regStatus) {
-            return (
-                <View style={{ flexDirection: 'row' }}>
-                    <Text style={getStatusStyle(this.state.session.regStatus)}>{this.state.session.regStatus}</Text>
-                    <TouchableOpacity onPress={this.onCancelRequest}>
-                        <Icon name="md-close" style={this.styles.tileIcons} />
-                    </TouchableOpacity>
-                </View>
-            )
-        } else {
-            return (
-                <RkButton
-                    rkType='success small'
-                    style={this.styles.actionBtn}
-                    onPress={this.onAttendRequest}>
-                    Attend
-                </RkButton>
-            );
-        }
-    }
-
+    // attendRequestStatus = () => {
+    //     if (this.state.session.regStatus) {
+    //         return (
+    //             <View style={{ flexDirection: 'row' }}>
+    //                 <Text style={getStatusStyle(this.state.session.regStatus)}>{this.state.session.regStatus}</Text>
+    //                 <TouchableOpacity onPress={this.onCancelRequest}>
+    //                     <Icon name="md-close" style={this.styles.tileIcons} />
+    //                 </TouchableOpacity>
+    //             </View>
+    //         )
+    //     } else {
+    //         return (
+    //             <RkButton
+    //                 rkType='success small'
+    //                 style={this.styles.actionBtn}
+    //                 onPress={this.onAttendRequest}>
+    //                 Attend
+    //             </RkButton>
+    //         );
+    //     }
+    // }
     applyTouchOpacity = (shouldApplyOpacity) => {
         if (!shouldApplyOpacity) {
             return <TouchableOpacity
@@ -232,10 +231,10 @@ export default class ScheduleTile extends RkComponent {
                     flexDirection: 'row',
                     flex: 3,
                 }}>
-                <Text style={{ fontSize: 16, fontWeight: '600', width: 300 }} numberOfLines={1}>{this.props.session.eventName}</Text>
+                <Text style={{ fontSize: 16, fontWeight: '600', width: 300 }} numberOfLines={1}>{this.props.session.sessionName}</Text>
             </TouchableOpacity>;
         } else {
-            return <Text style={{ fontSize: 16, fontWeight: '600', width: 300 }} numberOfLines={1}>{this.props.session.eventName}</Text>;
+            return <Text style={{ fontSize: 16, fontWeight: '600', width: 300 }} numberOfLines={1}>{this.props.session.sessionName}</Text>;
         }
 
     }
@@ -291,7 +290,7 @@ export default class ScheduleTile extends RkComponent {
                                 {this.getLocation()}
                             </View>
                         </View>
-                        {this.checkDeepDiveSession(this.props.session)}
+                        {/* {this.checkDeepDiveSession(this.props.session)} */}
                     </RkCard>
                 </TouchableOpacity>
             );
