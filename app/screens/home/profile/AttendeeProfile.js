@@ -18,6 +18,10 @@ export class AttendeeProfile extends RkComponent {
       render() {
         let avatar;
          let speakerName = "";
+         let speakerInfo = "";
+         if(this.state.speaker.info){
+           speakerInfo = this.state.speaker.info;
+         }
          speakerName = this.state.speaker.firstName + " " + this.state.speaker.lastName;
         if (this.state.pictureUrl) {
             avatar = <Avatar  rkType='big'  imagePath={this.state.pictureUrl} />
@@ -38,7 +42,7 @@ export class AttendeeProfile extends RkComponent {
                 </View>
                 <View style={[styles.row]}>
                   <Text style={{fontSize : 15, textAlign: 'justify'}}>
-                    {this.state.speaker.info}
+                    {speakerInfo}
                   </Text>
                 </View>
               </View>   

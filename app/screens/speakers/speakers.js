@@ -84,7 +84,6 @@ export class Speakers extends RkComponent {
         if(eventInfo){
         let eventId = eventInfo._id;
         speakerService.getSpeakersByEvent(eventId).then((response)=>{
-        console.log("response", response);
         this.setState(
           {
             Speakers: response,
