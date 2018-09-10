@@ -18,15 +18,17 @@ export class HomePage extends React.Component {
 
   constructor(props) {
     super(props);
+    
     this.state = { 
       currentTab: 'Home' 
     };
   }
 
   render() {
+    
     return (
       <Container>
-       <ProgramsTab navigation={this.props.navigation}/>
+       <ProgramsTab navigation={this.props.navigation} eventDetails={this.props.eventDetails}/>
         {/*
         //Networking is not supported in current release hence commenting below block of code
            <Tabs tabBarPosition="bottom" style={{ elevation: 3 }}>

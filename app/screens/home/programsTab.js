@@ -21,7 +21,7 @@ export class ProgramsTab extends React.Component {
               <Text  style={[styles.textColor]} >Schedule</Text>
             </TabHeading>
           } style={styles.activeBorder}>        
-          <EventCal navigation={this.props.navigation}/>
+          <EventCal navigation={this.props.navigation} eventDetails={this.props.eventDetails}/>
         </Tab>
         <Tab
           heading={
