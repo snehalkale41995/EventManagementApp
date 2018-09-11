@@ -2,13 +2,9 @@ import React, {Component} from 'react';
 import {Text, View} from 'react-native';
 import {Agenda} from 'react-native-calendars';
 import Moment from 'moment';
-import {Service} from '../../../services';
 import ScheduleTile from './Schedule-tile';
 import styleConstructor from './styles';
 import * as sessionService from '../../../serviceActions/session';
-
-const SESSIONS_TABLE = 'Sessions';
-const REGISTRATION_RESPONSE_TABLE = "RegistrationResponse";
 
 export default class EventCal extends Component {
     constructor(props) {
@@ -16,12 +12,7 @@ export default class EventCal extends Component {
       
         this.styles = styleConstructor();
         this.state = Object.assign(...props, {
-            sessions: {},
-            user: {},
-            event: {
-                startDate: '2018-04-20',
-                endDate: '2018-04-21'
-            }
+            sessions: {}
         });
     }
 
@@ -65,25 +56,13 @@ export default class EventCal extends Component {
      */
     fetchSessions = (currentDate, successFn) => {
         let eventId = this.props.eventDetails._id;
-        sessionService.getSessionsByEvent(eventId, currentDate).then(successFn)
+        sessionService.getSessionsByEventDate(eventId, currentDate).then(successFn)
         .catch(err =>{
             console.warn(err);
         });
-
     }
-    /**
-     *  Post mounting data fetch
-     */
-    componentDidMount() {
-        let __self = this;
-        Service.getCurrentUser((userObj) => {
-            __self.setState((prevState) => ({
-                ...prevState,
-                user: userObj
-            }));
-        });
-    }
-
+  
+  
     /**
      * Hide date displayed on left side of panel
      */
@@ -127,8 +106,8 @@ export default class EventCal extends Component {
     renderSession = (item) => {
         return (<ScheduleTile
             navigation={this.props.navigation}
-            user={this.state.user}
-            session={item}/>);
+            session={item}
+            eventId={this.props.eventDetails._id}/>);
     }
     /**
      * Handle Session Rendering
@@ -152,7 +131,7 @@ export default class EventCal extends Component {
      * Render method for component
      */
     render() {
-        let event=this.props.eventDetails
+        let event=this.props.eventDetails;
         const __startDate = Moment(event.startDate).format("YYYY-MM-DD");
         const __endDate = Moment(event.endDate).format("YYYY-MM-DD");
         return (<Agenda
