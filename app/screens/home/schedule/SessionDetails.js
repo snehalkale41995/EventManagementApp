@@ -8,6 +8,8 @@ import Moment from 'moment';
 import { Avatar } from '../../../components';
 import styleConstructor, { getStatusStyle } from './styles';
 import { GradientButton } from '../../../components/gradientButton';
+import * as loginService from '../../../serviceActions/login';
+import * as eventService from '../../../serviceActions/event';
 
 const REGISTRATION_RESPONSE_TABLE = "RegistrationResponse";
 export class SessionDetails extends Component {
@@ -17,17 +19,17 @@ export class SessionDetails extends Component {
   constructor(props) {
     super(props);
     this.styles = styleConstructor();
-    this.sessionDetails = this.props.navigation.state.params.session,
+    this.sessionDetails = this.props.navigation.state.params.session;
       this.state = {
+        eventId : "",
         sessionDetails: this.props.navigation.state.params.session,
-        speakerDetails: this.sessionDetails.speakersDetails ,
+        speakerDetails: this.sessionDetails.speakers,
         speakers: this.sessionDetails.speakers,
         sessionId: this.props.navigation.state.params.session.key,
         user: "",
         description: this.sessionDetails.description ? this.sessionDetails.description : this.sessionDetails.eventName,
-        sessionName: this.sessionDetails.eventName,
-        sesssionDuration: this.sessionDetails.duration,
-        sessionVenue: this.sessionDetails.room ? this.sessionDetails.room : "TBD",
+        sessionName: this.sessionDetails.sessionName,
+        sessionVenue: this.sessionDetails.room,
         showPanelButton: false,
         showFeedbackButton: false,
         startTime: this.sessionDetails.startTime,
@@ -86,23 +88,26 @@ handleFirstConnectivityChange = (connectionInfo) => {
   });
 };
 
-// componentWillUnmount() {
-//   NetInfo.removeEventListener(
-//     'connectionChange',
-//     this.handleFirstConnectivityChange
-//   );  
-// }
+componentWillUnmount() {
+  NetInfo.removeEventListener(
+    'connectionChange',
+    this.handleFirstConnectivityChange
+  );  
+}
 getCurrentUser() {
-    Service.getCurrentUser((userDetails) => {
-      this.setState({
+  loginService.getCurrentUser((userDetails) => {
+      eventService.getCurrentEvent((eventDetails)=>{
+        this.setState({
         user: userDetails.firstName + " " + userDetails.lastName,
-        userObj: userDetails
+        userObj: userDetails,
+        eventId : eventDetails._id
       });
-      this.retrieveSpeakers();
       this.checkSurveyResponse();
       this.fetchRegistrationStatus();
-    });
+      })
+  })
   }
+
   checkSurveyResponse = () => {
     Service.getDocRef("SessionSurvey")
       .where("SessionId", "==", this.state.sessionId)
@@ -191,6 +196,7 @@ getCurrentUser() {
     let sessionDate = Moment(this.state.startTime).format("ddd, MMM DD, YYYY");
     return (<Text>{startTime} - {endTime} | {sessionDate} </Text>);
   }
+
   getSpeakers = () => {
     if (this.state.speakerDetails) {
       return this.state.speakerDetails
@@ -202,7 +208,7 @@ getCurrentUser() {
             avatar = <Image style={{ width: 44, height: 44, borderRadius: 20 }} source={require('../../../assets/images/defaultUserImg.png')} />
           }
           return (
-            <TouchableOpacity key={index} onPress={() => this.props.navigation.navigate('SpeakerDetailsTabs', { speakerDetails: speaker, speakersId: speaker.id })}>
+            <TouchableOpacity key={index} onPress={() => this.props.navigation.navigate('SpeakerDetailsTabs', { speakerDetails: speaker, speakersId: speaker._id, eventId: this.state.eventId })}>
               <View style={[styles.row, styles.heading, styles.speakerView]} >
                 {avatar}
                 <View style={styles.column}>
@@ -216,22 +222,7 @@ getCurrentUser() {
         });
     }
   }
-  retrieveSpeakers = () =>{
-    let speakerArray = [];
-    if(this.state.sessionDetails.speakers){
-      this.state.sessionDetails.speakers.forEach((speaker, index) => {
-        Service.getDocument("Attendee", speaker, (data, id) => {
-          data.id =id;
-          speakerArray[index] = data;
-          this.setState({
-            speakerDetails : speakerArray
-          })
-        }, function (error) {
-          console.warn(error);
-        });
-      })
-    }
-  }
+
   attendRequestStatus = () => {
     if (this.state.regStatus) {
       if(this.state.sessionDetails.sessionType == 'deepdive'){
@@ -295,6 +286,7 @@ getCurrentUser() {
       );
     }
   }
+  
   onAttendRequest = (event) => {
     this.setState({
       isAddingToAgenda : true
@@ -436,15 +428,15 @@ getCurrentUser() {
         </View>
       ): (<View></View>);
       
-    const surveyButton = this.getSurveyAccess();
-    if(this.state.showPanelButton == true || this.state.showFeedbackButton == true){
+    // const surveyButton = this.getSurveyAccess();
+    // if(this.state.showPanelButton == true || this.state.showFeedbackButton == true){
       return (
         <Container style={styles.root}>
         <ScrollView style={styles.root}>
           {/* <RkCard> */}
             <View style={styles.section}>
               <View style={[styles.row, styles.heading]}>
-                <RkText style={{ fontSize: 20 }} rkType='header6 primary'>{this.state.sessionName}</RkText>
+                <RkText style={{ fontSize: 20 }} rkType='header6 primary'>{this.state.sessionDetails.sessionName}</RkText>
               </View>
             </View>
             <View style={styles.subSection}>
@@ -454,11 +446,11 @@ getCurrentUser() {
               </View>
               <View style={[styles.row, styles.heading]}>
                 <RkText style={{flexDirection : 'column',width: 25, fontSize: 12, marginTop:10 }}><Icon name="md-pin" style={{fontSize: 18, marginTop:5, color: '#5d5e5f'}}/></RkText>
-                <Text style={{flexDirection : 'column'}} rkType='header6' style={{marginTop:10, marginLeft:3, color: '#5d5e5f'}}>{this.state.sessionVenue}</Text>
+                <Text style={{flexDirection : 'column'}} rkType='header6' style={{marginTop:10, marginLeft:3, color: '#5d5e5f'}}>{this.state.sessionVenue.roomName}</Text>
               </View>
-              <View>
+              {/* <View>
                 {this.attendRequestStatus()}
-              </View>
+              </View> */}
             </View>
             <View style={styles.descSection}>
               <View style={[styles.row, styles.heading]}>
@@ -468,12 +460,11 @@ getCurrentUser() {
                 <Text style={[styles.text, styles.justify]}>{this.state.description}</Text>
               </View>
             </View>
-            {displaySpeakers}
-          {/* </RkCard> */}
+             {displaySpeakers} 
         </ScrollView>
-        <View style={[styles.surveButton]}>
+        {/* <View style={[styles.surveButton]}>
         {surveyButton}
-      </View>
+      </View> */}
       <View style={styles.footerOffline}>
             {
               this.state.isOffline ? <RkText rkType="small" style={styles.footerText}>The Internet connection appears to be offline. </RkText> : null
@@ -485,9 +476,10 @@ getCurrentUser() {
           </View>
       </Container>
       )
-    }
-    else if((this.state.showPanelButton == true || this.state.showFeedbackButton == true) && this.state.isAddingToAgenda == true){
-      return (
+    // }
+
+    if((this.state.showPanelButton == true || this.state.showFeedbackButton == true) && this.state.isAddingToAgenda == true){
+     return (
         <Container style={[styles.root]}>
           <ScrollView>
             <View style={[styles.loading]} >
@@ -495,7 +487,7 @@ getCurrentUser() {
             </View>
           </ScrollView>
           <View style={styles.footerOffline}>
-            {
+            { 
               this.state.isOffline ? <RkText rkType="small" style={styles.footerText}>The Internet connection appears to be offline. </RkText> : null
             }
           </View>

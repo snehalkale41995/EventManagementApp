@@ -1,7 +1,8 @@
 import axios from 'axios';
 import AppConfig from "../constants/AppConfig";
  
-   export const getSessionsByEvent = (eventId, currentDate) =>{
+  //for eventCal 
+   export const getSessionsByEventDate = (eventId, currentDate) =>{
       let promise = new Promise((resolve, reject) => {
          axios.get(`${AppConfig.serverURL}/api/session/getSessions/${eventId}`)
          .then(response => {
@@ -16,6 +17,20 @@ import AppConfig from "../constants/AppConfig";
          }
         })
          resolve(sessionList);
+         })
+         .catch(error => {
+            reject(error);
+         })
+      })
+        return promise;
+     }
+
+  //for speaker sessionList
+   export const getSessionsByEvent = (eventId) =>{
+      let promise = new Promise((resolve, reject) => {
+         axios.get(`${AppConfig.serverURL}/api/session/getSessions/${eventId}`)
+         .then(response => {
+         resolve(response.data);
          })
          .catch(error => {
             reject(error);

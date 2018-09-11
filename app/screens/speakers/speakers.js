@@ -24,7 +24,8 @@ export class Speakers extends RkComponent {
         this.state = {
             Speakers: [],
             isLoaded: false,
-            isOffline: false
+            isOffline: false,
+            eventId : " "
         }
     }
 
@@ -83,6 +84,7 @@ export class Speakers extends RkComponent {
         eventService.getCurrentEvent((eventInfo)=>{
         if(eventInfo){
         let eventId = eventInfo._id;
+        this.setState({eventId:eventId});
         speakerService.getSpeakersByEvent(eventId).then((response)=>{
         this.setState(
           {
@@ -109,7 +111,7 @@ export class Speakers extends RkComponent {
             }
             return (
                 <TouchableOpacity
-                    key={index} onPress={() => this.props.navigation.navigate('SpeakerDetailsTabs', { speakerDetails: speaker, speakersId: [speaker._id] })}
+                    key={index} onPress={() => this.props.navigation.navigate('SpeakerDetailsTabs', { speakerDetails: speaker, speakersId: speaker._id, eventId : this.state.eventId})}
                 >
                     <RkCard rkType='shadowed' style={styles.card}>
                         <View style={{ flexDirection: 'row' }}>
