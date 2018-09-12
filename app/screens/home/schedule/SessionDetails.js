@@ -30,8 +30,6 @@ export class SessionDetails extends Component {
         description: this.sessionDetails.description ? this.sessionDetails.description : this.sessionDetails.eventName,
         sessionName: this.sessionDetails.sessionName,
         sessionVenue: this.sessionDetails.room,
-        showPanelButton: false,
-        showFeedbackButton: false,
         startTime: this.sessionDetails.startTime,
         endTime: this.sessionDetails.endTime,
         userObj: {},
@@ -41,7 +39,8 @@ export class SessionDetails extends Component {
         currentSessionEnd  :  Moment(this.sessionDetails.endTime).format(),
         sameTimeRegistration : false,
         isOffline : false,
-        isAddingToAgenda :false
+        isAddingToAgenda :false,
+        isLoaded : false
       }
   }
 /**check */
@@ -50,12 +49,8 @@ componentWillMount() {
     NetInfo.isConnected.fetch().then(isConnected => {
       if(isConnected) {
         this.getCurrentUser();
-        this.setState({
-          isLoading: true
-        });
       } else {
         this.setState({
-          isLoading: false,
           isOffline : true
         });
       }
@@ -74,12 +69,8 @@ componentWillMount() {
 handleFirstConnectivityChange = (connectionInfo) => {
   if(connectionInfo.type != 'none') {
     this.getCurrentUser();
-      this.setState({
-        isLoading: true
-      });
   } else {
     this.setState({
-      isLoading: false,
       isOffline : true
     });
   }
@@ -94,6 +85,7 @@ componentWillUnmount() {
     this.handleFirstConnectivityChange
   );  
 }
+
 getCurrentUser() {
   let compRef = this;
   loginService.getCurrentUser((userDetails) => {
@@ -103,59 +95,36 @@ getCurrentUser() {
         userObj: userDetails,
         eventId : eventDetails._id
       });
-      //this.checkSurveyResponse();
       compRef.fetchRegistrationStatus();
       })
   })
   }
 
-  checkSurveyResponse = () => {
-    Service.getDocRef("SessionSurvey")
-      .where("SessionId", "==", this.state.sessionId)
-      .where("ResponseBy", "==", this.state.userObj.uid)
-      .get().then((snapshot) => {
-        if (snapshot.size == 0) {
-          this.setState({
-            showPanelButton: true,
-            showFeedbackButton: true
-          })
-        }
-        else {
-          this.setState({
-            showPanelButton: true
-          })
-        }
-        this.getSurveyAccess();
-      })
-      .catch(function (err) {
-       // console.log("err", err);
-      });
+  onSurvey= ()=> {
+    console.log("sessionDetails",this.state.sessionDetails);
+     this.props.navigation.navigate('Survey', { sessionDetails: this.state.sessionDetails });
+    // if (this.state.sessionDetails.startTime.getTime() < (new Date()).getTime()) {
+    //   Service.getDocRef("SessionSurvey")
+    //     .where("SessionId", "==", this.state.sessionId)
+    //     .where("ResponseBy", "==", this.state.userObj.uid)
+    //     .get().then((snapshot) => {
+    //       if (snapshot.size == 0) {
+    //         this.props.navigation.navigate('Survey', { sessionDetails: this.state.sessionDetails });
+    //       }
+    //       else {
+    //         Alert.alert("You have already given feedback for this session");
+    //       }
+    //     })
+    //     .catch(function (err) {
+    //       //console.log("err", err);
+    //     });
+    // } 
+    // else {
+    //   Alert.alert("Its too early ,wait till session ends");
+    // }
   }
 
-  onSurvey= ()=> {
-    if (this.state.sessionDetails.startTime.getTime() < (new Date()).getTime()) {
-      Service.getDocRef("SessionSurvey")
-        .where("SessionId", "==", this.state.sessionId)
-        .where("ResponseBy", "==", this.state.userObj.uid)
-        .get().then((snapshot) => {
-          if (snapshot.size == 0) {
-            this.props.navigation.navigate('Survey', { sessionDetails: this.state.sessionDetails });
-          }
-          else {
-            Alert.alert("You have already given feedback for this session");
-          }
-          //this.getSurveyAccess();
-        })
-        .catch(function (err) {
-          //console.log("err", err);
-        });
-    } 
-    else {
-      Alert.alert("Its too early ,wait till session ends");
-    }
-  }
   getSurveyAccess = () => {
-    if (this.state.showPanelButton == true && this.state.showFeedbackButton == true) {
       return (
         <View style={{ width:Platform.OS === 'ios' ? 320 : 380 ,alignItems:'center' , flexDirection : 'row' , marginLeft :Platform.OS === 'android' ? 20 : 0  }}>
           <View style={{ width: Platform.OS === 'ios' ? 160 : 180 ,alignItems:'center'}} >
@@ -170,26 +139,6 @@ getCurrentUser() {
           </View>
         </View>
       );
-    }
-    else if (this.state.showPanelButton == true) {
-      return (
-        <View style={{ width:Platform.OS === 'ios' ? 320 : 380 ,alignItems:'center' , flexDirection : 'row' , marginLeft :Platform.OS === 'android' ? 20 : 0  }}>
-          <View style={{ width: Platform.OS === 'ios' ? 160 : 180 ,alignItems:'center'}} >
-            <GradientButton colors={['#f20505', '#f55050']} text='Panel Q&A' style={{width: Platform.OS === 'ios' ? 150 :170 , alignSelf : 'center'}}
-              onPress={() => this.props.navigation.navigate('QueTab', { sessionDetails: this.state.sessionDetails })}
-            />
-          </View>
-          <View style={{  width: Platform.OS === 'ios' ? 160 : 180 ,alignItems:'center'}} >
-            <GradientButton colors={['#f20505', '#f55050']} text='Feedback' style={{  width: Platform.OS === 'ios' ? 150 :170 ,alignSelf : 'center'}}
-              onPress={this.onSurvey}
-            />
-          </View>
-        </View>
-      );
-    }
-    else {
-      return null;
-    }
   }
 
   getDuration = () => {
@@ -226,7 +175,8 @@ getCurrentUser() {
   }
 
   attendRequestStatus = () => {
-    if (this.state.regStatus) {
+    if(this.state.isLoaded){
+     if (this.state.regStatus) {
       if(this.state.sessionDetails.isRegistrationRequired){
         return (
           <View style = {[styles.attendBtn]}>
@@ -288,6 +238,7 @@ getCurrentUser() {
             </RkButton>
         </View>
       );
+    }
     }
   }
   
@@ -362,14 +313,21 @@ getCurrentUser() {
          let regResponse = response[0];
          compRef.setState({
             regStatus: regResponse.status,
-            regId: regResponse._id
+            regId: regResponse._id,
+            isLoaded : true
           })
         }
         else{
+          compRef.setState({
+            regStatus: "",
+            regId: "",
+            isLoaded : true
+          })
          // console.log("check for already registered in another session");
          // compRef.checkAlreadyRegistered();
         }
       }).catch(()=>{
+        this.setState({isLoaded:false})
         console.warn(error);
       })
     }
@@ -420,12 +378,28 @@ getCurrentUser() {
         </View>
       ): (<View></View>);
       
-    // const surveyButton = this.getSurveyAccess();
-    // if(this.state.showPanelButton == true || this.state.showFeedbackButton == true){
-      return (
+     const surveyButton = this.getSurveyAccess();
+    
+     return this.state.isAddingToAgenda ? (
+      <Container style={[styles.root]}>
+          <ScrollView>
+            <View style={[styles.loading]} >
+              <ActivityIndicator size='large' />
+            </View>
+          </ScrollView>
+          <View style={styles.footerOffline}>
+            {
+              this.state.isOffline ? <RkText rkType="small" style={styles.footerText}>The Internet connection appears to be offline. </RkText> : null
+            }
+          </View>
+          <View style={styles.footer}>
+            <RkText rkType="small" style={styles.footerText}>Powered by</RkText>
+            <RkText rkType="small" style={styles.companyName}> Eternus Solutions Pvt. Ltd. </RkText>
+          </View>
+        </Container>
+       ) : (
         <Container style={styles.root}>
         <ScrollView style={styles.root}>
-          {/* <RkCard> */}
             <View style={styles.section}>
               <View style={[styles.row, styles.heading]}>
                 <RkText style={{ fontSize: 20 }} rkType='header6 primary'>{this.state.sessionDetails.sessionName}</RkText>
@@ -454,10 +428,9 @@ getCurrentUser() {
             </View>
              {displaySpeakers} 
         </ScrollView>
-
-        {/* <View style={[styles.surveButton]}>
-        {surveyButton}
-      </View> */}
+        <View style={[styles.surveButton]}>
+          {surveyButton}
+        </View> 
       <View style={styles.footerOffline}>
             {
               this.state.isOffline ? <RkText rkType="small" style={styles.footerText}>The Internet connection appears to be offline. </RkText> : null
@@ -469,49 +442,6 @@ getCurrentUser() {
           </View>
       </Container>
       )
-    // }
-
-    if((this.state.showPanelButton == true || this.state.showFeedbackButton == true) && this.state.isAddingToAgenda == true){
-     return (
-        <Container style={[styles.root]}>
-          <ScrollView>
-            <View style={[styles.loading]} >
-              <ActivityIndicator size='large' />
-            </View>
-          </ScrollView>
-          <View style={styles.footerOffline}>
-            { 
-              this.state.isOffline ? <RkText rkType="small" style={styles.footerText}>The Internet connection appears to be offline. </RkText> : null
-            }
-          </View>
-          <View style={styles.footer}>
-            <RkText rkType="small" style={styles.footerText}>Powered by</RkText>
-            <RkText rkType="small" style={styles.companyName}> Eternus Solutions Pvt. Ltd. </RkText>
-          </View>
-        </Container>
-    );
-    }
-    else{
-      return (
-        <Container style={[styles.root]}>
-          <ScrollView>
-            <View style={[styles.loading]} >
-              <ActivityIndicator size='large' />
-            </View>
-          </ScrollView>
-          <View style={styles.footerOffline}>
-            {
-              this.state.isOffline ? <RkText rkType="small" style={styles.footerText}>The Internet connection appears to be offline. </RkText> : null
-            }
-          </View>
-          <View style={styles.footer}>
-            <RkText rkType="small" style={styles.footerText}>Powered by</RkText>
-            <RkText rkType="small" style={styles.companyName}> Eternus Solutions Pvt. Ltd. </RkText>
-          </View>
-        </Container>
-    );
-    }
-
   }
 }
 

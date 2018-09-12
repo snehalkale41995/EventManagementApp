@@ -1,6 +1,22 @@
 import axios from "axios";
 import AppConfig from "../constants/AppConfig";
 
+export const getRegResponse = () => {
+  let promise = new Promise((resolve, reject) => {
+    axios
+      .get(
+        `${AppConfig.serverURL}/api/registrationResponse`
+      )
+      .then(response => {
+        resolve(response.data);
+      })
+      .catch(error => {
+        reject(error);
+      });
+  });
+  return promise;
+};
+
 //checkAlreadyRegistered
 export const getRegResponseByEventUser = (eventId, userId) => {
   let promise = new Promise((resolve, reject) => {
