@@ -75,7 +75,6 @@ export default class ScheduleTile extends RkComponent {
     }
 
     applyTouchOpacity = (shouldApplyOpacity) => {
-        console.log("in scheduletileee eventId", this.props.eventId)
         if (!shouldApplyOpacity) {
             return <TouchableOpacity
                 onPress={() => this.props.navigation.navigate('SessionDetails', { session: this.props.session})}
