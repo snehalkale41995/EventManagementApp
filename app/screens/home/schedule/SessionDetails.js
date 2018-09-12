@@ -10,7 +10,7 @@ import styleConstructor, { getStatusStyle } from './styles';
 import { GradientButton } from '../../../components/gradientButton';
 import * as loginService from '../../../serviceActions/login';
 import * as eventService from '../../../serviceActions/event';
-
+import * as regResponseService from '../../../serviceActions/registrationResponse'
 const REGISTRATION_RESPONSE_TABLE = "RegistrationResponse";
 export class SessionDetails extends Component {
   static navigationOptions = {
@@ -95,6 +95,7 @@ componentWillUnmount() {
   );  
 }
 getCurrentUser() {
+  let compRef = this;
   loginService.getCurrentUser((userDetails) => {
       eventService.getCurrentEvent((eventDetails)=>{
         this.setState({
@@ -102,8 +103,8 @@ getCurrentUser() {
         userObj: userDetails,
         eventId : eventDetails._id
       });
-      this.checkSurveyResponse();
-      this.fetchRegistrationStatus();
+      //this.checkSurveyResponse();
+      compRef.fetchRegistrationStatus();
       })
   })
   }
@@ -127,7 +128,7 @@ getCurrentUser() {
         this.getSurveyAccess();
       })
       .catch(function (err) {
-        console.log("err", err);
+       // console.log("err", err);
       });
   }
 
@@ -146,7 +147,7 @@ getCurrentUser() {
           //this.getSurveyAccess();
         })
         .catch(function (err) {
-          console.log("err", err);
+          //console.log("err", err);
         });
     } 
     else {
@@ -190,6 +191,7 @@ getCurrentUser() {
       return null;
     }
   }
+
   getDuration = () => {
     let endTime = Moment(this.state.endTime).format("HH:mm");
     let startTime = Moment(this.state.startTime).format("HH:mm");
@@ -225,15 +227,15 @@ getCurrentUser() {
 
   attendRequestStatus = () => {
     if (this.state.regStatus) {
-      if(this.state.sessionDetails.sessionType == 'deepdive'){
+      if(this.state.sessionDetails.isRegistrationRequired){
         return (
           <View style = {[styles.attendBtn]}>
             <RkButton rkType='outline'
-              onPress={this.onCancelRequest}
+             onPress={this.onCancelRequest}
               style ={{borderColor : '#f20505',borderRadius : 30 , width : 100 ,height :30}}
               contentStyle={{ fontSize: 12 , color: '#f20505' }}
             >
-             De-Register
+                De-Register
               </RkButton>
           </View>
         )
@@ -259,14 +261,15 @@ getCurrentUser() {
         </View>
       );
     }
-     else if(!this.state.regStatus  &&  this.state.sessionDetails.sessionType == 'deepdive'){
+     else if(!this.state.regStatus  &&  this.state.sessionDetails.isRegistrationRequired){
       return (
         <View style = {[styles.attendBtn]} >
           <RkButton
             rkType='outline'
             style ={{borderColor : '#f20505', borderRadius : 30 , width : 100 ,height :30}}
             contentStyle={{ fontSize: 12 , color :'#f20505' }}
-            onPress={this.onAttendRequest}>
+            onPress={this.onAttendRequest}
+            >
             Register
             </RkButton>
         </View>
@@ -279,7 +282,8 @@ getCurrentUser() {
             rkType='outline'
             style ={{borderColor : '#f20505', borderRadius : 30 , width : 150 ,height :30}}
             contentStyle={{ fontSize: 12 , color :'#f20505' }}
-            onPress={this.onAttendRequest}>
+             onPress={this.onAttendRequest}  
+            >
             Add to My Agenda
             </RkButton>
         </View>
@@ -300,36 +304,23 @@ getCurrentUser() {
         Alert.alert("Already registered for same time in other session");
       }
       else{
-        const attendeeId = this.state.userObj.uid;
-        const firstName = this.state.userObj.firstName;
-        const lastName = this.state.userObj.lastName;
-        const email = this.state.userObj.email;
-        if(this.state.sessionDetails.speakers == undefined ){
-          this.state.sessionDetails.speakers = [];
+        let  attendRequest = {
+         user : this.state.userObj._id,
+         session : this.state.sessionId,
+         event : this.state.eventId,
+         registrationTime : new Date(),
+         status : this.state.sessionDetails.isRegistrationRequired ? 'De-Register' : 'Remove From Agenda'
         }
-        if(this.state.sessionDetails.description == undefined ){
-          this.state.sessionDetails.description = "";
-        }
-        if(this.state.sessionDetails.sessionType == undefined ){
-          this.state.sessionDetails.sessionType = "";
-        }
-        let attendRequest = {
-          sessionId: this.state.sessionDetails.key,
-          session: this.state.sessionDetails,
-          registeredAt: new Date(),
-          status: this.state.sessionDetails.sessionType == 'deepdive' ? 'De-Register' : 'Remove From Agenda',
-          attendee: {firstName , lastName ,email},
-          attendeeId: attendeeId,
-          sessionDate : this.state.sessionDetails.startTime
-        }
-        Service.getDocRef("RegistrationResponse").add(attendRequest).then((req) => {
+        regResponseService.addRegResponse(attendRequest).then((response) => {
           this.setState({
-            regId: req.id,
-            regStatus: attendRequest.status,
+            regId: response._id,
+            regStatus: response.status,
             isAddingToAgenda : false
           });
         }).catch((error) => {
-          console.warn(error);
+          this.setState({
+            isAddingToAgenda : false
+          })
         });
       }
     }
@@ -340,46 +331,47 @@ getCurrentUser() {
       Alert.alert("You cannot add past session to Agenda");
     }
   }
+
   onCancelRequest = (event) => {
     this.setState({
       isAddingToAgenda : true
     });
-    Service.getDocRef("RegistrationResponse").doc(this.state.regId).delete().then((req) => {
-        this.setState({
+    regResponseService.deleteRegResonse(this.state.regId).then((response)=>{
+          this.setState({
           regStatus: "",
           regId: "",
           isAddingToAgenda : false
         })
-    }).catch((error) => {
-        console.warn(error);
-    });
+    }).catch((error)=>{
+       this.setState({
+          isAddingToAgenda : false
+        })
+      console.warn(error);
+    })
 }
 
-  fetchRegistrationStatus = () => {
-    const baseObj = this;
-    if (this.state.userObj) {
-      const attendeeId = this.state.userObj.uid;
-      Service.getDocRef(REGISTRATION_RESPONSE_TABLE)
-        .where("sessionId", "==", this.state.sessionDetails.key)
-        .where("attendeeId", "==", attendeeId)
-        .onSnapshot(function (snapshot) {
-          if (snapshot.size > 0) {
-            snapshot.forEach((doc) => {
-              let regResponse = doc.data();
-                baseObj.setState({
-                  regStatus: regResponse.status,
-                  regId: doc.id
-                })
-            });
-          }
-          else{
-            baseObj.checkAlreadyRegistered();
-          }
-        },function (error){
-          console.warn(error);
-        });
-    } else {
-      console.warn("User object is undefined");
+   fetchRegistrationStatus = () => {
+      let compRef = this;
+      let attendeeId = this.state.userObj._id;
+      let eventId = this.state.eventId;
+      let sessionId = this.state.sessionDetails.key;
+      if(this.state.userObj){
+      regResponseService.getRegResponseBySessionUser(eventId,sessionId,attendeeId).
+      then((response)=>{
+        if(response.length>0){
+         let regResponse = response[0];
+         compRef.setState({
+            regStatus: regResponse.status,
+            regId: regResponse._id
+          })
+        }
+        else{
+         // console.log("check for already registered in another session");
+         // compRef.checkAlreadyRegistered();
+        }
+      }).catch(()=>{
+        console.warn(error);
+      })
     }
   }
 
@@ -448,9 +440,9 @@ getCurrentUser() {
                 <RkText style={{flexDirection : 'column',width: 25, fontSize: 12, marginTop:10 }}><Icon name="md-pin" style={{fontSize: 18, marginTop:5, color: '#5d5e5f'}}/></RkText>
                 <Text style={{flexDirection : 'column'}} rkType='header6' style={{marginTop:10, marginLeft:3, color: '#5d5e5f'}}>{this.state.sessionVenue.roomName}</Text>
               </View>
-              {/* <View>
+               <View>
                 {this.attendRequestStatus()}
-              </View> */}
+              </View> 
             </View>
             <View style={styles.descSection}>
               <View style={[styles.row, styles.heading]}>
@@ -462,6 +454,7 @@ getCurrentUser() {
             </View>
              {displaySpeakers} 
         </ScrollView>
+
         {/* <View style={[styles.surveButton]}>
         {surveyButton}
       </View> */}
