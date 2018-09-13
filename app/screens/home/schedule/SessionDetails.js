@@ -11,6 +11,8 @@ import { GradientButton } from '../../../components/gradientButton';
 import * as loginService from '../../../serviceActions/login';
 import * as eventService from '../../../serviceActions/event';
 import * as regResponseService from '../../../serviceActions/registrationResponse'
+import * as questionFormService from '../../../serviceActions/questionForm';
+
 const REGISTRATION_RESPONSE_TABLE = "RegistrationResponse";
 export class SessionDetails extends Component {
   static navigationOptions = {
@@ -101,25 +103,21 @@ getCurrentUser() {
   }
 
   onSurvey= ()=> {
-    console.log("sessionDetails",this.state.sessionDetails);
-     this.props.navigation.navigate('Survey', { sessionDetails: this.state.sessionDetails });
+    let eventId = this.state.eventId;
+    let userId = this.state.userObj._id;
+    let sessionId = this.state.sessionId;
     // if (this.state.sessionDetails.startTime.getTime() < (new Date()).getTime()) {
-    //   Service.getDocRef("SessionSurvey")
-    //     .where("SessionId", "==", this.state.sessionId)
-    //     .where("ResponseBy", "==", this.state.userObj.uid)
-    //     .get().then((snapshot) => {
-    //       if (snapshot.size == 0) {
-    //         this.props.navigation.navigate('Survey', { sessionDetails: this.state.sessionDetails });
-    //       }
-    //       else {
-    //         Alert.alert("You have already given feedback for this session");
-    //       }
-    //     })
-    //     .catch(function (err) {
-    //       //console.log("err", err);
-    //     });
-    // } 
-    // else {
+      questionFormService.getFeedbackResponse(eventId,sessionId,userId).
+         then((response)=>{
+        if(response.length===0){
+        this.props.navigation.navigate('Survey', { sessionDetails: this.state.sessionDetails });
+        }
+       else{ Alert.alert("You have already given feedback for this session")}
+      }).catch((error)=>{
+        console.warn(error);
+      })
+     //}
+     // else {
     //   Alert.alert("Its too early ,wait till session ends");
     // }
   }
