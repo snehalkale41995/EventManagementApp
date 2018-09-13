@@ -86,12 +86,18 @@ export class Questions extends React.Component {
         if(eventInfo){
         let eventId = eventInfo._id;
         this.setState({eventId : eventId})
-        questionFormService.getHomeQuestionForm(eventId).then((response)=>{
+        questionFormService.getQuestionForm(eventId).then((response)=>{
+            let  formResponse = {};
           if( response  == undefined){
                 thisRef.resetNavigation(thisRef.props.navigation, 'HomeMenu');
             }
         else{
-            let questionForm = response[0].formData
+              response.forEach((dataObj)=>{
+                if(dataObj.formType === "Home Questions"){
+                  formResponse = dataObj;
+                }
+            })
+            let questionForm = formResponse.formData;
              thisRef.setState({
                 questionsForm: questionForm,
                 isLoading :false
