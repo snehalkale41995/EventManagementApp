@@ -37,6 +37,7 @@ export default class MyAgenda extends React.Component {
   }
 
   componentDidMount() {
+    console.log("in MyAgenda componentDidMount")
     let compRef = this;
     loginService.getCurrentUser(userDetails => {
       eventService.getCurrentEvent(eventDetails => {
@@ -50,14 +51,15 @@ export default class MyAgenda extends React.Component {
   }
 
   fetchSessionList = () => {
+    console.log("in MyAgenda fetchSessionList")
     let eventId = this.state.eventId;
     let userId = this.state.userId;
     regResponseService
       .getRegResponseByEventUser(eventId, userId)
       .then(response => {
-        console.log("response", response);
         let sessions = [];
-        response.forEach(session => {
+        response.forEach(data => {
+         let session = data.session;
           sessions.push({
             key: session._id,
             sessionName: session.sessionName,
@@ -152,6 +154,7 @@ export default class MyAgenda extends React.Component {
       </View>
     );
   };
+
   getLocation = session => {
     return (
       <View
@@ -171,12 +174,13 @@ export default class MyAgenda extends React.Component {
           style={styles.roomName}
           style={{ color: "#5d5e5f", fontSize: 12 }}
         >
-          {/* {session.room.roomName} */}
+           {session.room.roomName} 
         </Text>
       </View>
     );
   };
   render() {
+    console.log("in render Myagenda");
     let sessionList = this.renderSessions();
     if (!this.state.isLoaded) {
       return (
