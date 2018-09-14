@@ -37,7 +37,6 @@ export default class MyAgenda extends React.Component {
   }
 
   componentDidMount() {
-    console.log("in MyAgenda componentDidMount")
     let compRef = this;
     loginService.getCurrentUser(userDetails => {
       eventService.getCurrentEvent(eventDetails => {
@@ -51,7 +50,6 @@ export default class MyAgenda extends React.Component {
   }
 
   fetchSessionList = () => {
-    console.log("in MyAgenda fetchSessionList")
     let eventId = this.state.eventId;
     let userId = this.state.userId;
     regResponseService
@@ -180,7 +178,6 @@ export default class MyAgenda extends React.Component {
     );
   };
   render() {
-    console.log("in render Myagenda");
     let sessionList = this.renderSessions();
     if (!this.state.isLoaded) {
       return (
