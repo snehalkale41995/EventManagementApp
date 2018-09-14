@@ -12,6 +12,9 @@ import * as loginService from '../../../serviceActions/login';
 import * as eventService from '../../../serviceActions/event';
 import * as regResponseService from '../../../serviceActions/registrationResponse'
 import * as questionFormService from '../../../serviceActions/questionForm';
+import {Loader} from '../../../components/loader';
+import {Footer} from '../../../components/footer';
+
 
 const REGISTRATION_RESPONSE_TABLE = "RegistrationResponse";
 export class SessionDetails extends Component {
@@ -106,7 +109,7 @@ getCurrentUser() {
     let eventId = this.state.eventId;
     let userId = this.state.userObj._id;
     let sessionId = this.state.sessionId;
-    // if (this.state.sessionDetails.startTime.getTime() < (new Date()).getTime()) {
+   // if (this.state.currentSessionStart < Moment((new Date()).format()) {
       questionFormService.getFeedbackResponse(eventId,sessionId,userId).
          then((response)=>{
         if(response.length===0){
@@ -116,8 +119,8 @@ getCurrentUser() {
       }).catch((error)=>{
         console.warn(error);
       })
-     //}
-     // else {
+    // }
+    //  else {
     //   Alert.alert("Its too early ,wait till session ends");
     // }
   }
@@ -321,8 +324,11 @@ getCurrentUser() {
             regId: "",
             isLoaded : true
           })
-         // console.log("check for already registered in another session");
-         // compRef.checkAlreadyRegistered();
+       
+         if(compRef.state.sessionDetails.isRegistrationRequired){
+           compRef.checkAlreadyRegistered();
+         }
+         
         }
       }).catch(()=>{
         this.setState({isLoaded:false})
@@ -331,37 +337,35 @@ getCurrentUser() {
     }
   }
 
-  checkAlreadyRegistered = () => {
-    const attendeeId = this.state.userObj.uid;
-    let baseObj = this;
-    Service.getDocRef(REGISTRATION_RESPONSE_TABLE)
-      .where("attendeeId", "==", attendeeId)
-      .get()
-      .then((snapshot) => {
-          snapshot.forEach(doc => {
-            let RegSession = doc.data();
-            let start = Moment(RegSession.session.startTime).format();
-            let end = Moment(RegSession.session.endTime).format();
-            if(baseObj.state.sessionDetails.sessionType == 'deepdive'){
-              if ( baseObj.state.currentSessionStart <= start && end <= baseObj.state.currentSessionEnd && RegSession.sessionId !== baseObj.state.sessionId) {
-                baseObj.setState({
+    checkAlreadyRegistered = () => {
+    let eventId = this.state.eventId;
+    let userId = this.state.userObj._id;
+    let sessionId = this.state.sessionId;
+    let compRef = this;
+    regResponseService.getRegResponseByEventUser(eventId, userId).
+      then((response)=>{
+        response.forEach((data)=>{
+           let regSession = data.session;
+           let start = Moment(regSession.startTime).format();
+           let end = Moment(regSession.endTime).format();
+            if (compRef.state.currentSessionStart <= start && end <= compRef.state.currentSessionEnd && regSession._id !== compRef.state.sessionId) {
+              compRef.setState({
                   sameTimeRegistration: true
                 });
               }
               else {
-                baseObj.setState({
+                compRef.setState({
                   regStatus: "",
                   regId: ""
                 })
               }
-            }
-            
-          })  
-      })
-      .catch((error) => {
+        
+        })
+      }).catch((error) => {
         console.warn(error);
       })
   }
+
   render() {
     const speakers = this.getSpeakers();
     const displaySpeakers = (this.state.speakerDetails) ? (
@@ -376,27 +380,21 @@ getCurrentUser() {
         </View>
       ): (<View></View>);
       
+
      const surveyButton = this.getSurveyAccess();
-    
-     return this.state.isAddingToAgenda ? (
-      <Container style={[styles.root]}>
-          <ScrollView>
-            <View style={[styles.loading]} >
-              <ActivityIndicator size='large' />
-            </View>
-          </ScrollView>
-          <View style={styles.footerOffline}>
-            {
-              this.state.isOffline ? <RkText rkType="small" style={styles.footerText}>The Internet connection appears to be offline. </RkText> : null
-            }
-          </View>
-          <View style={styles.footer}>
-            <RkText rkType="small" style={styles.footerText}>Powered by</RkText>
-            <RkText rkType="small" style={styles.companyName}> Eternus Solutions Pvt. Ltd. </RkText>
-          </View>
-        </Container>
-       ) : (
-        <Container style={styles.root}>
+        if(this.state.isAddingToAgenda){
+          return(
+         <Container style={[styles.root]}>
+              <Loader/> 
+              <View>
+              <Footer isOffline ={this.state.isOffline}/> 
+              </View>
+             </Container>
+          )
+        }
+        else if(this.state.isLoaded){
+          return(
+            <Container style={styles.root}>
         <ScrollView style={styles.root}>
             <View style={styles.section}>
               <View style={[styles.row, styles.heading]}>
@@ -429,18 +427,23 @@ getCurrentUser() {
         <View style={[styles.surveButton]}>
           {surveyButton}
         </View> 
-      <View style={styles.footerOffline}>
-            {
-              this.state.isOffline ? <RkText rkType="small" style={styles.footerText}>The Internet connection appears to be offline. </RkText> : null
-            }
-          </View> 
-          <View style={styles.footer}>
-            <RkText rkType="small" style={styles.footerText}>Powered by</RkText>
-            <RkText rkType="small" style={styles.companyName}> Eternus Solutions Pvt. Ltd. </RkText>
-          </View>
+       <View>
+        <Footer isOffline ={this.state.isOffline}/>    
+        </View>
       </Container>
-      )
-  }
+          )
+        }
+        else{
+          return(
+            <Container style={[styles.root]}>
+                    <Loader/> 
+                    <View>
+                    <Footer isOffline ={this.state.isOffline}/> 
+                    </View>
+                </Container>
+          )
+        }
+   }
 }
 
 let styles = RkStyleSheet.create(theme => ({
