@@ -9,9 +9,16 @@ import Moment from 'moment';
 import { Avatar } from '../../../components';
 import firebase from '../../../config/firebase';
 import {GradientButton} from '../../../components/gradientButton';
-import styleConstructor,{getStatusStyle}  from '../schedule/styles.js'
+import styleConstructor,{getStatusStyle}  from '../schedule/styles.js';
+import * as questionFormService from '../../../serviceActions/questionForm';
+import * as eventService from '../../../serviceActions/event';
+import * as loginService from '../../../serviceActions/login';
+import {Loader} from '../../../components/loader';
+import {Footer} from '../../../components/footer';
 const questionTable = 'AskedQuestions';
 var firestoreDB = firebase.firestore();
+
+
 export default class AskQuestion extends RkComponent {
     constructor(props) {
         super(props);
@@ -20,13 +27,14 @@ export default class AskQuestion extends RkComponent {
         this.state = {
             Question: "",
             sessionDetails: this.sessionDetails,
-            currentUser: {},
+            User: {},
             sessionId: this.sessionDetails.key,
             topQueView: false,
             recentQueView: true,
             questionData: [],
             orderBy: 'timestamp',
-            currentUid: "",
+            userId: "",
+            eventId : "",
             queAccess: "",
             questionStatus: false,
             AskQFlag: true,
@@ -34,18 +42,20 @@ export default class AskQuestion extends RkComponent {
             componentLoaded : true
         }
     }
+
     componentWillMount() {
-        let thisRef = this;
-        Service.getCurrentUser((userDetails) => {
-            thisRef.setState({
-                currentUser: userDetails,
-                currentUid: userDetails.uid
-            });
-        },function(error){
-            console.warn(error);
-        });
-        this.checkSessionTime();
-        this.getQuestions();
+      let thisRef = this;
+      loginService.getCurrentUser((userDetails) => {
+      eventService.getCurrentEvent((eventDetails)=>{
+      this.setState({
+        User: userDetails,
+        userId: userDetails._id,
+        eventId : eventDetails._id,
+      })
+      })
+     })
+     this.checkSessionTime();
+     this.getQuestions();
     }
 
     checkSessionTime = () => {
@@ -68,6 +78,7 @@ export default class AskQuestion extends RkComponent {
             })
         }
     }
+
     getQuestions = (order) => {
         if (order == undefined) {
             order = 'timestamp';
@@ -95,42 +106,55 @@ export default class AskQuestion extends RkComponent {
                 console.error("Error adding document: ", error);
             });
     }
+
     onSubmit = () => {
         this.setState({
             componentLoaded : false
         });
         let thisRef = this;
-        let que = this.state.Question;
-        let user = this.state.currentUser;
-        let sessionId = this.state.sessionId;
-        if (que.length !== 0) {
-            firestoreDB.collection(questionTable)
-                .add({
-                    Question: que,
-                    askedBy: user,
-                    SessionId: sessionId,
-                    timestamp: new Date(),
-                    voters: [],
-                    voteCount: 0
-                })
-                .then(function (docRef) {
-                    thisRef.setState({
-                        Question: "",
-                        componentLoaded : true
-                    })
-                    Alert.alert("Question submitted successfully");
-                    thisRef.getQuestions();
-                })
-                .catch(function (error) {
-                    console.error("Error adding document: ", error);
-                });
+   
+        let questionObj = {
+         user: this.state.userId,
+         session: this.state.sessionId,
+         event: this.state.eventId,
+         question: this.state.Question,
+         questionAskedTime: new Date(),
+         voteCount: 0,
+         voters: []
         }
-        else {
-            Alert.alert("Please fill the question field...");
-            thisRef.setState({
-                componentLoaded : true
-            })
-        }
+        console.log("questionObj", questionObj);
+
+        questionFormService.submitSessionQuestions(questionObj).then((response)=>{
+            
+        })
+        // if (que.length !== 0) {
+        //     firestoreDB.collection(questionTable)
+        //         .add({
+        //             Question: que,
+        //             askedBy: user,
+        //             SessionId: sessionId,
+        //             timestamp: new Date(),
+        //             voters: [],
+        //             voteCount: 0
+        //         })
+        //         .then(function (docRef) {
+        //             thisRef.setState({
+        //                 Question: "",
+        //                 componentLoaded : true
+        //             })
+        //             Alert.alert("Question submitted successfully");
+        //             thisRef.getQuestions();
+        //         })
+        //         .catch(function (error) {
+        //             console.error("Error adding document: ", error);
+        //         });
+        // }
+        // else {
+        //     Alert.alert("Please fill the question field...");
+        //     thisRef.setState({
+        //         componentLoaded : true
+        //     })
+        // }
     }
     onChangeInputText = (text) => {
         let Question = text;
@@ -184,6 +208,7 @@ export default class AskQuestion extends RkComponent {
         })
         return questionList;
     }
+
     getDateTime = (queDateTime) => {
         let queDate = Moment(queDateTime).format("DD MMM,YYYY");
         let queTime = Moment(queDateTime).format("hh:mm A");
@@ -193,6 +218,7 @@ export default class AskQuestion extends RkComponent {
             </View>
         );
     }
+
     checkLikeStatus = (question) => {
         
         let thisRef = this;
@@ -200,7 +226,7 @@ export default class AskQuestion extends RkComponent {
         let votersList = question.questionSet.voters;
         let voterStatus = false;
         votersList.forEach(voterId => {
-            if (voterId == thisRef.state.currentUid) {
+            if (voterId == thisRef.state.userId) {
                 voterStatus = true;
             }
         })
@@ -222,14 +248,14 @@ export default class AskQuestion extends RkComponent {
        let count = 0; 
        question.questionSet.voters.forEach(
             voter=>{
-              if(this.state.currentUid===voter)
+              if(this.state.userId===voter)
                 count++;
             }        
         )
         let voteCount;
         if(count===0)
         {
-            question.questionSet.voters.push(this.state.currentUid);
+            question.questionSet.voters.push(this.state.userId);
             voteCount = question.questionSet.voters.length;
         }
         else
@@ -255,7 +281,7 @@ export default class AskQuestion extends RkComponent {
         let thisRef = this;
         let questionId = question.questionId;
         let likedBy = question.questionSet.voters;
-        likedBy.pop(this.state.currentUid);
+        likedBy.pop(this.state.userId);
         let voteCount = likedBy.length;
         Service.getDocRef(questionTable)
             .doc(questionId)
