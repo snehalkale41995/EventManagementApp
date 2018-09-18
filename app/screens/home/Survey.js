@@ -211,7 +211,6 @@ export class Survey extends RkComponent {
   onFormSelectValue = questionsForm => {
     let thisRef = this;
     if (this.state.questionsForm.length == 0) {
-      console.log("this.state.questionsForm.length",this.state.questionsForm.length);
       return (
         <View>
           <Text>No data found...</Text>
