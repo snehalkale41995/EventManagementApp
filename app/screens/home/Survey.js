@@ -123,7 +123,7 @@ export class Survey extends RkComponent {
       .getQuestionForm(eventId)
       .then(response => {
         let formResponse = {};
-        if (response == undefined) {
+        if (response == undefined || response.length ===0) {
           thisRef.props.navigation.goBack();
         } else {
           response.forEach(dataObj => {
@@ -211,6 +211,7 @@ export class Survey extends RkComponent {
   onFormSelectValue = questionsForm => {
     let thisRef = this;
     if (this.state.questionsForm.length == 0) {
+      console.log("this.state.questionsForm.length",this.state.questionsForm.length);
       return (
         <View>
           <Text>No data found...</Text>
