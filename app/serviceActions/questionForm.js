@@ -86,25 +86,10 @@ import AppConfig from "../constants/AppConfig";
         return promise;
      }  
 
-//SessionQuestionAnswer getbyTime
-
-  export const getSessionQueByTime = (eventId, sessionId) =>{
+//SessionQuestion
+  export const getSessionQuestions = (eventId, sessionId, orderRef) =>{
       let promise = new Promise((resolve, reject) => {
-         axios.get(`${AppConfig.serverURL}/api/sessionQAnswer/byTime/${eventId}/${sessionId}`)
-         .then(response => {
-           resolve(response.data);
-         })
-         .catch(error => {
-            reject(error);
-         })
-      })
-        return promise;
-     }
-
-//SessionQuestionAnswer getbyVote
-  export const getSessionQueByVote = (eventId, sessionId) =>{
-      let promise = new Promise((resolve, reject) => {
-         axios.get(`${AppConfig.serverURL}/api/sessionQAnswer/byVote/${eventId}/${sessionId}`)
+         axios.get(`${AppConfig.serverURL}/api/sessionQAnswer/${orderRef}/${eventId}/${sessionId}`)
          .then(response => {
            resolve(response.data);
          })
