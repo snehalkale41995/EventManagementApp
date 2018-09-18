@@ -6,7 +6,6 @@ import AppConfig from "../constants/AppConfig";
       let promise = new Promise((resolve, reject) => {
          axios.get(`${AppConfig.serverURL}/api/questionForms/eventId/${eventId}`)
          .then(response => {
-           console.log("response.data", response.data)
            resolve(response.data);
          })
          .catch(error => {
@@ -74,6 +73,7 @@ import AppConfig from "../constants/AppConfig";
 
 //SessionQuestionAnswer
  export const  submitSessionQuestions = (sessionQuestion) =>{
+   console.log("sessionQuestion", sessionQuestion);
       let promise = new Promise((resolve, reject) => {
          axios.post(`${AppConfig.serverURL}/api/sessionQAnswer`, sessionQuestion)
          .then(response => {
@@ -85,3 +85,46 @@ import AppConfig from "../constants/AppConfig";
       })
         return promise;
      }  
+
+//SessionQuestionAnswer getbyTime
+
+  export const getSessionQueByTime = (eventId, sessionId) =>{
+      let promise = new Promise((resolve, reject) => {
+         axios.get(`${AppConfig.serverURL}/api/sessionQAnswer/byTime/${eventId}/${sessionId}`)
+         .then(response => {
+           resolve(response.data);
+         })
+         .catch(error => {
+            reject(error);
+         })
+      })
+        return promise;
+     }
+
+//SessionQuestionAnswer getbyVote
+  export const getSessionQueByVote = (eventId, sessionId) =>{
+      let promise = new Promise((resolve, reject) => {
+         axios.get(`${AppConfig.serverURL}/api/sessionQAnswer/byVote/${eventId}/${sessionId}`)
+         .then(response => {
+           resolve(response.data);
+         })
+         .catch(error => {
+            reject(error);
+         })
+      })
+        return promise;
+     }
+
+// SessionQuestionAnswer update votes
+    export const  updateSessionQuestion = (queId, formResponse) =>{
+      let promise = new Promise((resolve, reject) => {
+         axios.put(`${AppConfig.serverURL}/api/sessionQAnswer/${queId}`, formResponse)
+         .then(response => {
+           resolve(response.data);
+         })
+         .catch(error => {
+            reject(error.response.data);
+         })
+      })
+        return promise;
+     }

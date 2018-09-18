@@ -1,6 +1,6 @@
 import React from 'react';
 import {  View,Icon,Tab,TabHeading,Tabs,Container } from 'native-base';
-import { StyleSheet, FlatList, TouchableOpacity, Keyboard, Platform ,Alert, AsyncStorage,ScrollView,Text,Image ,ActivityIndicator} from 'react-native';
+import { StyleSheet, FlatList, TouchableOpacity, Keyboard,NetInfo, Platform ,Alert, AsyncStorage,ScrollView,Text,Image ,ActivityIndicator} from 'react-native';
 import { RkComponent, RkTheme, RkText, RkAvoidKeyboard,RkStyleSheet, RkButton, RkCard, RkTextInput } from 'react-native-ui-kitten';
 import { NavigationActions } from 'react-navigation';
 import { Service } from '../../../services';
@@ -35,7 +35,7 @@ export default class AskQuestion extends RkComponent {
             orderBy: 'timestamp',
             userId: "",
             eventId : "",
-            queAccess: "",
+            queAccess: 'none',
             questionStatus: false,
             AskQFlag: true,
             isLoaded : false,
@@ -43,22 +43,80 @@ export default class AskQuestion extends RkComponent {
         }
     }
 
-    componentWillMount() {
-      let thisRef = this;
-      loginService.getCurrentUser((userDetails) => {
-      eventService.getCurrentEvent((eventDetails)=>{
+    // componentWillMount() {
+    //   let thisRef = this;
+    //   loginService.getCurrentUser((userDetails) => {
+    //   eventService.getCurrentEvent((eventDetails)=>{
+    //   this.setState({
+    //     User: userDetails,
+    //     userId: userDetails._id,
+    //     eventId : eventDetails._id,
+    //   })
+    //   })
+    //  })
+    //  this.checkSessionTime();
+    
+    // }
+    /**check */
+componentWillMount() {
+  if(Platform.OS !== 'ios'){
+    NetInfo.isConnected.fetch().then(isConnected => {
+      if(isConnected) {
+        this.getCurrentUser();
+      } else {
+        this.setState({
+          isOffline : true
+        });
+      }
       this.setState({
+        isOffline: !isConnected
+      });
+    });  
+  }
+  this.getCurrentUser();
+  NetInfo.addEventListener(
+    'connectionChange',
+    this.handleFirstConnectivityChange
+  );
+}
+
+handleFirstConnectivityChange = (connectionInfo) => {
+  if(connectionInfo.type != 'none') {
+    this.getCurrentUser();
+  } else {
+    this.setState({
+      isOffline : true
+    });
+  }
+  this.setState({
+    isOffline: connectionInfo.type === 'none',
+  });
+};
+
+componentWillUnmount() {
+  NetInfo.removeEventListener(
+    'connectionChange',
+    this.handleFirstConnectivityChange
+  );  
+}
+
+  getCurrentUser() {
+  let compRef = this;
+  loginService.getCurrentUser((userDetails) => {
+      eventService.getCurrentEvent((eventDetails)=>{
+        this.setState({
         User: userDetails,
         userId: userDetails._id,
         eventId : eventDetails._id,
+      });
       })
-      })
-     })
-     this.checkSessionTime();
-     this.getQuestions();
-    }
+     compRef.checkSessionTime();
+  })
+    
+  }
 
     checkSessionTime = () => {
+        let thisRef = this;
         let session = this.state.sessionDetails;
         let today = Moment(new Date()).format();
         let sessionStart = Moment(session.startTime).format();
@@ -77,34 +135,63 @@ export default class AskQuestion extends RkComponent {
                 AskQFlag: false
             })
         }
+        setTimeout(()=> {
+            thisRef.getQuestions();
+        }, 500);
+       
     }
 
     getQuestions = (order) => {
-        if (order == undefined) {
+      console.warn("in getQuestions ");
+        if (order === undefined) {
             order = 'timestamp';
         }
         let sessionId = this.state.sessionId;
-        let orderByObj = order;
+        let eventId = this.state.eventId;
+      
         let thisRef = this;
         let Data = [];
-        Service.getDocRef(questionTable)
-            .where("SessionId", "==", sessionId)
-            .orderBy(orderByObj, 'desc')
-            .get()
-            .then(function (docRef) {
-                if (docRef.size > 0) {
-                    docRef.forEach(doc => {
-                        Data.push({ questionSet: doc.data(), questionId: doc.id });
+   
+      console.warn("sessionId", sessionId);
+      console.warn("eventId", eventId);
+          questionFormService.getSessionQueByTime(eventId, sessionId).then((response)=>{
+           console.warn("que Response", response );
+           if (response.length > 0) {
+                    response.forEach(doc => {
+                        Data.push({ questionSet: doc, questionId: doc._id });
                     })
-                    thisRef.setState({ questionData: Data, questionStatus: false  ,isLoaded : true})
+                    thisRef.setState({ questionData: Data, questionStatus: false , isLoaded : true})
                 }
                 else {
-                    thisRef.setState({ questionStatus: true ,isLoaded : true})
-                }
-            })
-            .catch(function (error) {
-                console.error("Error adding document: ", error);
-            });
+                    thisRef.setState({ questionStatus: true , isLoaded : true})
+                } 
+        }).catch((error)=>{
+            thisRef.setState({ questionStatus: true , isLoaded : true})
+            console.warn("errorrrr", error);
+        })
+        // questionFormService.getMethod().then((response)=>{
+        //     console.log("que Response", response )
+        // }).catch((error)=>{
+        //     console.log("errorrrr", error);
+        // })
+        // Service.getDocRef(questionTable)
+        //     .where("SessionId", "==", sessionId)
+        //     .orderBy(orderByObj, 'desc')
+        //     .get()
+        //     .then(function (docRef) {
+        //         if (docRef.size > 0) {
+        //             docRef.forEach(doc => {
+        //                 Data.push({ questionSet: doc.data(), questionId: doc.id });
+        //             })
+        //             thisRef.setState({ questionData: Data, questionStatus: false  ,isLoaded : true})
+        //         }
+        //         else {
+        //             thisRef.setState({ questionStatus: true ,isLoaded : true})
+        //         }
+        //     })
+        //     .catch(function (error) {
+        //         console.error("Error adding document: ", error);
+        //     });
     }
 
     onSubmit = () => {
@@ -112,7 +199,7 @@ export default class AskQuestion extends RkComponent {
             componentLoaded : false
         });
         let thisRef = this;
-   
+        
         let questionObj = {
          user: this.state.userId,
          session: this.state.sessionId,
@@ -122,39 +209,25 @@ export default class AskQuestion extends RkComponent {
          voteCount: 0,
          voters: []
         }
-        console.log("questionObj", questionObj);
-
+        if(this.state.Question.length !== 0){
         questionFormService.submitSessionQuestions(questionObj).then((response)=>{
-            
-        })
-        // if (que.length !== 0) {
-        //     firestoreDB.collection(questionTable)
-        //         .add({
-        //             Question: que,
-        //             askedBy: user,
-        //             SessionId: sessionId,
-        //             timestamp: new Date(),
-        //             voters: [],
-        //             voteCount: 0
-        //         })
-        //         .then(function (docRef) {
-        //             thisRef.setState({
-        //                 Question: "",
-        //                 componentLoaded : true
-        //             })
-        //             Alert.alert("Question submitted successfully");
-        //             thisRef.getQuestions();
-        //         })
-        //         .catch(function (error) {
-        //             console.error("Error adding document: ", error);
-        //         });
-        // }
-        // else {
-        //     Alert.alert("Please fill the question field...");
-        //     thisRef.setState({
-        //         componentLoaded : true
-        //     })
-        // }
+                        thisRef.setState({
+                        Question: "",
+                        componentLoaded : true
+                    })
+                    Alert.alert("Question submitted successfully");
+                    thisRef.getQuestions();
+                })
+                .catch(function (error) {
+                    console.log("Error adding document: ", error);
+                });  
+             }
+        else {
+            Alert.alert("Please fill the question field...");
+            thisRef.setState({
+                componentLoaded : true
+            })
+        } 
     }
     onChangeInputText = (text) => {
         let Question = text;
@@ -162,19 +235,21 @@ export default class AskQuestion extends RkComponent {
             Question: Question
         })
     }
-    displayQuestions = () => {
-        let questionList = this.state.questionData.map(question => {
-            let pictureUrl
-            let avatar;
 
-            if (question.questionSet.askedBy.pictureUrl != undefined) {
-                avatar = <Image style={this.styles.avatarImage} source={{ uri: question.questionSet.askedBy.pictureUrl }} />
+    displayQuestions = () => {
+    console.log("this.state.questionData",this.state.questionData);
+        let questionList = this.state.questionData.map(question => {
+            let pictureUrl = question.questionSet.user.profileImageURL;
+            let avatar;
+            
+            if (pictureUrl !== undefined && pictureUrl !=="") {
+                avatar = <Image style={this.styles.avatarImage} source={{ uri: pictureUrl }} />
             } else {
-                let firstLetter = question.questionSet.askedBy.firstName ? question.questionSet.askedBy.firstName[0] : '?';
+                let firstLetter = question.questionSet.user.firstName ? question.questionSet.user.firstName[0] : '?';
                 avatar = <RkText rkType='big' style={styles.avatar}>{firstLetter}</RkText>
             }
-            let askedBy = question.questionSet.askedBy;
-            let fullName = askedBy.firstName + " " + askedBy.lastName;
+            let user = question.questionSet.user;
+            let fullName = user.firstName + " " + user.lastName;
             var votesCount = question.questionSet.voteCount.toString();
 
             return (
@@ -190,15 +265,15 @@ export default class AskQuestion extends RkComponent {
 
                                 <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
                                     <View style={{ flex: 8, justifyContent: 'center' }}>
-                                        <Text style={{ fontSize: 15 }} >{question.questionSet.Question}</Text>
+                                        <Text style={{ fontSize: 15 }} >{question.questionSet.question}</Text>
                                     </View>
                                     <View style={{ flex: 2, justifyContent: 'center' }} >{this.checkLikeStatus(question)}
-                                        {/* <Text style={{ fontSize: 10 }}>{votesCount}</Text> */}
+                                         <Text style={{ fontSize: 10 }}>{votesCount}</Text> 
                                     </View>
                                 </View>
 
                                 <View style={{ flex: 8, flexDirection: 'row' }}>
-                                    <View>{this.getDateTime(question.questionSet.timestamp)}</View>
+                                    <View>{this.getDateTime(question.questionSet.questionAskedTime)}</View>
                                 </View>
                             </View>
                         </View>
@@ -220,7 +295,6 @@ export default class AskQuestion extends RkComponent {
     }
 
     checkLikeStatus = (question) => {
-        
         let thisRef = this;
         let votes = question.questionSet.voteCount;
         let votersList = question.questionSet.voters;
@@ -233,7 +307,7 @@ export default class AskQuestion extends RkComponent {
         if (voterStatus == true) {
             return (
                 //bl
-                <Text style={{ fontSize: 25, width: 36, height: 36 }} ><Icon name="md-thumbs-up" style={{ color: '#3872d1' }} /></Text>
+                <Text style={{ fontSize: 25, width: 36, height: 36 }}  onPress={() => this.onUnikeQuestion(question)}><Icon name="md-thumbs-up" style={{ color: '#3872d1' }} /></Text>
             );
         }
         else {
@@ -246,6 +320,7 @@ export default class AskQuestion extends RkComponent {
 
     onLikeQuestion = (question) => {
        let count = 0; 
+       
        question.questionSet.voters.forEach(
             voter=>{
               if(this.state.userId===voter)
@@ -262,19 +337,18 @@ export default class AskQuestion extends RkComponent {
          return;
 
         let thisRef = this;
+        let questionObj = {
+          "voters": question.questionSet.voters,
+          "voteCount": voteCount   
+        }
 
-        Service.getDocRef(questionTable)
-            .doc(question.questionId)
-            .update({
-                "voters": question.questionSet.voters,
-                "voteCount": voteCount
-            })
-            .then(function (dofRef) {
-                thisRef.getQuestions();
-            })
-            .catch(function (err) {
-                console.log("err" + err);
-            })
+        questionFormService.updateSessionQuestion(question.questionId, questionObj)
+        .then((response)=>{
+           thisRef.getQuestions();
+        })
+        .catch((error)=>{
+          console.log("err" + err);
+        })
     }
 
     onUnikeQuestion = (question) => {
@@ -283,18 +357,19 @@ export default class AskQuestion extends RkComponent {
         let likedBy = question.questionSet.voters;
         likedBy.pop(this.state.userId);
         let voteCount = likedBy.length;
-        Service.getDocRef(questionTable)
-            .doc(questionId)
-            .update({
-                "voters": likedBy,
-                "voteCount": voteCount
-            })
-            .then(function (dofRef) {
-                thisRef.getQuestions();
-            })
-            .catch(function (err) {
-                console.log("err" + err);
-            })
+       
+        let questionObj = {
+          "voters": question.questionSet.voters,
+          "voteCount": voteCount   
+        }
+
+        questionFormService.updateSessionQuestion(question.questionId, questionObj)
+        .then((response)=>{
+           thisRef.getQuestions();
+        })
+        .catch((error)=>{
+          console.log("err" + err);
+        })
     }
 
 
@@ -311,15 +386,15 @@ export default class AskQuestion extends RkComponent {
     }
     onRecentQueSelect = () => {
         if (this.state.recentQueView == false) {
-            let order = 'timestamp';
             this.setState({
                 topQueView: false,
                 recentQueView: true,
                 orderBy: order
             })
-            this.getQuestions(order);
+            this.getQuestions();
         }
     }
+
     checkIfLoaded = () => {
         if(this.state.isLoaded == true){
             return (
@@ -353,7 +428,7 @@ export default class AskQuestion extends RkComponent {
                                 }
                             </View>
                         </View>
-                        {this.displayQuestions()}
+                         {this.displayQuestions()} 
                         <View style={[styles.row, styles.heading]}>
                             {
                                 this.state.questionStatus ? <Text style={{ fontSize: 18 }}>No Questions Found...</Text> : null
