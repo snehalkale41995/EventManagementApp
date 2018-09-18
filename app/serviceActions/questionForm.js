@@ -1,6 +1,6 @@
 import axios from 'axios';
 import AppConfig from "../constants/AppConfig";
- 
+
 //for all type of forms
    export const getQuestionForm = (eventId) =>{
       let promise = new Promise((resolve, reject) => {
@@ -15,7 +15,8 @@ import AppConfig from "../constants/AppConfig";
       })
         return promise;
      }
-
+     
+// HomeQuestions
     export const  submitHomeQuestionForm = (formResponse) =>{
       let promise = new Promise((resolve, reject) => {
          axios.post(`${AppConfig.serverURL}/api/homeQueResponse`, formResponse)
@@ -29,6 +30,7 @@ import AppConfig from "../constants/AppConfig";
         return promise;
      }
 
+    // HomeQuestions
     export const getHomeQuestionResponse = (eventId) =>{
       let promise = new Promise((resolve, reject) => {
          axios.get(`${AppConfig.serverURL}/api/homeQueResponse/eventId/${eventId}`)
@@ -42,7 +44,7 @@ import AppConfig from "../constants/AppConfig";
         return promise;
      }
 
-
+//FeedbackQuestions
  export const  submitFeedbackForm = (formResponse) =>{
       let promise = new Promise((resolve, reject) => {
          axios.post(`${AppConfig.serverURL}/api/sessionFeedback`, formResponse)
@@ -56,6 +58,7 @@ import AppConfig from "../constants/AppConfig";
         return promise;
      }
 
+//FeedbackQuestions
     export const getFeedbackResponse = (eventId, sessionId,userId) =>{
       let promise = new Promise((resolve, reject) => {
          axios.get(`${AppConfig.serverURL}/api/sessionFeedback/bySessionUser/${eventId}/${sessionId}/${userId}`)
@@ -68,3 +71,17 @@ import AppConfig from "../constants/AppConfig";
       })
         return promise;
      }
+
+//SessionQuestionAnswer
+ export const  submitSessionQuestions = (sessionQuestion) =>{
+      let promise = new Promise((resolve, reject) => {
+         axios.post(`${AppConfig.serverURL}/api/sessionQAnswer`, sessionQuestion)
+         .then(response => {
+           resolve(response.data);
+         })
+         .catch(error => {
+            reject(error.response.data);
+         })
+      })
+        return promise;
+     }  
