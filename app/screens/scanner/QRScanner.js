@@ -88,11 +88,8 @@ export class QRScanner extends React.Component {
     if (sessions.length > 0) {
         let selectedSession = sessions[0];
         thisRef.setState({ sessions, selectedSession: selectedSession._id, sessionCapacity: selectedSession.sessionCapacity });
-        setTimeout(function() {
-          thisRef._getCurrentSessionUsers(selectedSession._id);
+          thisRef._getCurrentSessionUsers(sessions[0]._id,eventId);
           //thisRef.subscribeToSessionUpdate(selectedSession.id); 
-        }, 500);
-       
       } else {
         thisRef.setState({ error: 'No sessions configured on server. Please contact administrator.', isLoading: false });
       }
@@ -264,24 +261,27 @@ export class QRScanner extends React.Component {
 
   _validateQRData(data) {
     if (data.startsWith('TIE:')) {
+      console.warn("data", data);
       let parsedData = data.split(":");
-      if(parsedData.length == 3){
-        this._updateUserData(parsedData[2], parsedData[1]);
-      } else {
-        this.setState({ isErrorDisplayed: true, isLoading: false });
-        Alert.alert(
-          'Invalid Data',
-          'This QR code is not valid TiE QR Code.',
-          [
-            {
-              text: 'Ok', onPress: () => {
-                this.setState({ isErrorDisplayed: false });
-              }
-            },
-          ],
-          { cancelable: false }
-        );
-      }
+      console.warn("parsedData", parsedData);
+      console.warn("parsedData.length", parsedData.length);
+      // if(parsedData.length == 3){
+      //   this._updateUserData(parsedData[2], parsedData[1]);
+      // } else {
+      //   this.setState({ isErrorDisplayed: true, isLoading: false });
+      //   Alert.alert(
+      //     'Invalid Data',
+      //     'This QR code is not valid TiE QR Code.',
+      //     [
+      //       {
+      //         text: 'Ok', onPress: () => {
+      //           this.setState({ isErrorDisplayed: false });
+      //         }
+      //       },
+      //     ],
+      //     { cancelable: false }
+      //   );
+      //}
     } else {
       this.setState({ isErrorDisplayed: true, isLoading: false });
       Alert.alert(
@@ -305,13 +305,9 @@ export class QRScanner extends React.Component {
       this._validateQRData(result.data);
     }
   };
-
-  _getCurrentSessionUsers(selectedSessionId) {
-    console.warn("in _getCurrentSessionUsers")
+  
+  _getCurrentSessionUsers(selectedSessionId, eventId) {
     let thisRef = this;
-    let eventId = this.state.eventId;
-    console.warn("selectedSessionId",selectedSessionId);
-    console.warn("eventId",eventId);
     let sessionUsers = [];
     regResponseService.getRegResponseByEventSession(eventId, selectedSessionId).then((response)=>{
       if(response.length>0){
@@ -319,7 +315,7 @@ export class QRScanner extends React.Component {
          sessionUsers.push(sessionData.user._id); 
        }) 
       }
-      console.warn("sessionUsers", sessionUsers);
+      console.warn("sessionUsers",sessionUsers);
        thisRef.setState({ sessionUsers, isLoading: false });
     }).catch((error)=>{
       console.warn(error);
@@ -359,7 +355,9 @@ export class QRScanner extends React.Component {
   }
 
   onConfChange(selectedSessionId) {
-    let session = _.find(this.state.sessions, { 'id': this.state.selectedSession });
+  let eventId = this.state.eventId;
+    let session = _.find(this.state.sessions, { '_id': selectedSessionId });
+    console.warn("session",session)
     let sessionCapacity = session.sessionCapacity ? session.sessionCapacity : 'NA';
     this.setState({
       selectedSession: selectedSessionId,
@@ -367,8 +365,8 @@ export class QRScanner extends React.Component {
       lastScannedResult: '',
       sessionCapacity: sessionCapacity
     });
-    this._getCurrentSessionUsers(selectedSessionId);
-    this.subscribeToSessionUpdate(selectedSessionId);
+     this._getCurrentSessionUsers(selectedSessionId, eventId);
+    // this.subscribeToSessionUpdate(selectedSessionId);
   }
 
   getView = () => {
@@ -494,9 +492,9 @@ export class QRScanner extends React.Component {
         onStartShouldSetResponder={(e) => true}
         onResponderRelease={(e) => Keyboard.dismiss()}>
          {this.renderSessionDropdown()} 
-        {/* <View>
+         <View>
           {this.getView()}
-        </View> */}
+        </View> 
         {/* {renderIf(this.state.isLoading,
           <View style={styles.loading}>
             <ActivityIndicator size='large' />
