@@ -8,6 +8,9 @@ import { Platform, Vibration, StyleSheet } from 'react-native';
 import { NavigationActions } from 'react-navigation';
 import { BarCodeScanner, Permissions } from 'expo';
 import { Container, Header, Title, Content, Button, Icon, Right, Body, Left, Picker, ListItem } from "native-base";
+import * as eventService from "../../serviceActions/event";
+import * as loginService from "../../serviceActions/login";
+import * as sessionService from "../../serviceActions/session";
 
 import firebase from '../../config/firebase';
 var firestoreDB = firebase.firestore();
@@ -44,6 +47,8 @@ export class QRScanner extends React.Component {
       sessionDelegateAttendance: 0,
       sessionOtherAttendance: 0,
       loggedInUser: {},
+      loggedInUserId: "",
+      eventId: "",
       subscriptionHandler: null,
       results: {
         items: []
@@ -51,33 +56,43 @@ export class QRScanner extends React.Component {
     };
     this._getCurrentSessionUsers = this._getCurrentSessionUsers.bind(this);
     this.subscribeToSessionUpdate = this.subscribeToSessionUpdate.bind(this);
-    this._getSessions = this._getSessions.bind(this);
     this._getSesssionsFromServer = this._getSesssionsFromServer.bind(this);
   }
   
-  _getSesssionsFromServer() {
-    let db = firebase.firestore();
-    let thisRef = this;
-    let sessions = [];    
-    db.collection("Sessions").get().then(function (querySnapshot) {
-      querySnapshot.forEach(function (doc) {
-        let sessionData = doc.data();
-        sessionData['id'] = doc.id;
-        if(sessionData.sessionType != 'break') {
-          sessionData['eventName'] = sessionData.eventName + '(' + sessionData.room + ')';
-          sessions.push(sessionData);
-        }
+ _getCurrentEventUser(){
+    let compRef = this;
+    loginService.getCurrentUser(userDetails => {
+      eventService.getCurrentEvent(eventDetails => {
+        this.setState({
+          loggedInUser: userDetails,
+          loggedInUserId: userDetails._id,
+          eventId: eventDetails._id
+        });
+         compRef._getSesssionsFromServer(eventDetails._id);
       });
-      if (sessions.length > 0) {
+    });
+ }
+
+
+ _getSesssionsFromServer(eventId) {
+    let thisRef = this;
+    let sessions = [];  
+   sessionService.getSessionsByEvent(eventId).then((response)=>{
+     response.forEach((sessionData)=>{
+       if(sessionData.sessionType !== "common"){
+        sessionData['sessionName'] = sessionData.sessionName + '(' + sessionData.room.roomName + ')';
+        sessions.push(sessionData);  
+       }
+     })
+    if (sessions.length > 0) {
         let selectedSession = sessions[0];
-        thisRef.setState({ sessions, selectedSession: selectedSession.id, sessionCapacity: selectedSession.sessionCapacity });
-        //AsyncStorage.setItem("QR_SESSIONS", JSON.stringify(sessions));
-        thisRef._getCurrentSessionUsers(selectedSession.id);
-        thisRef.subscribeToSessionUpdate(selectedSession.id);
+        thisRef.setState({ sessions, selectedSession: selectedSession._id, sessionCapacity: selectedSession.sessionCapacity });
+        //thisRef._getCurrentSessionUsers(selectedSession.id);
+        //thisRef.subscribeToSessionUpdate(selectedSession.id);
       } else {
         thisRef.setState({ error: 'No sessions configured on server. Please contact administrator.', isLoading: false });
       }
-    }).catch(function (error) {
+   }).catch((error)=>{
       thisRef.setState({ error: 'Error getting Sessions from server. Please contact adminstrator.', isLoading: false })
       Alert.alert(
         'Error',
@@ -87,26 +102,8 @@ export class QRScanner extends React.Component {
         ],
         { cancelable: false }
       );
-    });
-  }
-
-  _getSessions() {
-    let thisRef = this;
-    thisRef._getSesssionsFromServer();
-    // AsyncStorage.getItem("QR_SESSIONS").then((sessions) => {
-    //   if (sessions != null){
-    //     let sessionsObj = JSON.parse(sessions);
-    //     thisRef.setState({ sessions: sessionsObj, selectedSession: sessionsObj[0].id });
-    //     thisRef._getCurrentSessionUsers(sessionsObj[0].id);
-    //   } else {
-    //     thisRef._getSesssionsFromServer();
-    //   }
-    // })
-    // .catch(err => {
-    //   thisRef._getSesssionsFromServer();
-    // });
-  }
-
+   })
+}
   componentDidMount() {
     this._requestCameraPermission();
     let thisRef = this;
@@ -115,7 +112,7 @@ export class QRScanner extends React.Component {
         this.setState({
           isLoading: true
         });
-        this._getSessions();  
+        this._getCurrentEventUser();  
       } else {
         this.setState({
           isLoading: false
@@ -147,7 +144,7 @@ export class QRScanner extends React.Component {
         this.setState({
           isLoading: true
         });
-        this._getSessions();
+        this._getCurrentEventUser();
     } else {
       this.setState({
         isLoading: false
@@ -312,12 +309,10 @@ export class QRScanner extends React.Component {
     db.collection("RegistrationResponse")
     .where("sessionId", "==", selectedSessionId)
     .onSnapshot((querySnapshot) => {
-    // .get()
-    // .then(function (querySnapshot) {
       querySnapshot.forEach(function (doc) {
         let sessionData = doc.data();
         sessionUsers.push(sessionData.attendeeId);
-        //console.warn(sessionUsers);
+       
       });
       thisRef.setState({ sessionUsers, isLoading: false });
     },function(error){
@@ -331,18 +326,6 @@ export class QRScanner extends React.Component {
         { cancelable: false }
       );
     })
-
-    // .catch(function (error) {
-    //   thisRef.setState({ isLoading: false });
-    //   Alert.alert(
-    //     'Error',
-    //     'Unable to get users for selected session. Please try again.',
-    //     [
-    //       { text: 'Ok', onPress: () => { } },
-    //     ],
-    //     { cancelable: false }
-    //   );
-    // });
   }
 
   subscribeToSessionUpdate(selectedSessionId) {
@@ -477,15 +460,14 @@ export class QRScanner extends React.Component {
 
     let sessionItems = this.state.sessions.map(function (session, index) {
       return (
-        // <Item key={index} label={session.eventName} value={session.id} />
-        <Text ellipsizeMode='tail' style={styles.text} numberOfLines={1} key={index} label={session.eventName} value={session.id} />
+        <Text ellipsizeMode='tail' style={styles.text} numberOfLines={1} key={index} label={session.sessionName} value={session._id} />
       )
     });
 
     return (
       <View>
         { this.renderPicker(sessionItems)}
-        <View style={[styles.userInfo, styles.bordered]}>
+         {/* <View style={[styles.userInfo, styles.bordered]}>
           <View style={styles.section}>
             <RkText rkType='header3' style={styles.space}> {this.state.sessionDelegateAttendance} / {this.state.sessionCapacity}</RkText>
             <RkText rkType='secondary1 hintColor'>Attendance</RkText>
@@ -494,8 +476,8 @@ export class QRScanner extends React.Component {
             <RkText rkType='header3' style={styles.space}> {this.state.sessionOtherAttendance} </RkText>
             <RkText rkType='secondary1 hintColor'>Others</RkText>
           </View>
-        </View>
-      </View>
+        </View> */}
+      </View> 
     );
   }
 
@@ -505,15 +487,15 @@ export class QRScanner extends React.Component {
         style={styles.screen}
         onStartShouldSetResponder={(e) => true}
         onResponderRelease={(e) => Keyboard.dismiss()}>
-        {this.renderSessionDropdown()}
-        <View>
+         {this.renderSessionDropdown()} 
+        {/* <View>
           {this.getView()}
-        </View>
-        {renderIf(this.state.isLoading,
+        </View> */}
+        {/* {renderIf(this.state.isLoading,
           <View style={styles.loading}>
             <ActivityIndicator size='large' />
           </View>
-        )}
+        )} */}
       </RkAvoidKeyboard>
     );
   }
