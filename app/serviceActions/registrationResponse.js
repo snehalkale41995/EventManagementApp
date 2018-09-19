@@ -81,3 +81,20 @@ export const  addRegResponse = (attendRequest) =>{
       })
         return promise;
      }
+
+//Qrscanner  _getCurrentSessionUsers
+export const getRegResponseByEventSession = (eventId, sessionId) => {
+  let promise = new Promise((resolve, reject) => {
+    axios
+      .get(
+        `${AppConfig.serverURL}/api/registrationResponse/byEventSession/${eventId}/${sessionId}`
+      )
+      .then(response => {
+        resolve(response.data);
+      })
+      .catch(error => {
+        reject(error);
+      });
+  });
+  return promise;
+};

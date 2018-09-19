@@ -11,6 +11,7 @@ import { Container, Header, Title, Content, Button, Icon, Right, Body, Left, Pic
 import * as eventService from "../../serviceActions/event";
 import * as loginService from "../../serviceActions/login";
 import * as sessionService from "../../serviceActions/session";
+import * as regResponseService from "../../serviceActions/registrationResponse";
 
 import firebase from '../../config/firebase';
 var firestoreDB = firebase.firestore();
@@ -87,8 +88,11 @@ export class QRScanner extends React.Component {
     if (sessions.length > 0) {
         let selectedSession = sessions[0];
         thisRef.setState({ sessions, selectedSession: selectedSession._id, sessionCapacity: selectedSession.sessionCapacity });
-        //thisRef._getCurrentSessionUsers(selectedSession.id);
-        //thisRef.subscribeToSessionUpdate(selectedSession.id);
+        setTimeout(function() {
+          thisRef._getCurrentSessionUsers(selectedSession._id);
+          //thisRef.subscribeToSessionUpdate(selectedSession.id); 
+        }, 500);
+       
       } else {
         thisRef.setState({ error: 'No sessions configured on server. Please contact administrator.', isLoading: false });
       }
@@ -104,7 +108,7 @@ export class QRScanner extends React.Component {
       );
    })
 }
-  componentDidMount() {
+  componentWillMount() {
     this._requestCameraPermission();
     let thisRef = this;
     NetInfo.isConnected.fetch().then(isConnected => {
@@ -303,19 +307,22 @@ export class QRScanner extends React.Component {
   };
 
   _getCurrentSessionUsers(selectedSessionId) {
+    console.warn("in _getCurrentSessionUsers")
     let thisRef = this;
+    let eventId = this.state.eventId;
+    console.warn("selectedSessionId",selectedSessionId);
+    console.warn("eventId",eventId);
     let sessionUsers = [];
-    var db = firebase.firestore();
-    db.collection("RegistrationResponse")
-    .where("sessionId", "==", selectedSessionId)
-    .onSnapshot((querySnapshot) => {
-      querySnapshot.forEach(function (doc) {
-        let sessionData = doc.data();
-        sessionUsers.push(sessionData.attendeeId);
-       
-      });
-      thisRef.setState({ sessionUsers, isLoading: false });
-    },function(error){
+    regResponseService.getRegResponseByEventSession(eventId, selectedSessionId).then((response)=>{
+      if(response.length>0){
+       response.forEach((sessionData)=>{
+         sessionUsers.push(sessionData.user._id); 
+       }) 
+      }
+      console.warn("sessionUsers", sessionUsers);
+       thisRef.setState({ sessionUsers, isLoading: false });
+    }).catch((error)=>{
+      console.warn(error);
       thisRef.setState({ isLoading: false });
       Alert.alert(
         'Error',
@@ -324,7 +331,7 @@ export class QRScanner extends React.Component {
           { text: 'Ok', onPress: () => { } },
         ],
         { cancelable: false }
-      );
+      ); 
     })
   }
 
@@ -463,7 +470,6 @@ export class QRScanner extends React.Component {
         <Text ellipsizeMode='tail' style={styles.text} numberOfLines={1} key={index} label={session.sessionName} value={session._id} />
       )
     });
-
     return (
       <View>
         { this.renderPicker(sessionItems)}
