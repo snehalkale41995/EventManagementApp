@@ -73,7 +73,6 @@ import AppConfig from "../constants/AppConfig";
 
 //SessionQuestionAnswer
  export const  submitSessionQuestions = (sessionQuestion) =>{
-   console.log("sessionQuestion", sessionQuestion);
       let promise = new Promise((resolve, reject) => {
          axios.post(`${AppConfig.serverURL}/api/sessionQAnswer`, sessionQuestion)
          .then(response => {

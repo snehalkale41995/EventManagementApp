@@ -367,7 +367,7 @@ export default class AskQuestion extends RkComponent {
         thisRef.getQuestions();
       })
       .catch(error => {
-        console.log("err" + err);
+      //  console.log("err" + err);
       });
   };
 
