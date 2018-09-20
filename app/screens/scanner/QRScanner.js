@@ -47,7 +47,6 @@ export class QRScanner extends React.Component {
       loggedInUser: {},
       loggedInUserId: "",
       eventId: "",
-      subscriptionHandler: null,
       results: {
         items: []
       }
@@ -198,7 +197,7 @@ export class QRScanner extends React.Component {
         compRef.markUserAttendance(attendanceObj);
       }
     } else {
-      console.warn("already scanned");
+     // console.warn("already scanned");
     }
   }
 
@@ -226,7 +225,8 @@ export class QRScanner extends React.Component {
       let parsedData = data.split(":");
       if(parsedData.length == 4){
         if(parsedData[1] === this.state.eventId){
-          this._updateUserData(parsedData[3], parsedData[2], parsedData[1]);
+           this.checkForDuplicateScan(parsedData[3], parsedData[2], parsedData[1]);
+         // this._updateUserData(parsedData[3], parsedData[2], parsedData[1]);
         }
         else {
         this.displayInvalidUserError();
@@ -238,12 +238,46 @@ export class QRScanner extends React.Component {
      this.displayInvalidQrError();
     }
   }
+  
+  checkForDuplicateScan=(scannedUserId, userCode, event_Id)=>{
+   if (this.state.lastScannedResult != scannedUserId && !this.state.isLoading) {
+    let selectedSessionId = this.state.selectedSession;
+     attendanceService
+      .checkAlreadyScanned(selectedSessionId, scannedUserId)
+      .then(response => {
+        if(response.length>0){
+           this.displayAlreadyScannedError();
+        }
+        else{
+        this._updateUserData(scannedUserId, userCode, event_Id);
+        }
+      }).catch((error)=>{
+       // console.warn(error)
+      })
+   }
+  }
+
+  displayAlreadyScannedError=()=>{
+    this.setState({ isErrorDisplayed: true, isLoading: false });
+      Alert.alert(
+        'Already Present',
+        'This User is already marked as Present',
+        [
+          {
+            text: 'Ok', onPress: () => {
+              this.setState({ isErrorDisplayed: false });
+            }
+          },
+        ],
+        { cancelable: false }
+      );
+  }
 
   displayInvalidUserError=()=>{
     this.setState({ isErrorDisplayed: true, isLoading: false });
       Alert.alert(
         'Unregistered User',
-        'This user is not registered for this Event',
+        'This User is not registered for this Event',
         [
           {
             text: 'Ok', onPress: () => {
