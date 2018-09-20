@@ -12,6 +12,7 @@ import * as eventService from "../../serviceActions/event";
 import * as loginService from "../../serviceActions/login";
 import * as sessionService from "../../serviceActions/session";
 import * as regResponseService from "../../serviceActions/registrationResponse";
+import * as attendanceService from "../../serviceActions/attendance";
 
 import firebase from '../../config/firebase';
 var firestoreDB = firebase.firestore();
@@ -41,7 +42,7 @@ export class QRScanner extends React.Component {
       isLoading: true,
       sessions: [],
       lastScannedResult: '',
-      lastScannedUserLabel: '',
+      lastScannedUserCode: '',
       sessionUsers: [],
       isOffline: false,
       sessionCapacity: 0,
@@ -89,7 +90,7 @@ export class QRScanner extends React.Component {
         let selectedSession = sessions[0];
         thisRef.setState({ sessions, selectedSession: selectedSession._id, sessionCapacity: selectedSession.sessionCapacity });
           thisRef._getCurrentSessionUsers(sessions[0]._id,eventId);
-          //thisRef.subscribeToSessionUpdate(selectedSession.id); 
+          //thisRef.subscribeToSessionUpdate(selectedSession._id); 
       } else {
         thisRef.setState({ error: 'No sessions configured on server. Please contact administrator.', isLoading: false });
       }
@@ -171,51 +172,38 @@ export class QRScanner extends React.Component {
   };
 
   _getSelectedSession = () => {
-    let session = _.find(this.state.sessions, { 'id': this.state.selectedSession });
+    let session = _.find(this.state.sessions, { '_id': this.state.selectedSession });
     return session;
   }
 
-  _updateUserData(scannedData, userInfo) {
-      if (this.state.lastScannedResult != scannedData && !this.state.isLoading) {
+  _updateUserData(scannedUserId, userCode, event_Id) {
+    let compRef = this;
+    let attendanceObj = {
+    event: this.state.eventId,
+    session: this.state.selectedSession,
+    attendee: scannedUserId,
+    scannedBy:this.state.loggedInUserId,
+    time: new Date()
+    }
+    console.warn("attendanceObj",attendanceObj);
+    console.warn("userCode",userCode);
+    console.warn("event_Id",event_Id);
+      if (this.state.lastScannedResult != scannedUserId && !this.state.isLoading) {
         let selectedSession = this._getSelectedSession();
-        let parsedUserInfo = userInfo.split("-");
-        if(parsedUserInfo.length == 1) {
-          parsedUserInfo.push('');
+        let parsedUserCode = userCode.split("-");
+        if(parsedUserCode.length == 1) {
+          parsedUserCode.push('');
         }
-        this.setState({ isLoading: true, lastScannedResult: scannedData, lastScannedUserLabel: userInfo });
-        if (selectedSession.sessionType == 'deepdive' && parsedUserInfo[0] == 'DEL' && this.state.sessionUsers.indexOf(scannedData) == -1) {
+        console.warn("parsedUserCode[0]",parsedUserCode[0]);
+        this.setState({ isLoading: true, lastScannedResult: scannedUserId, lastScannedUserCode: userCode });
+        if (selectedSession.isRegistrationRequired && parsedUserCode[0] == 'DEL' && this.state.sessionUsers.indexOf(scannedUserId) == -1) {
           Alert.alert(
             'Unregistered User',
             'This user is not registered for this session. Do you still want to continue?',
             [
               {
                 text: 'Yes', onPress: () => {
-                  firestoreDB.collection('Attendance').add({
-                    userId: scannedData,
-                    userType: parsedUserInfo[0],
-                    userLabel: userInfo,
-                    sessionId: this.state.selectedSession,
-                    session: selectedSession,
-                    userName: '',
-                    userRole: '',
-                    scannedBy: this.state.loggedInUser.uid,
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                  })
-                    .then((docRef) => {
-                      this.setState({ isLoading: false });
-                      Vibration.vibrate(200);      
-                    })
-                    .catch((error) => {
-                      this.setState({ isLoading: false });
-                      Alert.alert(
-                        'Error',
-                        'Unable to update attendance. Please try again.',
-                        [
-                          { text: 'Ok', onPress: () => { } },
-                        ],
-                        { cancelable: false }
-                      );
-                    });
+                compRef.markUserAttendance(attendanceObj)
                 }
               },
               {
@@ -227,63 +215,48 @@ export class QRScanner extends React.Component {
             { cancelable: false }
           );
         } else {
-          firestoreDB.collection('Attendance').add({
-            userId: scannedData,
-            userType: parsedUserInfo[0],
-            userLabel: userInfo,
-            sessionId: this.state.selectedSession,
-            session: selectedSession,
-            userName: '',
-            userRole: '',
-            scannedBy: this.state.loggedInUser.uid,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-          })
-            .then((docRef) => {
-              this.setState({ isLoading: false });
-              Vibration.vibrate(500);
-            })
-            .catch((error) => {
-              this.setState({ isLoading: false });
-              Alert.alert(
-                'Error',
-                'Unable to update attendance. Please try again.',
-                [
-                  { text: 'Ok', onPress: () => { } },
-                ],
-                { cancelable: false }
-              );
-            });
+          compRef.markUserAttendance(attendanceObj)
         }
       } else {
         console.warn('already scanned');        
       }
   }
 
+  markUserAttendance=(attendanceObj)=>{
+    let compRef = this;
+    attendanceService
+      .markAttendance(attendanceObj)
+      .then(response => {
+        compRef.setState({ isLoading: false });
+        Vibration.vibrate(200);
+      })
+      .catch(error => {
+        compRef.setState({ isLoading: false });
+        Alert.alert(
+          "Error",
+          "Unable to update attendance. Please try again.",
+          [{ text: "Ok", onPress: () => {} }],
+          { cancelable: false }
+        );
+      });
+  }
+
   _validateQRData(data) {
+    console.warn("data", data);
     if (data.startsWith('TIE:')) {
-      console.warn("data", data);
       let parsedData = data.split(":");
-      console.warn("parsedData", parsedData);
-      console.warn("parsedData.length", parsedData.length);
-      // if(parsedData.length == 3){
-      //   this._updateUserData(parsedData[2], parsedData[1]);
-      // } else {
-      //   this.setState({ isErrorDisplayed: true, isLoading: false });
-      //   Alert.alert(
-      //     'Invalid Data',
-      //     'This QR code is not valid TiE QR Code.',
-      //     [
-      //       {
-      //         text: 'Ok', onPress: () => {
-      //           this.setState({ isErrorDisplayed: false });
-      //         }
-      //       },
-      //     ],
-      //     { cancelable: false }
-      //   );
-      //}
+      if(parsedData.length == 4){
+      this._updateUserData(parsedData[3], parsedData[2],parsedData[1]);
+      } else {
+        this.displayInvalidQrError();
+      }
     } else {
-      this.setState({ isErrorDisplayed: true, isLoading: false });
+     this.displayInvalidQrError();
+    }
+  }
+
+  displayInvalidQrError=()=>{
+    this.setState({ isErrorDisplayed: true, isLoading: false });
       Alert.alert(
         'Invalid Data',
         'This QR code is not valid TiE QR Code.',
@@ -296,7 +269,6 @@ export class QRScanner extends React.Component {
         ],
         { cancelable: false }
       );
-    }
   }
 
   _handleBarCodeRead = result => {
@@ -315,10 +287,8 @@ export class QRScanner extends React.Component {
          sessionUsers.push(sessionData.user._id); 
        }) 
       }
-      console.warn("sessionUsers",sessionUsers);
        thisRef.setState({ sessionUsers, isLoading: false });
     }).catch((error)=>{
-      console.warn(error);
       thisRef.setState({ isLoading: false });
       Alert.alert(
         'Error',
@@ -357,7 +327,6 @@ export class QRScanner extends React.Component {
   onConfChange(selectedSessionId) {
   let eventId = this.state.eventId;
     let session = _.find(this.state.sessions, { '_id': selectedSessionId });
-    console.warn("session",session)
     let sessionCapacity = session.sessionCapacity ? session.sessionCapacity : 'NA';
     this.setState({
       selectedSession: selectedSessionId,
@@ -365,7 +334,7 @@ export class QRScanner extends React.Component {
       lastScannedResult: '',
       sessionCapacity: sessionCapacity
     });
-     this._getCurrentSessionUsers(selectedSessionId, eventId);
+    this._getCurrentSessionUsers(selectedSessionId, eventId);
     // this.subscribeToSessionUpdate(selectedSessionId);
   }
 
@@ -407,7 +376,7 @@ export class QRScanner extends React.Component {
               />
               <View style={styles.scanResults}>
                 <RkText>
-                  {this.state.lastScannedUserLabel}
+                  {this.state.lastScannedUserCode}
                 </RkText>
               </View>
             </View>
@@ -471,7 +440,7 @@ export class QRScanner extends React.Component {
     return (
       <View>
         { this.renderPicker(sessionItems)}
-         {/* <View style={[styles.userInfo, styles.bordered]}>
+         {/* <View style={[styles.userCode, styles.bordered]}>
           <View style={styles.section}>
             <RkText rkType='header3' style={styles.space}> {this.state.sessionDelegateAttendance} / {this.state.sessionCapacity}</RkText>
             <RkText rkType='secondary1 hintColor'>Attendance</RkText>
@@ -517,7 +486,7 @@ let styles = RkStyleSheet.create(theme => ({
     borderColor: theme.colors.border.base,
     alignItems: 'center'
   },
-  userInfo: {
+  userCode: {
     flexDirection: 'row',
     paddingVertical: 2,
   },
