@@ -225,13 +225,34 @@ export class QRScanner extends React.Component {
     if (data.startsWith('TIE:')) {
       let parsedData = data.split(":");
       if(parsedData.length == 4){
-      this._updateUserData(parsedData[3], parsedData[2],parsedData[1]);
+        if(parsedData[1] === this.state.eventId){
+          this._updateUserData(parsedData[3], parsedData[2], parsedData[1]);
+        }
+        else {
+        this.displayInvalidUserError();
+      }
       } else {
         this.displayInvalidQrError();
       }
     } else {
      this.displayInvalidQrError();
     }
+  }
+
+  displayInvalidUserError=()=>{
+    this.setState({ isErrorDisplayed: true, isLoading: false });
+      Alert.alert(
+        'Unregistered User',
+        'This user is not registered for this Event',
+        [
+          {
+            text: 'Ok', onPress: () => {
+              this.setState({ isErrorDisplayed: false });
+            }
+          },
+        ],
+        { cancelable: false }
+      );
   }
 
   displayInvalidQrError=()=>{
