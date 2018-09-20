@@ -14,9 +14,6 @@ import * as sessionService from "../../serviceActions/session";
 import * as regResponseService from "../../serviceActions/registrationResponse";
 import * as attendanceService from "../../serviceActions/attendance";
 
-import firebase from '../../config/firebase';
-var firestoreDB = firebase.firestore();
-
 const Item = Picker.Item;
 
 function renderIf(condition, content) {
@@ -26,7 +23,6 @@ function renderIf(condition, content) {
     return null;
   }
 }
-
 export class QRScanner extends React.Component {
   static navigationOptions = ({ navigation }) => ({
     title: 'Scanner'.toUpperCase(),
@@ -75,7 +71,6 @@ export class QRScanner extends React.Component {
     });
  }
 
-
  _getSesssionsFromServer(eventId) {
     let thisRef = this;
     let sessions = [];  
@@ -89,8 +84,8 @@ export class QRScanner extends React.Component {
     if (sessions.length > 0) {
         let selectedSession = sessions[0];
         thisRef.setState({ sessions, selectedSession: selectedSession._id, sessionCapacity: selectedSession.sessionCapacity });
-          thisRef._getCurrentSessionUsers(sessions[0]._id,eventId);
-          //thisRef.subscribeToSessionUpdate(selectedSession._id); 
+        thisRef._getCurrentSessionUsers(sessions[0]._id, eventId);
+        thisRef.subscribeToSessionUpdate(sessions[0]._id, eventId); 
       } else {
         thisRef.setState({ error: 'No sessions configured on server. Please contact administrator.', isLoading: false });
       }
@@ -124,17 +119,6 @@ export class QRScanner extends React.Component {
         isOffline: !isConnected
       });
     });  
-    AsyncStorage.getItem("USER_DETAILS").then((userDetails) => {
-      if(userDetails) {
-        let user = JSON.parse(userDetails)
-        thisRef.setState({
-          loggedInUser: user
-        });  
-      }
-    })
-    .catch(err => {
-      console.warn('Error',err);
-    }); 
     NetInfo.addEventListener(
       'connectionChange',
       this.handleFirstConnectivityChange
@@ -178,48 +162,44 @@ export class QRScanner extends React.Component {
 
   _updateUserData(scannedUserId, userCode, event_Id) {
     let compRef = this;
-    let attendanceObj = {
-    event: this.state.eventId,
-    session: this.state.selectedSession,
-    attendee: scannedUserId,
-    scannedBy:this.state.loggedInUserId,
-    time: new Date()
-    }
-    console.warn("attendanceObj",attendanceObj);
-    console.warn("userCode",userCode);
-    console.warn("event_Id",event_Id);
-      if (this.state.lastScannedResult != scannedUserId && !this.state.isLoading) {
-        let selectedSession = this._getSelectedSession();
-        let parsedUserCode = userCode.split("-");
-        if(parsedUserCode.length == 1) {
-          parsedUserCode.push('');
-        }
-        console.warn("parsedUserCode[0]",parsedUserCode[0]);
-        this.setState({ isLoading: true, lastScannedResult: scannedUserId, lastScannedUserCode: userCode });
-        if (selectedSession.isRegistrationRequired && parsedUserCode[0] == 'DEL' && this.state.sessionUsers.indexOf(scannedUserId) == -1) {
-          Alert.alert(
-            'Unregistered User',
-            'This user is not registered for this session. Do you still want to continue?',
-            [
-              {
-                text: 'Yes', onPress: () => {
-                compRef.markUserAttendance(attendanceObj)
-                }
-              },
-              {
-                text: 'No', onPress: () => {
-                  this.setState({ isLoading: false });
-                }
-              },
-            ],
-            { cancelable: false }
-          );
-        } else {
-          compRef.markUserAttendance(attendanceObj)
-        }
-      } else {
-        console.warn('already scanned');        
+    if (this.state.lastScannedResult != scannedUserId && !this.state.isLoading) {
+      let selectedSession = this._getSelectedSession();
+      let parsedUserCode = userCode.split("-");
+      if (parsedUserCode.length == 1) {
+        parsedUserCode.push("");
       }
+      let attendanceObj = { event: this.state.eventId, session: this.state.selectedSession, userId: scannedUserId, userType: parsedUserCode[0], scannedBy: this.state.loggedInUserId, time: new Date()};
+      this.setState({
+        isLoading: true,
+        lastScannedResult: scannedUserId,
+        lastScannedUserCode: userCode
+      });
+      if (selectedSession.isRegistrationRequired && parsedUserCode[0] == "DEL" && this.state.sessionUsers.indexOf(scannedUserId) == -1) {
+        Alert.alert(
+          "Unregistered User",
+          "This user is not registered for this session. Do you still want to continue?",
+          [
+            {
+              text: "Yes",
+              onPress: () => {
+                compRef.markUserAttendance(attendanceObj);
+              }
+            },
+            {
+              text: "No",
+              onPress: () => {
+                this.setState({ isLoading: false });
+              }
+            }
+          ],
+          { cancelable: false }
+        );
+      } else {
+        compRef.markUserAttendance(attendanceObj);
+      }
+    } else {
+      console.warn("already scanned");
+    }
   }
 
   markUserAttendance=(attendanceObj)=>{
@@ -242,7 +222,6 @@ export class QRScanner extends React.Component {
   }
 
   _validateQRData(data) {
-    console.warn("data", data);
     if (data.startsWith('TIE:')) {
       let parsedData = data.split(":");
       if(parsedData.length == 4){
@@ -288,6 +267,7 @@ export class QRScanner extends React.Component {
        }) 
       }
        thisRef.setState({ sessionUsers, isLoading: false });
+      
     }).catch((error)=>{
       thisRef.setState({ isLoading: false });
       Alert.alert(
@@ -301,17 +281,14 @@ export class QRScanner extends React.Component {
     })
   }
 
-  subscribeToSessionUpdate(selectedSessionId) {
-    if(this.state.subscriptionHandler) {
-      this.state.subscriptionHandler();      
-    }
-    let db = firebase.firestore();
-    let thisRef = this;
-    let subscriptionHandler = db.collection("Attendance").where("sessionId", "==", selectedSessionId)
-    .onSnapshot(function(querySnapshot) {
+  subscribeToSessionUpdate(selectedSessionId, eventId) {
+  let thisRef = this; 
+      attendanceService
+      .getUserCount(eventId,selectedSessionId)
+      .then(response => {
       var attendance = [], delegateAttedance = 0, otherAttendance = 0;
-      querySnapshot.forEach(function(doc) {
-        let attendanceDetails = doc.data();
+      response.forEach(function(data) {
+        let attendanceDetails = data;
         if(attendanceDetails.userType == "DEL"){
           delegateAttedance++;
         } else {
@@ -320,8 +297,7 @@ export class QRScanner extends React.Component {
         attendance.push(attendanceDetails);
       });
       thisRef.setState({sessionDelegateAttendance: delegateAttedance, sessionOtherAttendance: otherAttendance});
-    });
-    this.setState({subscriptionHandler});
+      })
   }
 
   onConfChange(selectedSessionId) {
@@ -335,7 +311,7 @@ export class QRScanner extends React.Component {
       sessionCapacity: sessionCapacity
     });
     this._getCurrentSessionUsers(selectedSessionId, eventId);
-    // this.subscribeToSessionUpdate(selectedSessionId);
+    this.subscribeToSessionUpdate(selectedSessionId, eventId);
   }
 
   getView = () => {
@@ -440,7 +416,7 @@ export class QRScanner extends React.Component {
     return (
       <View>
         { this.renderPicker(sessionItems)}
-         {/* <View style={[styles.userCode, styles.bordered]}>
+          <View style={[styles.userCode, styles.bordered]}>
           <View style={styles.section}>
             <RkText rkType='header3' style={styles.space}> {this.state.sessionDelegateAttendance} / {this.state.sessionCapacity}</RkText>
             <RkText rkType='secondary1 hintColor'>Attendance</RkText>
@@ -449,7 +425,7 @@ export class QRScanner extends React.Component {
             <RkText rkType='header3' style={styles.space}> {this.state.sessionOtherAttendance} </RkText>
             <RkText rkType='secondary1 hintColor'>Others</RkText>
           </View>
-        </View> */}
+        </View> 
       </View> 
     );
   }
@@ -464,11 +440,11 @@ export class QRScanner extends React.Component {
          <View>
           {this.getView()}
         </View> 
-        {/* {renderIf(this.state.isLoading,
+         {renderIf(this.state.isLoading,
           <View style={styles.loading}>
             <ActivityIndicator size='large' />
           </View>
-        )} */}
+        )} 
       </RkAvoidKeyboard>
     );
   }
