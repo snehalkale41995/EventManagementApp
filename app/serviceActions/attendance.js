@@ -17,11 +17,27 @@ export const markAttendance = (attendanceObj) =>{
 
 //Qrscanner subscribeToSessionUpdate
 export const getUserCount = (eventId, sessionId) => {
-  console.warn("sessionId",sessionId);
   let promise = new Promise((resolve, reject) => {
     axios
       .get(
         `${AppConfig.serverURL}/api/attendance/bySessionEvent/${eventId}/${sessionId}`
+      )
+      .then(response => {
+        resolve(response.data);
+      })
+      .catch(error => {
+        reject(error);
+      });
+  });
+  return promise;
+};
+
+//check already scanned
+export const checkAlreadyScanned = (sessionId, userId) => {
+  let promise = new Promise((resolve, reject) => {
+    axios
+      .get(
+        `${AppConfig.serverURL}/api/attendance/bySessionUSer/${sessionId}/${userId}`
       )
       .then(response => {
         resolve(response.data);
