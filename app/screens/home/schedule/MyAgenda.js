@@ -44,14 +44,12 @@ export default class MyAgenda extends React.Component {
           userId: userDetails._id,
           eventId: eventDetails._id
         });
-        compRef.fetchSessionList();
+        compRef.fetchSessionList(eventDetails._id,userDetails._id);
       });
     });
   }
 
-  fetchSessionList = () => {
-    let eventId = this.state.eventId;
-    let userId = this.state.userId;
+  fetchSessionList = (eventId, userId) => {
     regResponseService
       .getRegResponseByEventUser(eventId, userId)
       .then(response => {
@@ -181,16 +179,16 @@ export default class MyAgenda extends React.Component {
   };
   render() {
     let sessionList = this.renderSessions();
-    if (!this.state.isLoaded) {
+    if (this.state.isLoaded) {
       return (
-        <View style={styles.loading}>
-          <ActivityIndicator size="large" />
+       <View style={styles.listContainer}>
+          <ScrollView>{sessionList}</ScrollView>
         </View>
       );
     } else {
       return (
-        <View style={styles.listContainer}>
-          <ScrollView>{sessionList}</ScrollView>
+        <View style={styles.loading}>
+          <ActivityIndicator size="large"/>
         </View>
       );
     }
