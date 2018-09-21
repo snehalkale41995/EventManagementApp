@@ -11,6 +11,7 @@ import * as sponsorService from '../../serviceActions/staticPages';
 import * as eventService from '../../serviceActions/event';
 import {Loader} from '../../components/loader';
 import {Footer} from '../../components/footer';
+import {EmptyData} from '../../components/emptyData';
 
 export class Sponsors extends RkComponent {
     static navigationOptions = {
@@ -21,7 +22,8 @@ export class Sponsors extends RkComponent {
         this.state = {
             Sponsors: [],
             isLoaded: false,
-            isOffline: false
+            isOffline: false,
+            noDataFlag : false
         }
     }
 
@@ -74,14 +76,24 @@ export class Sponsors extends RkComponent {
         if(eventInfo){
         let eventId = eventInfo._id;
         sponsorService.getSponsorInfo(eventId).then((response)=>{
-        this.setState(
-          {
+        if(response.length === 0){
+        this.setState({
+         isLoaded: true,
+        noDataFlag : true
+        })  
+         }
+         else{     
+            this.setState({
             Sponsors: response,
-            isLoaded: true
-          }
-        )
+            isLoaded: true,
+            noDataFlag : false
+          })
+         }
       }).catch((error)=>{
-        this.setState({ isLoaded: false})
+        this.setState({
+             isLoaded: false,
+             noDataFlag : true
+        })
        })
        }
     })
@@ -122,7 +134,7 @@ export class Sponsors extends RkComponent {
 
         render() {
         let sponsorList = this.displaySponsors();
-        if (this.state.isLoaded) {
+        if (this.state.isLoaded && !this.state.noDataFlag) {
             return (
                 <Container style={[styles.root]}>
                     <ScrollView>
@@ -136,6 +148,9 @@ export class Sponsors extends RkComponent {
                 </Container>
             )
         }
+       else if(this.state.isLoaded && this.state.noDataFlag){
+        return (<EmptyData isOffline ={this.state.isOffline}/>)
+          }
         else {
             return (
                <Container style={[styles.root]}>

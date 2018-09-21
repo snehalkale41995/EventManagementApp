@@ -8,6 +8,7 @@ import * as eventService from '../../serviceActions/event';
 import Autolink from 'react-native-autolink';
 import {Loader} from '../../components/loader';
 import {Footer} from '../../components/footer';
+import {EmptyData} from '../../components/emptyData';
 
 function renderIf(condition, content) {
   if (condition) {
@@ -28,7 +29,8 @@ export class HelpDesk extends React.Component {
       deskInfo :{},
       isLoaded: false,
       eventContact : "",
-      techContact : ""
+      techContact : "",
+      noDataFlag : false
     }
   }
 
@@ -79,16 +81,26 @@ export class HelpDesk extends React.Component {
       if(deskInfo){
        let eventId = deskInfo._id;
        infoService.getHelpDeskInfo(eventId).then((response)=>{
-        this.setState(
-          {
+         if(response.length === 0){
+            this.setState({
+              isLoaded: true,
+              noDataFlag : true
+            })  
+         }
+         else{
+          this.setState({
             deskInfo: response[0],
             eventContact : response[0].eventSupportContact.toString(),
             techContact : response[0].techSupportContact.toString(),
-            isLoaded: true
-          }
-        )
+            isLoaded: true,
+            noDataFlag : false
+          })
+         }
       }).catch((error)=>{
-        //console.log(error);
+        this.setState({
+              isLoaded: true,
+              noDataFlag : true
+            })  
        })
        }
       else{
@@ -124,7 +136,7 @@ export class HelpDesk extends React.Component {
   }
   render() {
   let Info = this.displayInformation();
-        if (this.state.isLoaded) {
+        if (this.state.isLoaded && !this.state.noDataFlag) {
             return (
                 <Container style={[styles.root]}>
                     <ScrollView>
@@ -138,6 +150,9 @@ export class HelpDesk extends React.Component {
                 </Container>
             )
         }
+          else if(this.state.isLoaded && this.state.noDataFlag){
+           return (<EmptyData isOffline ={this.state.isOffline}/>)
+          }
         else {
             return (
                <Container style={[styles.root]}>

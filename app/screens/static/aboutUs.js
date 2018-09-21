@@ -7,6 +7,7 @@ import * as infoService from '../../serviceActions/staticPages';
 import * as eventService from '../../serviceActions/event';
 import {Loader} from '../../components/loader';
 import {Footer} from '../../components/footer';
+import {EmptyData} from '../../components/emptyData';
 
 function renderIf(condition, content) {
   if (condition) {
@@ -26,7 +27,8 @@ export class AboutUs extends React.Component {
     this.state = {
       isOffline: false,
       eventInfo :{},
-      isLoaded: false
+      isLoaded: false,
+      noDataFlag : false
     }
   }
 
@@ -77,15 +79,27 @@ export class AboutUs extends React.Component {
       if(eventInfo){
        let eventId = eventInfo._id;
        infoService.getEventInfo(eventId).then((response)=>{
+       if(response.length === 0){
+            this.setState({
+              isLoaded: true,
+              noDataFlag : true
+            })  
+         }
+         else{  
         this.setState(
           {
             eventInfo: response[0],
             eventLogo : eventInfo.eventLogo,
-            isLoaded: true
+            isLoaded: true,
+            noDataFlag : false
           }
         )
+         }
       }).catch((error)=>{
-       // console.log(error);
+        this.setState({
+              isLoaded: true,
+              noDataFlag : true
+            }) 
        })
        }
       else{
@@ -133,7 +147,7 @@ export class AboutUs extends React.Component {
 
   render() {
   let Info = this.displayInformation();
-        if (this.state.isLoaded) {
+        if (this.state.isLoaded && !this.state.noDataFlag) {
             return (
                 <Container style={[styles.root]}>
                     <ScrollView>
@@ -147,6 +161,9 @@ export class AboutUs extends React.Component {
                 </Container>
             )
         }
+         else if(this.state.isLoaded && this.state.noDataFlag){
+           return (<EmptyData isOffline ={this.state.isOffline}/>)
+          }
         else {
             return (
                <Container style={[styles.root]}>
