@@ -93,9 +93,9 @@ export default class MyAgenda extends React.Component {
           >
             <RkCard rkType="shadowed" style={styles.card}>
               <View style={styles.header}>
-                <View style={styles.mainHeader}>
-                  <Text style={styles.headerText}>{session.sessionName}</Text>
-                </View>
+                <View style={styles.mainHeader} style={{ flexDirection: 'column', alignItems: 'flex-start', flex: 7 }}>
+              <Text style={{ fontSize: 16, fontWeight: '600', width: 300 }} numberOfLines={1}>{session.sessionName}</Text>
+              </View>
                 <View
                   style={{
                     flexDirection: "column",
@@ -111,6 +111,8 @@ export default class MyAgenda extends React.Component {
               <View style={styles.content}>
                 <View style={styles.tileFooter}>
                   {this.getDuration(session)}
+                </View>
+                <View style={styles.tileFooter}>
                   {this.getLocation(session)}
                 </View>
               </View>
@@ -128,8 +130,8 @@ export default class MyAgenda extends React.Component {
   };
 
   getDuration = session => {
-    let endTime = Moment(session.endTime).format("hh:mm A");
-    let startTime = Moment(session.startTime).format("hh:mm A");
+    let endTime = Moment(session.endTime).format("HH:mm");
+    let startTime = Moment(session.startTime).format("HH:mm");
     let sessionDate = Moment(session.startTime).format("DD.MM.YY");
     return (
       <View style={{ flexDirection: "row", alignSelf: "flex-start" }}>
@@ -147,7 +149,7 @@ export default class MyAgenda extends React.Component {
           style={styles.duration}
           style={{ color: "#5d5e5f", fontSize: 12 }}
         >
-          {startTime}-{endTime} | {sessionDate}
+          {startTime} - {endTime} | {sessionDate}
         </Text>
       </View>
     );
@@ -156,7 +158,7 @@ export default class MyAgenda extends React.Component {
   getLocation = session => {
     return (
       <View
-        style={{ marginLeft: 20, flexDirection: "row", alignSelf: "flex-end" }}
+        style={{flexDirection: "row", alignSelf: "flex-end" }}
       >
         <Icon
           name="md-pin"
