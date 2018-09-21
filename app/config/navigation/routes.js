@@ -45,11 +45,11 @@ export class HomePageMenuScreen extends React.Component {
     let show = params.showHome || false;
     this.state = {
       showQuestions: false,
-      showHomepage: false,
       userId: "",
       showHome: show,
       isLoading: false,
       isOffline: false,
+      isLoaded : false,
       eventDetails : {}
     }
   }
@@ -112,55 +112,46 @@ export class HomePageMenuScreen extends React.Component {
         userId: Uid,
         eventDetails : eventDetails
       })
-       if (this.state.showHome == false) {
-        this.getQuestionsData(Uid);
-      }
-      else {
-        this.setState({
-          showQuestions: false,
-          showHomepage: true
-        })
-      }
+        this.getQuestionsData(userDetails._id, eventDetails._id);
       })
       })
     }
 
-  getQuestionsData = (Uid) => {
-    eventService.getCurrentEvent((eventDetails)=>{
-      let eventId = eventDetails._id;
+  getQuestionsData = (Uid, eventId) => {
       homeQueService.getHomeQuestionResponse(eventId).then((response)=>{
         if(response.length==0){
             this.setState({
              showQuestions: true,
-             showHomepage: false})
+             isLoaded : true})
         }
        else{
            response.forEach((data)=>{
            if(data.user._id ===Uid){
              this.setState({
              showQuestions: false,
-             showHomepage: true})
+             isLoaded : true})
            }
           else{
              this.setState({
              showQuestions: true,
-             showHomepage: false})
+             isLoaded : true})
           }
           });
        }
       }).catch((error)=>{
-        console.warn(error);
+         this.setState({
+             showQuestions: false,
+             isLoaded : true})
       })
-    })
   }
 
   render() {
-    if (this.state.showQuestions == true && this.state.showHomepage == false) {
+    if (this.state.showQuestions == true && this.state.isLoaded) {
       return (
         <Questions navigation={this.props.navigation} userId={this.state.userId} />
       );
      }
-     if (this.state.showQuestions == false && this.state.showHomepage == true) {
+    else if (this.state.showQuestions == false && this.state.isLoaded) {
       return (
         <View style={styles.mainView}>
           <HomePage navigation={this.props.navigation} eventDetails={this.state.eventDetails}/>
