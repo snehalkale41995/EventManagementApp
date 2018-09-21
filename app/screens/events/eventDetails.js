@@ -84,12 +84,17 @@ export class EventDetails extends React.Component {
   _authenticateUser(){
     let event = this.state.event;
       loginService.getCurrentUser((userDetails) => {
-       if(event._id === userDetails.event){
+      if(userDetails.roleName === "Admin"){
+        this.props.navigation.navigate('App');
+      }
+      else{
+      if(event._id === userDetails.event){
        this.props.navigation.navigate('App');
        }
        else{
-         Alert.alert("You have not registerd for this event..");
+         Alert.alert("You have not registerd for this Event");
        }
+      }
       })
   }
 
