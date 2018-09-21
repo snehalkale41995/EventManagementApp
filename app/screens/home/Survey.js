@@ -185,7 +185,7 @@ export class Survey extends RkComponent {
           thisRef.setState({
             isLoading: false
           });
-          Alert.alert("Thanks for your response");
+          Alert.alert("Thanks for your Feedback");
           thisRef.setState({
             responses: [],
             queArray: [],
@@ -303,6 +303,7 @@ export class Survey extends RkComponent {
     });
     return MultiChoice;
   };
+
   onRenderCheckBox = (options, Qid) => {
     let CheckBox1 = options.map(fItem => {
       return (
