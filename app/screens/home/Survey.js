@@ -118,7 +118,6 @@ export class Survey extends RkComponent {
   getForm = () => {
     let thisRef = this;
     let eventId = this.state.eventId;
-
     questionFormService
       .getQuestionForm(eventId)
       .then(response => {
@@ -152,11 +151,12 @@ export class Survey extends RkComponent {
 
   onSubmitResponse = () => {
        let thisRef = this;
-        this.setState({
+        thisRef.setState({
             isLoading : true
         })
-        let blankResponse = false;
-        this.state.queArray.forEach(fItem => {
+      setTimeout(function() {
+               let blankResponse = false;
+        thisRef.state.queArray.forEach(fItem => {
             if (fItem.Answer.size >= 1){
                 fItem.Answer = Array.from(fItem.Answer);
             }
@@ -164,19 +164,23 @@ export class Survey extends RkComponent {
                 blankResponse = true;
             }
         });
-
         if(blankResponse == true){
-            this.setState({
-                isLoading : false
-            })
             Alert.alert("Please fill all the fields");
+            let questionArray =  thisRef.state.queArray
+            questionArray.forEach(fItem => {
+                fItem.Answer = new Set()
+             });
+            thisRef.setState({
+                isLoading : false,
+                queArray:questionArray
+            })
         }
      else {
       let formResponse = {
-        event: this.state.eventId,
-        user: this.state.userId,
-        session: this.state.sessionId,
-        formResponse: this.state.queArray,
+        event: thisRef.state.eventId,
+        user: thisRef.state.userId,
+        session: thisRef.state.sessionId,
+        formResponse: thisRef.state.queArray,
         responseTime: new Date()
       };
       questionFormService
@@ -195,17 +199,13 @@ export class Survey extends RkComponent {
          setTimeout(function() {
         thisRef.props.navigation.goBack();
          }, 1000);
-          
-        // thisRef.props.navigation.pop();
-        //   thisRef.props.navigation.navigate("SessionDetails", {
-        //     session: thisRef.state.session
-        //   });
         })
         .catch(error => {
          thisRef.setState({isLoading : false})
           Alert.alert("Something went Wrong");
         });
     }
+      }, 2000);
   };
 
   onFormSelectValue = questionsForm => {
@@ -334,9 +334,14 @@ export class Survey extends RkComponent {
 
   onCheckBoxChange = (value, Qid) => {
     let label = value;
-    if (this.state.queArray[Qid].Answer.has(label)) {
+    if(this.state.queArray[Qid].Answer){
+      if (this.state.queArray[Qid].Answer.has(label)) {
       this.state.queArray[Qid].Answer.delete(label);
     } else {
+      this.state.queArray[Qid].Answer.add(label);
+    }
+    }
+     else {
       this.state.queArray[Qid].Answer.add(label);
     }
   };
@@ -372,7 +377,7 @@ export class Survey extends RkComponent {
             />
           </ScrollView>
           <View>
-            <Footer isOffline={this.state.isOffline} />
+            <Footer isOffline={this.state.isOffline}/>
           </View>
         </Container>
       );

@@ -128,12 +128,13 @@ export class Questions extends React.Component {
     }
 
     onSubmitResponse = () => {
-          let thisRef = this;
+        let thisRef = this;
         this.setState({
             isLoading : true
         })
+        setTimeout(function() {
         let blankResponse = false;
-        this.state.queArray.forEach(fItem => {
+        thisRef.state.queArray.forEach(fItem => {
             if (fItem.Answer.size >= 1){
                 fItem.Answer = Array.from(fItem.Answer);
             }
@@ -142,16 +143,21 @@ export class Questions extends React.Component {
             }
         });
         if(blankResponse == true){
-            this.setState({
-                isLoading : false
-            })
             Alert.alert("Please fill all the fields");
+            let questionArray =  thisRef.state.queArray
+            questionArray.forEach(fItem => {
+                fItem.Answer = new Set()
+             });
+            thisRef.setState({
+                isLoading : false,
+                queArray:questionArray
+            })
         }
         else{
             let formResponse = {
-              event : this.state.eventId,
-              user : this.props.userId,
-              formResponse : this.state.queArray,
+              event : thisRef.state.eventId,
+              user : thisRef.props.userId,
+              formResponse : thisRef.state.queArray,
               responseTime : new Date()
             }
             questionFormService.submitHomeQuestionForm(formResponse).then((response)=>{
@@ -164,6 +170,7 @@ export class Questions extends React.Component {
                 Alert.alert("Something went Wrong"); 
             })
         }
+      }, 2000);
     }
 
     onFormSelectValue = (questionsForm) => {
