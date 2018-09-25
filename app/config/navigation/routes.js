@@ -154,7 +154,7 @@ export class HomePageMenuScreen extends React.Component {
     else if (this.state.showQuestions == false && this.state.isLoaded) {
       return (
         <View style={styles.mainView}>
-          <HomePage navigation={this.props.navigation} eventDetails={this.state.eventDetails}/>
+          <HomePage navigation={this.props.navigation}/>
           <View style={styles.footerOffline}>
             {
               (!this.state.isLoading && this.state.isOffline) ? <RkText rkType="small" style={styles.footerText}>The Internet connection appears to be offline. </RkText> : null
