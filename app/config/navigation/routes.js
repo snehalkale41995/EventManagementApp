@@ -12,6 +12,8 @@ import { Avatar } from '../../components/avatar';
 import * as loginService from '../../serviceActions/login';
 import * as homeQueService from '../../serviceActions/questionForm';
 import * as eventService from '../../serviceActions/event';
+
+const displayHomeQAceess = ['Admin','Volunteer','Speaker'];
 export class HomePageMenuScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
     let renderAvatar = () => {
@@ -50,7 +52,8 @@ export class HomePageMenuScreen extends React.Component {
       isLoading: false,
       isOffline: false,
       isLoaded : false,
-      eventDetails : {}
+      eventDetails : {},
+      userObj : {}
     }
   }
   /**check */
@@ -110,7 +113,8 @@ export class HomePageMenuScreen extends React.Component {
        let Uid = userDetails._id;
        this.setState({
         userId: Uid,
-        eventDetails : eventDetails
+        eventDetails : eventDetails,
+        userObj : userDetails
       })
         this.getQuestionsData(userDetails._id, eventDetails._id);
       })
@@ -126,7 +130,7 @@ export class HomePageMenuScreen extends React.Component {
         }
        else{
            response.forEach((data)=>{
-           if(data.user._id ===Uid){
+           if(data.user._id === Uid){
              this.setState({
              showQuestions: false,
              isLoaded : true})
@@ -146,12 +150,15 @@ export class HomePageMenuScreen extends React.Component {
   }
 
   render() {
-    if (this.state.showQuestions == true && this.state.isLoaded) {
+      if(this.state.isLoaded){
+       let currentUserRole = this.state.userObj.roleName;
+       console.warn("currentUserRole",currentUserRole)
+      if (this.state.showQuestions == true && displayHomeQAceess.indexOf(currentUserRole)=== -1) {
       return (
-        <Questions navigation={this.props.navigation} userId={this.state.userId} />
+        <Questions navigation={this.props.navigation} userId={this.state.userId}/>
       );
      }
-    else if (this.state.showQuestions == false && this.state.isLoaded) {
+      else {
       return (
         <View style={styles.mainView}>
           <HomePage navigation={this.props.navigation}/>
@@ -167,7 +174,8 @@ export class HomePageMenuScreen extends React.Component {
         </View>
       );
     }
-     if (!this.state.isLoading && this.state.isOffline) {
+  }
+    else if (!this.state.isLoading && this.state.isOffline) {
       return (
         <Container style={styles.root}>
           <ScrollView>
