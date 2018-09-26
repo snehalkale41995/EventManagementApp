@@ -16,7 +16,7 @@ import {Loader} from '../../../components/loader';
 import {Footer} from '../../../components/footer';
 import _ from 'lodash'
 
-const addToAgendaAceess = ['Admin','Volunteer','Speaker'];
+const userProfileAccess = ['Admin','Volunteer','Speaker'];
 export class SessionDetails extends Component {
   static navigationOptions = {
     title: 'Session Details'.toUpperCase()
@@ -412,7 +412,7 @@ getCurrentUser() {
               </View>
                <View>
                 {
-                  addToAgendaAceess.indexOf(currentUserRole) === -1 ? this.attendRequestStatus() : null
+                  userProfileAccess.indexOf(currentUserRole) === -1 ? this.attendRequestStatus() : null
                 }
               </View> 
             </View>
@@ -427,7 +427,9 @@ getCurrentUser() {
              {displaySpeakers} 
         </ScrollView>
         <View style={[styles.surveButton]}>
-          {surveyButton}
+         {
+          userProfileAccess.indexOf(currentUserRole) === -1 ? surveyButton : null
+         }
         </View> 
        <View>
         <Footer isOffline ={this.state.isOffline}/>    
