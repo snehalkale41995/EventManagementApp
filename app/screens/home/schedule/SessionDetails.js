@@ -14,9 +14,9 @@ import * as regResponseService from '../../../serviceActions/registrationRespons
 import * as questionFormService from '../../../serviceActions/questionForm';
 import {Loader} from '../../../components/loader';
 import {Footer} from '../../../components/footer';
+import _ from 'lodash'
 
-
-const REGISTRATION_RESPONSE_TABLE = "RegistrationResponse";
+const addToAgendaAceess = ['Admin','Volunteer','Speaker'];
 export class SessionDetails extends Component {
   static navigationOptions = {
     title: 'Session Details'.toUpperCase()
@@ -176,7 +176,6 @@ getCurrentUser() {
   }
 
   attendRequestStatus = () => {
-    if(this.state.isLoaded){
      if (this.state.regStatus) {
       if(this.state.sessionDetails.isRegistrationRequired){
         return (
@@ -239,7 +238,6 @@ getCurrentUser() {
             </RkButton>
         </View>
       );
-    }
     }
   }
   
@@ -368,6 +366,8 @@ getCurrentUser() {
 
   render() {
     const speakers = this.getSpeakers();
+    
+    console.warn()
     const displaySpeakers = (this.state.speakerDetails) ? (
         <View style={styles.speakerSection}>
               <View style={[styles.heading]}>
@@ -379,7 +379,6 @@ getCurrentUser() {
               {speakers}
         </View>
       ): (<View></View>);
-      
 
      const surveyButton = this.getSurveyAccess();
         if(this.state.isAddingToAgenda){
@@ -393,6 +392,7 @@ getCurrentUser() {
           )
         }
         else if(this.state.isLoaded){
+        let currentUserRole = this.state.userObj.roleName;
           return(
             <Container style={styles.root}>
         <ScrollView style={styles.root}>
@@ -411,7 +411,9 @@ getCurrentUser() {
                 <Text style={{flexDirection : 'column'}} rkType='header6' style={{marginTop:10, marginLeft:3, color: '#5d5e5f'}}>{this.state.sessionVenue.roomName}</Text>
               </View>
                <View>
-                {this.attendRequestStatus()}
+                {
+                  addToAgendaAceess.indexOf(currentUserRole) === -1 ? this.attendRequestStatus() : null
+                }
               </View> 
             </View>
             <View style={styles.descSection}>
