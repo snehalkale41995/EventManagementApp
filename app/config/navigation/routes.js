@@ -43,12 +43,9 @@ export class HomePageMenuScreen extends React.Component {
 
   constructor(props) {
     super(props)
-    let params = this.props.navigation.state.params || {};
-    let show = params.showHome || false;
     this.state = {
       showQuestions: false,
       userId: "",
-      showHome: show,
       isLoading: false,
       isOffline: false,
       isLoaded : false,
@@ -152,13 +149,14 @@ export class HomePageMenuScreen extends React.Component {
   render() {
       if(this.state.isLoaded){
        let currentUserRole = this.state.userObj.roleName;
-       console.warn("currentUserRole",currentUserRole)
-      if (this.state.showQuestions == true && displayHomeQAceess.indexOf(currentUserRole)=== -1) {
+       let params = this.props.navigation.state.params || {};
+       let show = params.showHome || false;
+      if (this.state.showQuestions == true && displayHomeQAceess.indexOf(currentUserRole)=== -1 && show === false) {
       return (
         <Questions navigation={this.props.navigation} userId={this.state.userId}/>
       );
      }
-      else {
+      else if(show === true){
       return (
         <View style={styles.mainView}>
           <HomePage navigation={this.props.navigation}/>
@@ -191,7 +189,7 @@ export class HomePageMenuScreen extends React.Component {
         <Container style={styles.root}>
           <ScrollView>
             <View style={styles.loading} >
-              <ActivityIndicator size='large' />
+              <ActivityIndicator size='small'/>
             </View>
           </ScrollView>
         </Container>

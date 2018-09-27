@@ -88,7 +88,7 @@ export class Questions extends React.Component {
         this.setState({eventId : eventId})
         questionFormService.getQuestionForm(eventId).then((response)=>{
             let  formResponse = {};
-          if( response  == undefined){
+          if( response==undefined || response.length== 0){
                 thisRef.resetNavigation(thisRef.props.navigation, 'HomeMenu');
             }
         else{
