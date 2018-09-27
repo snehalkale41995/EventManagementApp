@@ -10,6 +10,7 @@ import * as infoService from '../../serviceActions/staticPages';
 import * as eventService from '../../serviceActions/event';
 import {Loader} from '../../components/loader';
 import {Footer} from '../../components/footer';
+import {EmptyData} from '../../components/emptyData';
 
 function renderIf(condition, content) {
   if (condition) {
@@ -18,7 +19,6 @@ function renderIf(condition, content) {
     return null;
   }
 }
-
 export class VenueMap extends React.Component {
   static navigationOptions = {
     title: 'Location Map'.toUpperCase()
@@ -29,7 +29,9 @@ export class VenueMap extends React.Component {
     this.state = {
       isOffline: false,
       locationInfo : {},
-      eventInfo : {}
+      eventInfo : {},
+      isLoaded: false,
+      noDataFlag : false
     }
   }
 
@@ -102,6 +104,13 @@ export class VenueMap extends React.Component {
       if(eventInfo){
         let eventId = eventInfo._id;
        infoService.getLocationInfo(eventId).then((response)=>{
+        if(response.length === 0){
+            this.setState({
+              isLoaded: true,
+              noDataFlag : true
+            })  
+         }
+         else{  
         let data = response[0];
         let eventInfo = {
           eventName : data.event.eventName,
@@ -119,8 +128,12 @@ export class VenueMap extends React.Component {
            locationInfo:locationInfo, 
            isLoaded: true}
         )
+         }
       }).catch((error)=>{
-       // console.log(error);
+          this.setState({
+              isLoaded: true,
+              noDataFlag : true
+            }) 
        })
       }
       else{
@@ -156,7 +169,7 @@ displayMap(){
 
   render() {
   let map = this.displayMap();
-        if (this.state.isLoaded) {
+        if (this.state.isLoaded && !this.state.noDataFlag) {
             return (
                 <Container style={[styles.root]}>
                     <ScrollView>
@@ -170,6 +183,9 @@ displayMap(){
                 </Container>
             )
         }
+         else if(this.state.isLoaded && this.state.noDataFlag){
+           return (<EmptyData isOffline ={this.state.isOffline}/>)
+         }
         else {
             return (
                  <Container style={[styles.root]}>
