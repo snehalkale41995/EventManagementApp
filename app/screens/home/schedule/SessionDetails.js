@@ -335,31 +335,46 @@ getCurrentUser() {
   }
 
     checkAlreadyRegistered = () => {
+    let compRef = this;
+    let sameTimeRegistration;
     let eventId = this.state.eventId;
     let userId = this.state.userObj._id;
     let sessionId = this.state.sessionId;
-    let compRef = this;
+    let currentSessionStart = compRef.sessionDetails.startTime;
+    let currentSessionEnd = compRef.sessionDetails.endTime;
+   
     regResponseService.getRegResponseByEventUser(eventId, userId).
       then((response)=>{
         response.forEach((data)=>{
            let regSession = data.session;
-           let start = Moment(regSession.startTime).format();
-           let end = Moment(regSession.endTime).format();
-            if (compRef.state.currentSessionStart <= start && end <= compRef.state.currentSessionEnd && regSession._id !== compRef.state.sessionId) {
-              compRef.setState({
+
+           if(regSession.isRegistrationRequired){
+
+            let isSameStart = Moment(currentSessionStart).isSame(Moment(regSession.startTime));
+            let isSameEnd = Moment(currentSessionEnd).isSame(Moment(regSession.endTime));
+            let isBetweenStart =  Moment(currentSessionStart).isBetween(Moment(regSession.startTime),Moment(regSession.endTime));
+            let isBetweenEnd = Moment(currentSessionEnd).isBetween(Moment(regSession.startTime),Moment(regSession.endTime));
+            let isBetweenStartOld = Moment(regSession.startTime).isBetween(Moment(currentSessionStart),Moment(currentSessionEnd));
+            let isBetweenEndOld = Moment(regSession.endTime).isBetween(Moment(currentSessionStart),Moment(currentSessionEnd));
+           let alreadyReg = isSameStart || isSameEnd || isBetweenStart ||isBetweenEnd||isBetweenStartOld ||isBetweenEndOld;
+          
+           if(alreadyReg && regSession._id !== compRef.state.sessionId) {
+               sameTimeRegistration = true}
+           }
+          })
+            if(sameTimeRegistration === true){
+             compRef.setState({
                   sameTimeRegistration: true
                 });
-              }
+            }
               else {
                 compRef.setState({
                   regStatus: "",
                   regId: ""
                 })
               }
-        
-        })
       }).catch((error) => {
-      
+        //console
       })
   }
 
@@ -529,38 +544,5 @@ let styles = RkStyleSheet.create(theme => ({
     alignItems : 'flex-end',
     marginRight : 10,
     marginTop : -10
-  },
-  loading: {
-    marginTop: 250,
-    left: 0,
-    opacity: 0.5,
-    right: 0,
-    top: 0,
-    bottom: 0,
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    alignSelf: 'stretch', 
-    backgroundColor : '#E7060E'
-  },
-  footerOffline : {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    alignSelf: 'stretch', 
-    backgroundColor : '#545454'
-  },
-  footerText: {
-    color : '#f0f0f0',
-    fontSize: 11,
-  },
-  companyName:{
-    color : '#ffffff',
-    fontSize: 12,
-    fontWeight: 'bold'
-  },
+  }
 }));
