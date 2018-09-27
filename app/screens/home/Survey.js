@@ -23,14 +23,13 @@ import {
 } from "react-native-ui-kitten";
 import { NavigationActions } from "react-navigation";
 import ReactMoment from "react-moment";
-import firebase from "./../../config/firebase";
 import { GradientButton } from "../../components/gradientButton";
-var firestoreDB = firebase.firestore();
 import * as questionFormService from "../../serviceActions/questionForm";
 import * as eventService from "../../serviceActions/event";
 import * as loginService from "../../serviceActions/login";
 import { Loader } from "../../components/loader";
 import { Footer } from "../../components/footer";
+import {EmptyData} from '../../components/emptyData';
 
 export class Survey extends RkComponent {
   static navigationOptions = {
@@ -48,7 +47,8 @@ export class Survey extends RkComponent {
       sessionId: this.props.navigation.state.params.sessionDetails.key,
       session: this.props.navigation.state.params.sessionDetails,
       isOffline: false,
-      isLoading: true
+      isLoading: true,
+      noDataFlag : false
     };
     this.onFormSelectValue = this.onFormSelectValue.bind(this);
   }
@@ -123,7 +123,10 @@ export class Survey extends RkComponent {
       .then(response => {
         let formResponse = {};
         if (response == undefined || response.length ===0) {
-          thisRef.props.navigation.goBack();
+          thisRef.setState({
+              isLoading: false,
+              noDataFlag : true
+            })  
         } else {
           response.forEach(dataObj => {
             if (dataObj.formType === "Feedback Questions") {
@@ -145,7 +148,7 @@ export class Survey extends RkComponent {
         }
       })
       .catch(error => {
-        this.setState({ isLoading: false });
+        this.setState({ isLoading: false,  noDataFlag : true});
       });
   };
 
@@ -355,16 +358,7 @@ export class Survey extends RkComponent {
   }
 
   render() {
-    if (this.state.isLoading == true) {
-      return (
-        <Container style={[styles.screen]}>
-          <Loader />
-          <View>
-            <Footer isOffline={this.state.isOffline} />
-          </View>
-        </Container>
-      );
-    } else {
+   if (!this.state.isLoading && !this.state.noDataFlag) {
       return (
         <Container style={[styles.screen]}>
           <ScrollView>
@@ -381,10 +375,23 @@ export class Survey extends RkComponent {
           </View>
         </Container>
       );
-    }
+   }
+   else if(!this.state.isLoading && this.state.noDataFlag){
+           return (<EmptyData isOffline ={this.state.isOffline}/>)
+          }
+  else{
+    return (
+      <Container style={[styles.screen]}>
+      <Loader/> 
+      <View>
+      <Footer isOffline ={this.state.isOffline}/> 
+      </View>
+      </Container>
+      )
   }
 }
 
+}
 let styles = RkStyleSheet.create(theme => ({
   screen: {
     backgroundColor: theme.colors.screen.base
