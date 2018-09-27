@@ -156,7 +156,7 @@ export class HomePageMenuScreen extends React.Component {
         <Questions navigation={this.props.navigation} userId={this.state.userId}/>
       );
      }
-      else if(show === true){
+      else {
       return (
         <View style={styles.mainView}>
           <HomePage navigation={this.props.navigation}/>

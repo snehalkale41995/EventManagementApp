@@ -24,7 +24,8 @@ export class Questions extends React.Component {
             responses : [],
             queArray : [],
             isOffline :false,
-            isLoading : true
+            isLoading : true,
+            noDataFound : false
         }
         this.onFormSelectValue = this.onFormSelectValue.bind(this);
         this.onRadioButtonChange = this.onRadioButtonChange.bind(this);
@@ -88,8 +89,9 @@ export class Questions extends React.Component {
         this.setState({eventId : eventId})
         questionFormService.getQuestionForm(eventId).then((response)=>{
             let  formResponse = {};
-          if( response==undefined || response.length== 0){
-                thisRef.resetNavigation(thisRef.props.navigation, 'HomeMenu');
+          if( response==undefined || response.length == 0){
+              thisRef.setState({isLoading : false, noDataFound: true})
+              thisRef.resetNavigation(thisRef.props.navigation, 'HomeMenu');
             }
         else{
               response.forEach((dataObj)=>{
@@ -97,10 +99,16 @@ export class Questions extends React.Component {
                   formResponse = dataObj;
                 }
             })
+             if(Object.getOwnPropertyNames(formResponse).length ==0){
+                 thisRef.setState({isLoading : false, noDataFound: true})
+                 thisRef.resetNavigation(thisRef.props.navigation, 'HomeMenu');
+             }
+             else{
             let questionForm = formResponse.formData;
              thisRef.setState({
                 questionsForm: questionForm,
-                isLoading :false
+                isLoading :false,
+                noDataFound: false
             })
              let questionSet = [];
                 questionForm.forEach(que => {
@@ -109,9 +117,10 @@ export class Questions extends React.Component {
                 thisRef.setState({
                     queArray: questionSet
                 })
+             }
         }
       }).catch((error)=>{
-            this.setState({ isLoading: false})
+            this.setState({ isLoading: false, noDataFound: true})
        })
        }
     })
@@ -266,18 +275,9 @@ export class Questions extends React.Component {
     }
 
     render() {
-        if (this.state.isLoading == true ){
-            return (
-                <Container style={[styles.screen]}>
-                    <Loader/> 
-                    <View>
-                    <Footer isOffline ={this.state.isOffline}/> 
-                    </View>
-                </Container>
-            );
-        }
-        else{
-            return (
+       
+        if (this.state.isLoading == false && this.state.noDataFound ==false ){
+         return (
                 <Container style={[styles.screen]}> 
                     <ScrollView>
                         {this.onFormSelectValue(this.state.questionsForm)}
@@ -289,6 +289,17 @@ export class Questions extends React.Component {
                     <View>
                   <Footer isOffline ={this.state.isOffline}/>    
                   </View>
+                </Container>
+            );
+         
+        }
+        else{
+              return (
+                <Container style={[styles.screen]}>
+                    <Loader/> 
+                    <View>
+                    <Footer isOffline ={this.state.isOffline}/> 
+                    </View>
                 </Container>
             );
         }      
