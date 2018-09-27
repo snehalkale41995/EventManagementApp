@@ -133,6 +133,10 @@ export class Survey extends RkComponent {
               formResponse = dataObj;
             }
           });
+         if(Object.getOwnPropertyNames(formResponse).length ==0){
+            thisRef.setState({isLoading : false, noDataFlag: true})
+         }
+        else{
           let questionForm = formResponse.formData;
           thisRef.setState({
             questionsForm: questionForm,
@@ -146,6 +150,7 @@ export class Survey extends RkComponent {
             queArray: questionSet
           });
         }
+      }
       })
       .catch(error => {
         this.setState({ isLoading: false,  noDataFlag : true});
