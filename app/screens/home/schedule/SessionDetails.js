@@ -105,11 +105,12 @@ getCurrentUser() {
   })
   }
 
-  onSurvey= ()=> {
+    onSurvey= ()=> {
     let eventId = this.state.eventId;
     let userId = this.state.userObj._id;
     let sessionId = this.state.sessionId;
-   // if (this.state.currentSessionStart < Moment((new Date()).format()) {
+    let today = Moment(new Date()).format();
+    if (this.state.currentSessionStart <= today){
       questionFormService.getFeedbackResponse(eventId,sessionId,userId).
          then((response)=>{
         if(response.length===0){
@@ -117,12 +118,12 @@ getCurrentUser() {
         }
        else{ Alert.alert("You have already given feedback for this session")}
       }).catch((error)=>{
-        console.warn(error);
+       // console.warn(error);
       })
-    // }
-    //  else {
-    //   Alert.alert("Its too early ,wait till session ends");
-    // }
+    }
+     else {
+      Alert.alert("Its too early ,wait till session ends");
+    }
   }
 
   getSurveyAccess = () => {
@@ -296,7 +297,6 @@ getCurrentUser() {
        this.setState({
           isAddingToAgenda : false
         })
-      console.warn(error);
     })
 }
 
@@ -330,7 +330,6 @@ getCurrentUser() {
         }
       }).catch(()=>{
         this.setState({isLoaded:false})
-        console.warn(error);
       })
     }
   }
@@ -360,14 +359,12 @@ getCurrentUser() {
         
         })
       }).catch((error) => {
-        console.warn(error);
+      
       })
   }
 
   render() {
     const speakers = this.getSpeakers();
-    
-    console.warn()
     const displaySpeakers = (this.state.speakerDetails) ? (
         <View style={styles.speakerSection}>
               <View style={[styles.heading]}>
