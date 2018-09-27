@@ -143,7 +143,6 @@ export default class AskQuestion extends RkComponent {
     if (orderRef === undefined) {
       orderRef = 'byTime';
     }
-    console.warn("orderRef", orderRef);
     let sessionId = this.state.sessionId;
     let eventId = this.state.eventId;
 

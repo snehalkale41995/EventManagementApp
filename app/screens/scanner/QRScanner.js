@@ -100,6 +100,7 @@ export class QRScanner extends React.Component {
       );
    })
 }
+  
   componentWillMount() {
     this._requestCameraPermission();
     let thisRef = this;
@@ -226,7 +227,6 @@ export class QRScanner extends React.Component {
       if(parsedData.length == 4){
         if(parsedData[1] === this.state.eventId){
            this.checkForDuplicateScan(parsedData[3], parsedData[2], parsedData[1]);
-         // this._updateUserData(parsedData[3], parsedData[2], parsedData[1]);
         }
         else {
         this.displayInvalidUserError();
