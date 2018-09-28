@@ -11,6 +11,10 @@ import { Avatar } from '../../components';
 import * as eventService from '../../serviceActions/event';
 import {Loader} from '../../components/loader';
 import {Footer} from '../../components/footer';
+import {
+  handleAndroidBackButton,
+  exitAlert
+} from '../../components/backHandler';
 
 export class Events extends RkComponent {
     static navigationOptions = {
@@ -34,7 +38,8 @@ export class Events extends RkComponent {
         if (Platform.OS !== 'ios') {
             NetInfo.isConnected.fetch().then(isConnected => {
                 if (isConnected) {
-                    this.getEventsList();
+                handleAndroidBackButton(exitAlert);
+                this.getEventsList();
                 } else {
                     this.setState({
                         isOffline: true
@@ -45,6 +50,7 @@ export class Events extends RkComponent {
                 });
             });
         }
+        handleAndroidBackButton(exitAlert);
         this.getEventsList();
         NetInfo.addEventListener(
             'connectionChange',
@@ -54,6 +60,7 @@ export class Events extends RkComponent {
 
     handleFirstConnectivityChange = (connectionInfo) => {
         if (connectionInfo.type != 'none') {
+            handleAndroidBackButton(exitAlert);
             this.getEventsList();
         } else {
             this.setState({

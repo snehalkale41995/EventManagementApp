@@ -42,16 +42,16 @@ const AppStack = DrawerNavigator({
 //added event screen
 const EventStack = StackNavigator({ EventList : { screen: Screens.Events } });
 const EventDetailsStack = StackNavigator({ EventDetails : { screen: Screens.EventDetails } });
-
 const AuthStack = StackNavigator({ SignIn: { screen: Screens.LoginV2 } });
 
-const SwitchStack = SwitchNavigator(
+{ screen: Screens.Events }
+const SwitchStack = StackNavigator(
   {
-    AuthLoading: Screens.SplashScreen,
+    AuthLoading: {screen:Screens.SplashScreen},
     App: AppStack,
-    Event : EventStack,
-    EventDetails : EventDetailsStack,
-    Auth: AuthStack,
+    Event : {screen: Screens.Events},
+    EventDetails : {screen: Screens.EventDetails},
+    Auth: { screen: Screens.LoginV2 },
   },
   {
     initialRouteName: 'AuthLoading',
