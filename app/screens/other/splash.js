@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Image, View, Dimensions, StatusBar, AsyncStorage, Alert } from 'react-native';
+import { StyleSheet, Image, View, Dimensions, StatusBar, AsyncStorage, Alert, BackHandler } from 'react-native';
 import { RkText, RkStyleSheet, RkButton, RkTheme } from 'react-native-ui-kitten'
 import {ProgressBar} from '../../components';
 import {
@@ -7,9 +7,8 @@ import {
 } from '../../config/theme';
 import {NavigationActions} from 'react-navigation';
 import {scale, scaleModerate, scaleVertical} from '../../utils/scale';
-import firebase from '../../config/firebase';
 import { Toast } from 'native-base';
-
+import {exitAlert} from '../../components/backHandler';
 let timeFrame = 500;
 
 export class SplashScreen extends React.Component {
@@ -39,20 +38,29 @@ export class SplashScreen extends React.Component {
   
   };
 
+  componentWillUnmount() {
+   this.removeAndroidBackButtonHandler();
+  }
+
+ _handleAndroidBackButton = () => {
+  BackHandler.addEventListener('hardwareBackPress', () => {
+    exitAlert();
+    return true;
+  });
+};
+
+ removeAndroidBackButtonHandler()  {
+  BackHandler.removeEventListener('hardwareBackPress', () => {});
+}
+
   componentDidMount() {
     StatusBar.setHidden(true, 'none');
     RkTheme.setTheme(KittenTheme);
-
     this.timer = setInterval(() => {
       if (this.state.progress == 1) {
         clearInterval(this.timer);
         setTimeout(() => {
           StatusBar.setHidden(false, 'slide');
-          // let toHome = NavigationActions.reset({
-          //   index: 0,
-          //   actions: [NavigationActions.navigate({routeName: 'Auth'})]
-          // });
-          // this.props.navigation.dispatch(toHome)
           this._bootstrapAsync();
         }, timeFrame);
       } else {
@@ -64,7 +72,7 @@ export class SplashScreen extends React.Component {
         this.setState({progress});
       }
     }, timeFrame)
-
+    this._handleAndroidBackButton();
   }
 
   render() {
