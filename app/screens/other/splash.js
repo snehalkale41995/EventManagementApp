@@ -62,6 +62,7 @@ export class SplashScreen extends React.Component {
         setTimeout(() => {
           StatusBar.setHidden(false, 'slide');
           this._bootstrapAsync();
+          this._handleAndroidBackButton();
         }, timeFrame);
       } else {
         let random = Math.random() * 0.5;
@@ -72,7 +73,7 @@ export class SplashScreen extends React.Component {
         this.setState({progress});
       }
     }, timeFrame)
-    this._handleAndroidBackButton();
+    
   }
 
   render() {
