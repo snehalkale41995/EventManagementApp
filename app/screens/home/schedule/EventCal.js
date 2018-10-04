@@ -77,8 +77,6 @@ export default class EventCal extends Component {
             console.warn(err);
         });
     }
-  
-  
     /**
      * Hide date displayed on left side of panel
      */
@@ -91,7 +89,6 @@ export default class EventCal extends Component {
      */
 
     loadSessions = (selectedDay) => {
-      
          let currentDate;
          let displayDate;
          let startDate = this.state.eventDetails.startDate;
@@ -102,7 +99,12 @@ export default class EventCal extends Component {
         if(selectedDay.dateString == '2018-03-20'){
             return;
         }
-         if(startDay === selectedDay.day.toString()){
+        // this is to avoid reloading of page for start date initially
+          let dayOfEvent = selectedDay.day.toString()
+          if(dayOfEvent.length ==1){
+              dayOfEvent = "0"+dayOfEvent;
+          }
+         if(startDay === dayOfEvent){
          currentDate = Moment(this.state.eventStartDate.toString());
          displayDate = this.state.eventStartDate
         }
@@ -123,10 +125,12 @@ export default class EventCal extends Component {
             });
             let newSessions = {};
             newSessions[displayDate] = sessions;
+           
             this.setState((prevState) => ({
                 ...prevState,
                 sessions: newSessions
             }));
+           
         });
     }
     
