@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Image, Alert, Keyboard, ActivityIndicator, AsyncStorage } from 'react-native';
+import { View, Image, Alert, Keyboard, ActivityIndicator, AsyncStorage, Platform } from 'react-native';
 import { RkButton, RkText, RkTextInput, RkAvoidKeyboard, RkStyleSheet } from 'react-native-ui-kitten';
 import {FontAwesome} from '../../assets/icons';
 import {GradientButton} from '../../components/gradientButton';
@@ -156,7 +156,8 @@ let styles = RkStyleSheet.create(theme => ({
     flex: 1
   },
   content: {
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
+    marginTop : Platform.OS === "ios" ? 35 : 0
   },
   save: {
     marginVertical: 20,
