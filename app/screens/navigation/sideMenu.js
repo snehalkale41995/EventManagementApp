@@ -8,20 +8,26 @@ import { Icon } from "native-base";
 import _ from 'lodash';
 import {FontAwesome, FontIcons} from '../../assets/icons';
 import { AsyncStorage } from 'react-native';
-
+import * as eventService from '../../serviceActions/event';
 export class SideMenu extends React.Component {
 
   constructor(props) {
     super(props);
     this._navigateAction = this._navigate.bind(this);
     this.state = {
-      userDetails: {}
+      userDetails: {},
+      eventDetails : {}
     }
   }
   
   componentWillMount() {
     AsyncStorage.getItem("USER_DETAILS").then((userDetails)=>{
-       this.setState({userDetails: JSON.parse(userDetails)});
+      eventService.getCurrentEvent((eventDetails)=>{
+       this.setState({
+         userDetails: JSON.parse(userDetails),
+         eventDetails : eventDetails
+        });
+      })
       })
       .catch(err => {
         console.warn('Errors');
@@ -95,8 +101,8 @@ export class SideMenu extends React.Component {
         <ScrollView
           showsVerticalScrollIndicator={false}>
           <View style={[styles.container, styles.content]}>
-            {this._renderIcon()}
-            <RkText style={styles.tieName}>TiE Pune Events</RkText>
+            {/* {this._renderIcon()} */}
+            <RkText style={styles.tieName}>{this.state.eventDetails.eventName}</RkText>
           </View>
           {menu}
           <TouchableHighlight
