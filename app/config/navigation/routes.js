@@ -26,8 +26,8 @@ export class HomePageMenuScreen extends React.Component {
     let renderTitle = () => {
       return (
         <View style={styles.header}>
-          {/* <RkText style={{color: 'white'}}>TiE Pune 2018</RkText> */}
-          <Image style={styles.TieLOGO} source={require('../../assets/images/TiECon-Pune-2018-logo.png')} />
+           <RkText style={{color: 'white'}}>HOME</RkText> 
+          {/* <Image style={styles.TieLOGO} source={require('../../assets/images/TiECon-Pune-2018-logo.png')} /> */}
         </View>
       )
     };
