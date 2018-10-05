@@ -4,7 +4,6 @@ import { Tabs, Tab, Icon, Text, TabHeading } from "native-base";
 import {Platform} from 'react-native';
 import MyAgenda from './schedule/MyAgenda';
 import EventCal from './schedule/EventCal';
-import {Service} from '../../services';
 
 export class ProgramsTab extends React.Component {
   constructor(props) {

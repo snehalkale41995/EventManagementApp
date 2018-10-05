@@ -3,7 +3,6 @@ import { TouchableHighlight, View, ScrollView, Image, Platform, StyleSheet, Aler
 import {NavigationActions} from 'react-navigation';
 import { RkStyleSheet, RkText, RkTheme } from 'react-native-ui-kitten';
 import {MainRoutes} from '../../config/navigation/routes';
-import firebase from '../../config/firebase';
 import { Icon } from "native-base";
 import _ from 'lodash';
 import {FontAwesome, FontIcons} from '../../assets/icons';

@@ -7,7 +7,6 @@ import {
 } from '../../config/theme';
 import {NavigationActions} from 'react-navigation';
 import {scale, scaleModerate, scaleVertical} from '../../utils/scale';
-import firebase from '../../config/firebase';
 import { Toast } from 'native-base';
 
 let timeFrame = 500;

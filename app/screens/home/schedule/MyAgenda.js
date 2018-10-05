@@ -22,9 +22,7 @@ import Moment from "moment";
 import * as loginService from "../../../serviceActions/login";
 import * as eventService from "../../../serviceActions/event";
 import * as regResponseService from "../../../serviceActions/registrationResponse";
-import { Service } from "../../../services";
 
-const TABLE = "RegistrationResponse";
 export default class MyAgenda extends React.Component {
   constructor(props) {
     super(props);

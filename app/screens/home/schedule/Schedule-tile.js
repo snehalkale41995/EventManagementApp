@@ -5,7 +5,6 @@ import { RkComponent, RkTheme, RkText, RkButton, RkCard, RkStyleSheet } from 're
 import { NavigationActions } from 'react-navigation';
 
 import styleConstructor, { getStatusStyle } from './styles';
-import { Service } from '../../../services';
 import ReactMoment from 'react-moment';
 import Moment from 'moment';
 import { Avatar } from '../../../components';
@@ -40,17 +39,6 @@ export default class ScheduleTile extends RkComponent {
         this.state = __props;
 
     }
-    /**
-     *  Get Speaker Details
-     */
-    componentDidMount() {
-        Service.getCurrentUser((userObj) => {
-            this.setState({
-                user: userObj
-            });
-        });
-    }
-
     /**
     * Duration Details
     */

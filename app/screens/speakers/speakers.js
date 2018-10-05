@@ -6,7 +6,6 @@ import { RkComponent, RkTheme, RkStyleSheet, RkText, RkAvoidKeyboard, RkButton, 
 import { NavigationActions } from 'react-navigation';
 import ReactMoment from 'react-moment';
 import { GradientButton } from '../../components/gradientButton';
-import { Service } from '../../services';
 import Moment from 'moment';
 import { Avatar } from '../../components';
 import * as eventServices from '../../serviceActions/event';

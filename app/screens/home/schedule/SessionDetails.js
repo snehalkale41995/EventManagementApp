@@ -3,7 +3,6 @@ import { Image,Platform,Text, Button, View, TouchableOpacity, StyleSheet, AsyncS
 import { RkButton, RkStyleSheet, RkText, RkCard } from 'react-native-ui-kitten';
 import { Icon, Container, Tabs, Tab, TabHeading } from 'native-base';
 import { NavigationActions, TabNavigator, TabView } from 'react-navigation';
-import { Service } from '../../../services';
 import Moment from 'moment';
 import { Avatar } from '../../../components';
 import styleConstructor, { getStatusStyle } from './styles';

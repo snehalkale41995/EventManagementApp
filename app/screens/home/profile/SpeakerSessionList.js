@@ -20,11 +20,7 @@ import { FontAwesome } from "../../../assets/icons";
 import { GradientButton } from "../../../components";
 import ScheduleTile from "../schedule/Schedule-tile";
 import * as sessionService from "../../../serviceActions/session";
-import firebase from "../../../config/firebase";
-import { Service } from "../../../services";
-var firestoreDB = firebase.firestore();
 
-const TABLE = "Sessions";
 export class SpeakerSessionList extends RkComponent {
   static navigationOptions = {
     title: "speaker".toUpperCase()
