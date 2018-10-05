@@ -182,7 +182,7 @@ export class QRScanner extends React.Component {
             {
               text: "Yes",
               onPress: () => {
-                compRef.markUserAttendance(attendanceObj);
+                compRef.checkForSessionCapacity(attendanceObj);
               }
             },
             {
@@ -194,13 +194,43 @@ export class QRScanner extends React.Component {
           ],
           { cancelable: false }
         );
-      } else {
-        compRef.markUserAttendance(attendanceObj);
+      }
+      else {
+        compRef.checkForSessionCapacity(attendanceObj);
       }
     } else {
      // console.warn("already scanned");
     }
   }
+
+
+ checkForSessionCapacity= (attendanceObj) =>{
+   let compRef = this;
+     if(this.state.sessionDelegateAttendance + this.state.sessionOtherAttendance>=this.state.sessionCapacity){
+         Alert.alert(
+          "Capacity Fullfilled",
+          "Session Capacity is fullfilled. Do you still want to continue?",
+          [
+            {
+              text: "Yes",
+              onPress: () => {
+               compRef.markUserAttendance(attendanceObj);
+              }
+            },
+            {
+              text: "No",
+              onPress: () => {
+                this.setState({ isLoading: false });
+              }
+            }
+          ],
+          { cancelable: false }
+        );
+      }
+      else{
+        compRef.markUserAttendance(attendanceObj);
+      }
+ }
 
   markUserAttendance=(attendanceObj)=>{
     let compRef = this;
