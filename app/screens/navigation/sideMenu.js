@@ -16,7 +16,8 @@ export class SideMenu extends React.Component {
     this._navigateAction = this._navigate.bind(this);
     this.state = {
       userDetails: {},
-      eventDetails : {}
+      eventDetails : {},
+      eventName : " "
     }
   }
   
@@ -25,7 +26,8 @@ export class SideMenu extends React.Component {
       eventService.getCurrentEvent((eventDetails)=>{
        this.setState({
          userDetails: JSON.parse(userDetails),
-         eventDetails : eventDetails
+         eventDetails : eventDetails,
+         eventName : eventDetails.eventName.toUpperCase()
         });
       })
       })
@@ -102,7 +104,7 @@ export class SideMenu extends React.Component {
           showsVerticalScrollIndicator={false}>
           <View style={[styles.container, styles.content]}>
             {/* {this._renderIcon()} */}
-            <RkText style={styles.tieName}>{this.state.eventDetails.eventName}</RkText>
+            <RkText style={styles.tieName}>{this.state.eventName}</RkText>
           </View>
           {menu}
           <TouchableHighlight
