@@ -9,11 +9,13 @@ import styleConstructor, { getStatusStyle } from './styles';
 import { GradientButton } from '../../../components/gradientButton';
 import * as loginService from '../../../serviceActions/login';
 import * as eventService from '../../../serviceActions/event';
-import * as regResponseService from '../../../serviceActions/registrationResponse'
+import * as regResponseService from '../../../serviceActions/registrationResponse';
 import * as questionFormService from '../../../serviceActions/questionForm';
 import {Loader} from '../../../components/loader';
 import {Footer} from '../../../components/footer';
 import _ from 'lodash'
+import withPreventDoubleClick from '../../../components/withPreventDoubleClick/withPreventDoubleClick';
+const TouchableOpacityEx = withPreventDoubleClick(TouchableOpacity);
 
 const userProfileAccess = ['Admin','Volunteer','Speaker'];
 export class SessionDetails extends Component {
@@ -160,7 +162,7 @@ getCurrentUser() {
             avatar = <Image style={{ width: 44, height: 44, borderRadius: 20 }} source={require('../../../assets/images/defaultUserImg.png')} />
           }
           return (
-            <TouchableOpacity key={index} onPress={() => this.props.navigation.navigate('SpeakerDetailsTabs', { speakerDetails: speaker, speakersId: speaker._id, eventId: this.state.eventId })}>
+            <TouchableOpacityEx key={index} onPress={() => this.props.navigation.navigate('SpeakerDetailsTabs', { speakerDetails: speaker, speakersId: speaker._id, eventId: this.state.eventId })}>
               <View style={[styles.row, styles.heading, styles.speakerView]} >
                 {avatar}
                 <View style={styles.column}>
@@ -169,7 +171,7 @@ getCurrentUser() {
                 </View>
                 <RkText style={[styles.attendeeScreen]} ><Icon name="ios-arrow-forward" /></RkText>
               </View>
-            </TouchableOpacity>
+            </TouchableOpacityEx>
           )
         });
     }

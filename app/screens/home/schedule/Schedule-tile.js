@@ -3,13 +3,12 @@ import { Text, View, Icon } from 'native-base';
 import { AsyncStorage, FlatList, TouchableOpacity, Alert, Image, StyleSheet } from 'react-native';
 import { RkComponent, RkTheme, RkText, RkButton, RkCard, RkStyleSheet } from 'react-native-ui-kitten';
 import { NavigationActions } from 'react-navigation';
-
 import styleConstructor, { getStatusStyle } from './styles';
 import ReactMoment from 'react-moment';
 import Moment from 'moment';
 import { Avatar } from '../../../components';
-
-const REGISTRATION_RESPONSE_TABLE = "RegistrationResponse";
+import withPreventDoubleClick from '../../../components/withPreventDoubleClick/withPreventDoubleClick';
+const TouchableOpacityEx = withPreventDoubleClick(TouchableOpacity);
 
 export default class ScheduleTile extends RkComponent {
 
@@ -64,35 +63,35 @@ export default class ScheduleTile extends RkComponent {
 
     applyTouchOpacity = (shouldApplyOpacity) => {
         if (!shouldApplyOpacity) {
-            return <TouchableOpacity
+            return <TouchableOpacityEx
                 onPress={() => this.props.navigation.navigate('SessionDetails', { session: this.props.session})}
                 style={{
                     flexDirection: 'row',
                     flex: 3,
                 }}>
                 <Text style={{ fontSize: 16, fontWeight: '600', width: 300 }} numberOfLines={1}>{this.props.session.sessionName}</Text>
-            </TouchableOpacity>;
+            </TouchableOpacityEx>;
         } else {
             return <Text style={{ fontSize: 16, fontWeight: '600', width: 300 }} numberOfLines={1}>{this.props.session.sessionName}</Text>;
         }
-
     }
+
     applyTouchOpacityArrow = (shouldApplyOpacity) => {
         if (!shouldApplyOpacity) {
             return (
                 <View style={{ flexDirection: 'column', alignItems: 'flex-end', flex: 3 }}>
-                    <TouchableOpacity
+                    <TouchableOpacityEx
                         onPress={() => this.props.navigation.navigate('SessionDetails', { session: this.props.session })}
                     >
                         <RkText style={{ marginTop: 5 }}><Icon name="ios-arrow-forward" /></RkText>
-                    </TouchableOpacity>
+                    </TouchableOpacityEx>
                 </View>
             );
         } else {
             return <Text style={{ fontSize: 16, fontWeight: '600', width: 300 }} numberOfLines={1}>   </Text>;
         }
-
     }
+    
     checkDeepDiveSession = (session) => {
         if (session.isRegistrationRequired) {
             return <Text style={this.styles.speaker} style={{ fontSize: 10, color: 'red' }}>**Pre-registration required**</Text>;
@@ -110,7 +109,7 @@ export default class ScheduleTile extends RkComponent {
     render() {
         if (this.props.session) {
             return (
-                <TouchableOpacity disabled={this.props.session.isBreak}
+                <TouchableOpacityEx disabled={this.props.session.isBreak}
                     onPress={() => this.props.navigation.navigate('SessionDetails', { session: this.props.session })}
                 >
                     <RkCard rkType='shadowed' style={[this.styles.card, { borderLeftColor: this.props.session.displayColor }]}>
@@ -131,7 +130,7 @@ export default class ScheduleTile extends RkComponent {
                         </View>
                          {this.checkDeepDiveSession(this.props.session)} 
                     </RkCard>
-                </TouchableOpacity>
+                </TouchableOpacityEx>
             );
         } else {
             return (

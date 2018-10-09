@@ -13,6 +13,9 @@ import {Loader} from '../../components/loader';
 import {Footer} from '../../components/footer';
 import * as speakerService from '../../serviceActions/speaker';
 import * as eventService from '../../serviceActions/event';
+import withPreventDoubleClick from '../../components/withPreventDoubleClick/withPreventDoubleClick';
+const TouchableOpacityEx = withPreventDoubleClick(TouchableOpacity);
+
 export class Speakers extends RkComponent {
     static navigationOptions = {
         title: 'Speakers'.toUpperCase()
@@ -109,7 +112,7 @@ export class Speakers extends RkComponent {
                 avatar = <Image style={{ width: 34, height: 34 }} source={require('../../assets/images/defaultUserImg.png')} />
             }
             return (
-                <TouchableOpacity
+                <TouchableOpacityEx
                     key={index} onPress={() => this.props.navigation.navigate('SpeakerDetailsTabs', { speakerDetails: speaker, speakersId: speaker._id, eventId : this.state.eventId})}
                 >
                     <RkCard rkType='shadowed' style={styles.card}>
@@ -126,7 +129,7 @@ export class Speakers extends RkComponent {
                             </View>
                         </View >
                     </RkCard>
-                </TouchableOpacity>
+                </TouchableOpacityEx>
             )
         });
     }
@@ -159,6 +162,7 @@ export class Speakers extends RkComponent {
 
     }
 }
+
 let styles = RkStyleSheet.create(theme => ({
     root: {
         backgroundColor: theme.colors.screen.base
