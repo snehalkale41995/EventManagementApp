@@ -22,7 +22,8 @@ import Moment from "moment";
 import * as loginService from "../../../serviceActions/login";
 import * as eventService from "../../../serviceActions/event";
 import * as regResponseService from "../../../serviceActions/registrationResponse";
-
+import withPreventDoubleClick from '../../../components/withPreventDoubleClick/withPreventDoubleClick';
+const TouchableOpacityEx = withPreventDoubleClick(TouchableOpacity);
 export default class MyAgenda extends React.Component {
   constructor(props) {
     super(props);
@@ -81,7 +82,7 @@ export default class MyAgenda extends React.Component {
     if (this.state.sessionList.length > 0) {
       return this.state.sessionList.map(session => {
         return (
-          <TouchableOpacity
+          <TouchableOpacityEx
             onPress={() =>
               this.props.navigation.navigate("SessionDetails", {
                 session: session
@@ -113,7 +114,7 @@ export default class MyAgenda extends React.Component {
                 </View>
               </View>
             </RkCard>
-          </TouchableOpacity>
+          </TouchableOpacityEx>
         );
       });
     } else {
