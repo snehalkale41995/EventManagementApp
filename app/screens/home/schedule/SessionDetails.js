@@ -320,14 +320,17 @@ getCurrentUser() {
         else{
           compRef.setState({
             regStatus: "",
-            regId: "",
-            isLoaded : true
+            regId: ""
           })
        
          if(compRef.state.sessionDetails.isRegistrationRequired){
            compRef.checkAlreadyRegistered();
          }
-         
+         else{
+             compRef.setState({
+             isLoaded : true
+          })
+         }
         }
       }).catch(()=>{
         this.setState({isLoaded:false})
@@ -365,17 +368,21 @@ getCurrentUser() {
           })
             if(sameTimeRegistration === true){
              compRef.setState({
-                  sameTimeRegistration: true
+                  sameTimeRegistration: true,
+                  isLoaded : true
                 });
             }
               else {
                 compRef.setState({
                   regStatus: "",
-                  regId: ""
+                  regId: "",
+                  isLoaded : true
                 })
               }
       }).catch((error) => {
-        //console
+          compRef.setState({
+          isLoaded : true
+        })
       })
   }
 
