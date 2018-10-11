@@ -82,9 +82,11 @@ export class QRScanner extends React.Component {
      })
     if (sessions.length > 0) {
         let selectedSession = sessions[0];
+       
         thisRef.setState({ sessions, selectedSession: selectedSession._id, sessionCapacity: selectedSession.sessionCapacity });
         thisRef._getCurrentSessionUsers(sessions[0]._id, eventId);
         thisRef.subscribeToSessionUpdate(sessions[0]._id, eventId); 
+        thisRef._getOtherSessionAttendance(selectedSession, eventId);
       } else {
         thisRef.setState({ error: 'No sessions configured on server. Please contact administrator.', isLoading: false });
       }
@@ -155,12 +157,23 @@ export class QRScanner extends React.Component {
     });
   };
 
+  _getOtherSessionAttendance = (selectedSession, eventId) =>{
+    let thisRef = this;
+    attendanceService.getAttendance(selectedSession, eventId).then((otherSessionAttendance)=>{
+      thisRef.setState({ otherSessionAttendance, isLoading: false });
+    }).catch((error)=>{
+      thisRef.setState({ isLoading: false });
+    })
+  }
+
+
   _getSelectedSession = () => {
     let session = _.find(this.state.sessions, { '_id': this.state.selectedSession });
     return session;
   }
 
   _updateUserData(scannedUserId, userCode, event_Id) {
+    let otherSessionAttendance = this.state.otherSessionAttendance;
     let compRef = this;
     if (this.state.lastScannedResult != scannedUserId && !this.state.isLoading) {
       let selectedSession = this._getSelectedSession();
@@ -174,6 +187,12 @@ export class QRScanner extends React.Component {
         lastScannedResult: scannedUserId,
         lastScannedUserCode: userCode
       });
+
+     if(otherSessionAttendance.length >0 && parsedUserCode[0] == "DEL" && otherSessionAttendance.indexOf(scannedUserId) !== -1){
+      this.setState({ isLoading: false });  
+      Alert.alert("This user is already marked as present for another session");
+     }
+      else{
       if (selectedSession.isRegistrationRequired && parsedUserCode[0] == "DEL" && this.state.sessionUsers.indexOf(scannedUserId) == -1) {
         Alert.alert(
           "Unregistered User",
@@ -198,6 +217,7 @@ export class QRScanner extends React.Component {
       else {
         compRef.checkForSessionCapacity(attendanceObj);
       }
+    }
     } else {
      // console.warn("already scanned");
     }
@@ -397,6 +417,7 @@ export class QRScanner extends React.Component {
     });
     this._getCurrentSessionUsers(selectedSessionId, eventId);
     this.subscribeToSessionUpdate(selectedSessionId, eventId);
+    this._getOtherSessionAttendance(session, eventId);
   }
 
   getView = () => {
