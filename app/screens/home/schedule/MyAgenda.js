@@ -24,6 +24,8 @@ import * as eventService from "../../../serviceActions/event";
 import * as regResponseService from "../../../serviceActions/registrationResponse";
 import withPreventDoubleClick from '../../../components/withPreventDoubleClick/withPreventDoubleClick';
 const TouchableOpacityEx = withPreventDoubleClick(TouchableOpacity);
+
+
 export default class MyAgenda extends React.Component {
   constructor(props) {
     super(props);
@@ -79,13 +81,14 @@ export default class MyAgenda extends React.Component {
   };
  
   renderSessions = () => {
-    if (this.state.sessionList.length > 0) {
-      return this.state.sessionList.map(session => {
+    if (this.props.myAgendaList.length > 0) {
+      return this.props.myAgendaList.map(session => {
         return (
           <TouchableOpacityEx
             onPress={() =>
               this.props.navigation.navigate("SessionDetails", {
-                session: session
+                session: session,
+                myAgendaView : true
               })}
           >
             <RkCard rkType="shadowed" style={styles.card}>
@@ -178,7 +181,7 @@ export default class MyAgenda extends React.Component {
   };
   render() {
     let sessionList = this.renderSessions();
-    if (this.state.isLoaded) {
+    if (this.props.isLoaded) {
       return (
        <View style={styles.listContainer}>
           <ScrollView>{sessionList}</ScrollView>

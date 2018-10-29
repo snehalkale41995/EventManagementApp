@@ -12,7 +12,8 @@ import {data} from './data'
 import {AppLoading, Font} from 'expo';
 import {View, Text, Alert, AsyncStorage, Platform} from "react-native";
 import { Permissions, Notifications } from 'expo';
-
+import SocketIOClient from 'socket.io-client';
+const socket = SocketIOClient('http://192.168.101.21:3010');
 
 bootstrap();
 data.populateData();
@@ -64,12 +65,19 @@ export default class App extends React.Component {
     signedIn: false,
     checkedSignIn: false,
     notification: {},
+     messages: []
   };
 
   componentWillMount() {
-    this._loadAssets();
-  }
+  this._loadAssets();
+  socket.emit('message', 'Hello world!');
 
+   socket.on('message', (message) => {
+   var oldMessages = this.state.messages;
+  // React will automatically rerender the component when a new message is added.
+   this.setState({ messages: oldMessages.concat(message) });
+   });
+  }
   _loadAssets = async() => {
     await Font.loadAsync({
       'fontawesome': require('./assets/fonts/fontawesome.ttf'),
@@ -87,6 +95,7 @@ export default class App extends React.Component {
   };
 
   render() {
+     console.log("this.state.messages", this.state.messages)
     if (!this.state.loaded) {
       return <AppLoading />;
     }

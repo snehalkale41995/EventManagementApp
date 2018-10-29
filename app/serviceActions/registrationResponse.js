@@ -71,11 +71,9 @@ export const  addRegResponse = (attendRequest) =>{
       let promise = new Promise((resolve, reject) => {
          axios.post(`${AppConfig.serverURL}/api/registrationResponse`,attendRequest)
          .then(response => {
-       
            resolve(response.data);
          })
          .catch(error => {
-     
             reject(error.response.data);
          })
       })

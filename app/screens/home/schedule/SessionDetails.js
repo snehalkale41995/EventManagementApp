@@ -387,6 +387,8 @@ getCurrentUser() {
   }
 
   render() {
+    let myAgendaView = this.props.navigation.state.params.myAgendaView? this.props.navigation.state.params.myAgendaView : false  ;
+    console.warn("myAgendaView", myAgendaView);
     const speakers = this.getSpeakers();
     const displaySpeakers = (this.state.speakerDetails) ? (
         <View style={styles.speakerSection}>
@@ -432,7 +434,7 @@ getCurrentUser() {
               </View>
                <View>
                 {
-                  userProfileAccess.indexOf(currentUserRole) === -1 ? this.attendRequestStatus() : null
+                  userProfileAccess.indexOf(currentUserRole) === -1 && !myAgendaView? this.attendRequestStatus() : null
                 }
               </View> 
             </View>
