@@ -36,49 +36,6 @@ export default class MyAgenda extends React.Component {
       isLoaded: false
     };
   }
-
-  componentDidMount() {
-    let compRef = this;
-    loginService.getCurrentUser(userDetails => {
-      eventService.getCurrentEvent(eventDetails => {
-        this.setState({
-          userId: userDetails._id,
-          eventId: eventDetails._id
-        });
-        compRef.fetchSessionList(eventDetails._id,userDetails._id);
-      });
-    });
-  }
-
-  fetchSessionList = (eventId, userId) => {
-    regResponseService
-      .getRegResponseByEventUser(eventId, userId)
-      .then(response => {
-        let sessions = [];
-        response.forEach(data => {
-         let session = data.session;
-          sessions.push({
-            key: session._id,
-            sessionName: session.sessionName,
-            event: session.event,
-            speakers: session.speakers,
-            volunteers: session.volunteers,
-            room: session.room,
-            description: session.description,
-            sessionType: session.sessionType,
-            sessionCapacity: session.sessionCapacity,
-            startTime: session.startTime,
-            endTime: session.endTime,
-            isBreak: !!session.isBreak,
-            isRegistrationRequired: !!session.isRegistrationRequired
-          });
-        });
-        this.setState({
-          sessionList: sessions,
-          isLoaded: true
-        });
-      });
-  };
  
   renderSessions = () => {
     if (this.props.myAgendaList.length > 0) {

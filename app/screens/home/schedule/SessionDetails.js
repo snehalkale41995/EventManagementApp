@@ -388,7 +388,6 @@ getCurrentUser() {
 
   render() {
     let myAgendaView = this.props.navigation.state.params.myAgendaView? this.props.navigation.state.params.myAgendaView : false  ;
-    console.warn("myAgendaView", myAgendaView);
     const speakers = this.getSpeakers();
     const displaySpeakers = (this.state.speakerDetails) ? (
         <View style={styles.speakerSection}>
