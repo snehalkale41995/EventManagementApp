@@ -253,12 +253,15 @@ export class QRScanner extends React.Component {
  }
 
   markUserAttendance=(attendanceObj)=>{
+    let selectedSession = this.state.selectedSession;
+    let eventId = this.state.eventId;
     let compRef = this;
     attendanceService
       .markAttendance(attendanceObj)
       .then(response => {
-        compRef.setState({ isLoading: false });
+        compRef.setState({ isLoading: false});
         Vibration.vibrate(200);
+       compRef.subscribeToSessionUpdate(selectedSession, eventId);
       })
       .catch(error => {
         compRef.setState({ isLoading: false });
