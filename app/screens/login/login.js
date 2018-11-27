@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Image, Alert, Keyboard, ActivityIndicator, AsyncStorage, Platform } from 'react-native';
+import { View, Image, Alert, Keyboard, ActivityIndicator, AsyncStorage, Platform, Text} from 'react-native';
 import { RkButton, RkText, RkTextInput, RkAvoidKeyboard, RkStyleSheet } from 'react-native-ui-kitten';
 import {FontAwesome} from '../../assets/icons';
 import {GradientButton} from '../../components/gradientButton';
@@ -102,8 +102,12 @@ export class LoginV2 extends React.Component {
         onResponderRelease={ (e) => Keyboard.dismiss()}>
         <View style={[styles.header, styles.loginHeader]}>
           {renderIcon()}
-          <RkText rkType='light h1'>Tie</RkText>
-          <RkText rkType='logo h0'>Pune</RkText>
+          {/* <RkText rkType='light h1'>Tie</RkText>
+          <RkText rkType='logo h0'>Pune</RkText> */}
+          <View style={{marginTop : 20}}>
+            
+            <Text style={{fontSize : 30 ,fontStyle:'italic', fontFamily: 'Roboto-Bold'}}>TIECON</Text> 
+          </View>
         </View>
         <View style={styles.content}>
           <View>
