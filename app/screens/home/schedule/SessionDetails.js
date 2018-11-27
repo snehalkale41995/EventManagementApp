@@ -35,7 +35,7 @@ export class SessionDetails extends Component {
         user: "",
         description: this.sessionDetails.description ? this.sessionDetails.description : this.sessionDetails.eventName,
         sessionName: this.sessionDetails.sessionName,
-        sessionVenue: this.sessionDetails.room,
+        sessionVenue: this.sessionDetails.room ? this.sessionDetails.room : "",
         startTime: this.sessionDetails.startTime,
         endTime: this.sessionDetails.endTime,
         userObj: {},

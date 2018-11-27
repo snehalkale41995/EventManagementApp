@@ -56,7 +56,7 @@ export default class ScheduleTile extends RkComponent {
         return (
             <View style={{ marginLeft: 20, flexDirection: 'row', alignSelf: 'flex-end' }}>
                 <Icon name="md-pin" style={this.styles.tileIcons} style={{ color: '#5d5e5f', fontSize: 16, marginTop: 2, marginRight: 5 }} />
-                <Text style={this.styles.roomName} style={{ color: '#5d5e5f', fontSize: 14 }}>{this.props.session.room.roomName}</Text>
+                <Text style={this.styles.roomName} style={{ color: '#5d5e5f', fontSize: 14 }}>{this.props.session.room ? this.props.session.room.roomName : ""}</Text>
             </View>
         );
     }
