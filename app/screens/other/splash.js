@@ -71,7 +71,7 @@ export class SplashScreen extends React.Component {
     return (
       <View style={styles.container}>
         <View>
-          <Image style={[styles.image, {width}]} source={require('../../assets/images/splashBack.png')}/>
+          <Image style={[styles.image, {width}]} source={require('../../assets/images/tie_logo.png')}/>
           <View style={[styles.text, styles.tieTitle]}>
             {/* <RkText rkType='light' style={styles.hero}>TiE</RkText> */}
             <RkText rkType='logo' style={styles.appName}>Events</RkText>
@@ -129,8 +129,8 @@ let styles = RkStyleSheet.create(theme => ({
     justifyContent: 'center'
   },
   image: {
-    resizeMode: 'cover',
-    height: scaleVertical(430),
+    resizeMode: 'contain',
+    height: scaleVertical(450),
   },
   text: {
     alignItems: 'center'

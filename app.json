@@ -3,10 +3,10 @@
     "name": "TiE Pune Events",
     "slug": "tieconpuneevents",
     "sdkVersion":"25.0.0",
-    "icon": "./icon.png",
+    "icon": "./tie-square200.png",
     "orientation": "portrait",
     "loading": {
-      "icon": "./icon_rounded.png"
+      "icon": "./tie-square200.png"
     },
     "androidStatusBar": {
       "barStyle": "light-content",
