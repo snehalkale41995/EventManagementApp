@@ -12,7 +12,8 @@ import * as eventService from '../../serviceActions/event';
 import {Loader} from '../../components/loader';
 import {Footer} from '../../components/footer';
 import * as loginService from '../../serviceActions/login';
-export class Events extends RkComponent {
+
+export class MenuEvents extends RkComponent {
     static navigationOptions = {
       title: 'UPCOMING EVENTS'.toUpperCase(),
       headerStyle: {
@@ -103,14 +104,26 @@ export class Events extends RkComponent {
     }
 
    storeEventDetails(event){
+       let thisRef = this;
      if(event){
          let eventInfo = JSON.stringify(event);
          AsyncStorage.setItem("EVENT_DETAILS", eventInfo);
-         this.props.navigation.navigate('App');
+           thisRef.resetNavigation(thisRef.props.navigation, 'HomeMenu');
      }
       else{
         AsyncStorage.setItem("EVENT_DETAILS", {});
       }
+    }
+
+ 
+    resetNavigation =(navigation, targetRoute) => {
+        const resetAction = NavigationActions.reset({
+          index: 0,
+          actions: [
+            NavigationActions.navigate({ routeName: targetRoute}),
+          ],
+        });
+        this.props.navigation.dispatch(resetAction);
     }
 
    displayEvents = () => {

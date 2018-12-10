@@ -295,6 +295,13 @@ export const MainRoutes = [
     icon: 'md-information-circle',
     screen: Screens.AboutEternus,
     children: []
+  },
+  {
+    id: 'EventList',
+    title: 'Event List',
+    icon: 'md-list',
+    screen: Screens.MenuEvents,
+    children: []
   }
 ];
 
