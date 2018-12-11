@@ -4,7 +4,7 @@ import { ScrollView, Platform, Image, NetInfo } from 'react-native';
 import { Text, View, Icon, Container, Label } from 'native-base';
 import { StyleSheet, FlatList, TouchableOpacity, Keyboard, Alert, AsyncStorage, ActivityIndicator } from 'react-native';
 import { RkComponent, RkTheme, RkStyleSheet, RkText, RkAvoidKeyboard, RkButton, RkCard, RkChoice, RkTextInput, RkChoiceGroup } from 'react-native-ui-kitten';
-import { NavigationActions } from 'react-navigation';
+import { NavigationActions, StackActions } from 'react-navigation';
 import ReactMoment from 'react-moment';
 import { GradientButton } from '../../components/gradientButton';
 import { Avatar } from '../../components';
@@ -108,7 +108,7 @@ export class MenuEvents extends RkComponent {
      if(event){
          let eventInfo = JSON.stringify(event);
          AsyncStorage.setItem("EVENT_DETAILS", eventInfo);
-           thisRef.resetNavigation(thisRef.props.navigation, 'HomeMenu');
+        thisRef.resetNavigation(thisRef.props.navigation, 'HomeMenu');
      }
       else{
         AsyncStorage.setItem("EVENT_DETAILS", {});
@@ -167,6 +167,7 @@ export class MenuEvents extends RkComponent {
                         </View>
                     </RkCard>
                 </TouchableOpacity>
+             
             )
         });
     }

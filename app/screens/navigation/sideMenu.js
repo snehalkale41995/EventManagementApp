@@ -21,7 +21,15 @@ export class SideMenu extends React.Component {
   }
   
   componentWillMount() {
-    AsyncStorage.getItem("USER_DETAILS").then((userDetails)=>{
+  this.setUserEventDetails();
+  }
+ 
+  componentWillReceiveProps(nextProps) {
+    this.setEventName();
+  }
+
+  setUserEventDetails(){
+     AsyncStorage.getItem("USER_DETAILS").then((userDetails)=>{
       eventService.getCurrentEvent((eventDetails)=>{
        this.setState({
          userDetails: JSON.parse(userDetails),
@@ -34,6 +42,22 @@ export class SideMenu extends React.Component {
         console.warn('Errors');
       });
   }
+
+  //To avoid multiple setState call
+ setEventName(){
+   AsyncStorage.getItem("EVENT_DETAILS").then((eventDetails)=>{
+    let eventInfo = JSON.parse(eventDetails);
+    let selectedEvent = eventInfo.eventName;
+    let currentStateEvent = this.state.eventDetails.eventName;
+      if(selectedEvent!== currentStateEvent){
+        this.setState({
+         eventDetails : eventInfo,
+         eventName : eventInfo.eventName.toUpperCase()
+        });
+        }
+   })
+ }
+   
 
   _navigate(route) {
     let resetAction = NavigationActions.reset({
