@@ -12,6 +12,7 @@ import * as eventService from '../../serviceActions/event';
 import {Loader} from '../../components/loader';
 import {Footer} from '../../components/footer';
 import * as loginService from '../../serviceActions/login';
+import _ from 'lodash'
 export class Events extends RkComponent {
     static navigationOptions = {
       title: 'UPCOMING EVENTS'.toUpperCase(),
@@ -75,23 +76,28 @@ export class Events extends RkComponent {
 
   getCurrentUser(){
     loginService.getCurrentUser((userDetails) => {
-      this.getEventsList(userDetails.event);
+      this.getEventsList(userDetails);
     })
    }
 
-    getEventsList(userEventId) {
+    getEventsList(userDetails) {
         let thisRef = this;
         let Events = [];
         let today = new Date().setHours(0, 0, 0, 0);
         eventService.getEvents().then(function(response) {
          response.forEach( (data)=> {
-        //  if(data._id === userEventId){
          let endDate = new Date(data["endDate"]).setHours(0, 0, 0, 0);
          if(today<=endDate){
           Events.push(data);
           }
-        //  }
         });
+
+        if(userDetails.roleName !== "Admin"){
+         Events = _.filter(Events, function(event) {
+            return event._id === userDetails.event ;
+          });
+        }
+
           thisRef.setState({
              Events : Events,
              isLoaded :true
