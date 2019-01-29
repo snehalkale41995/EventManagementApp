@@ -9,3 +9,4 @@ export * from './sponsors';
 export * from './static';
 export * from './events';
 export * from './userProfile';
+export * from './directory';

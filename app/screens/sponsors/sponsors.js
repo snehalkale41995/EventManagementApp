@@ -146,7 +146,7 @@ export class Sponsors extends RkComponent {
                   <Footer isOffline ={this.state.isOffline}/>    
                   </View>
                 </Container>
-            )
+            ) 
         }
        else if(this.state.isLoaded && this.state.noDataFlag){
         return (<EmptyData isOffline ={this.state.isOffline}/>)

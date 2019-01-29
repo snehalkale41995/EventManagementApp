@@ -302,6 +302,13 @@ export const MainRoutes = [
     icon: 'md-list',
     screen: Screens.MenuEvents,
     children: []
+  },
+  {
+    id: 'Derectory',
+    title: 'Derectory',
+    icon: 'md-list',
+    screen: Screens.Directory,
+    children: []
   }
 ];
 

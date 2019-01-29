@@ -2,7 +2,7 @@
   "expo": {
     "name": "TiE Pune Events",
     "slug": "tieconpuneevents",
-    "sdkVersion":"25.0.0",
+    "sdkVersion":"30.0.0",
     "icon": "./tie-square200.png",
     "orientation": "portrait",
     "loading": {
