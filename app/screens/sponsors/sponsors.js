@@ -81,7 +81,7 @@ export class Sponsors extends RkComponent {
          isLoaded: true,
         noDataFlag : true
         })  
-         }
+         } 
          else{     
             this.setState({
             Sponsors: response,

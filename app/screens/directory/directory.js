@@ -1,7 +1,7 @@
 import React from 'react';
 import { ScrollView, Platform, Image, NetInfo} from 'react-native';
 import { Text, View, Icon, Container, Label } from 'native-base';
-import { StyleSheet, FlatList, TouchableOpacity, Keyboard, Alert, AsyncStorage, ActivityIndicator, Linking } from 'react-native';
+import { StyleSheet, FlatList, TouchableOpacity, Keyboard, Alert, AsyncStorage, ActivityIndicator, Linking, Dimensions  } from 'react-native';
 import { RkComponent, RkTheme, RkStyleSheet, RkText, RkAvoidKeyboard, RkButton, RkCard, RkChoice, RkTextInput, RkChoiceGroup } from 'react-native-ui-kitten';
 import { NavigationActions } from 'react-navigation';
 import ReactMoment from 'react-moment';
@@ -18,6 +18,7 @@ import * as regResponseService from "../../serviceActions/registrationResponse";
 import Attendee from './attendee';
 import Sponsors from './sponsers';
 import {  Tab, TabHeading,Tabs } from "native-base";
+import { TabView, TabBar, SceneMap } from 'react-native-tab-view';
 
 export class Directory extends RkComponent {
 
@@ -27,7 +28,8 @@ export class Directory extends RkComponent {
           sessionList: [],
           userId: "",
           eventId: "",
-          isLoaded: false
+          isLoaded: false,
+          
         };
       }
     
@@ -71,31 +73,70 @@ export class Directory extends RkComponent {
           });
       };
     
-render() {
+render() { 
     let {eventId, userId} = this.state;
     return (
-      <Tabs style={{ elevation: 3 }} style={styles.tabContent}
+    //     <TabView
+    //     scrollEnabled
+    //     style={{
+    //         width:600
+    //     }}
+    //     navigationState={this.state.tabState}
+    //     renderScene={SceneMap({
+    //       first: Attendee,
+    //       second: Attendee,
+    //       first: Attendee,
+    //       second: Attendee,
+    //       first: Attendee,
+    //       second: Attendee,
+    //     })}
+    //     onIndexChange={index => this.setState({ ...this.state.tabState,index:index })} 
+        
+    //   />
+      <Tabs style={{ elevation: 3,width:400}} style={styles.tabContent}
         onChangeTab={() => {
          this.fetchSessionList(eventId, userId);
          }}
       >
-        <Tab
+        <Tab 
           heading={
             <TabHeading  style={{backgroundColor : '#fff'}} >
-              <Icon style={[styles.textColor]} name="calendar"/>
-              <Text  style={[styles.textColor]} >Schedule</Text>
+              <Text  style={[styles.textColor]} >Deligates</Text> 
             </TabHeading>
-          } style={styles.activeBorder}>        
-          <Attendee/>
+          } style={styles.activeBorder} >        
+          <Attendee navigation={this.props.navigation} profile='Delegate'/> 
         </Tab>
         <Tab
           heading={
             <TabHeading style={{backgroundColor : '#fff'}}>
-              <Icon  style={[styles.textColor]}  name="ios-link"/>
-              <Text  style={[styles.textColor]} >My Agenda</Text>
+              <Text  style={[styles.textColor]} >Volunteers</Text>
             </TabHeading>
           } style={styles.activeBorder}>
-          <Sponsors/>
+          <Attendee navigation={this.props.navigation} profile='Volunteer'/> 
+        </Tab>
+        <Tab
+          heading={
+            <TabHeading style={{backgroundColor : '#fff',minWidth:8}}>
+              <Text  style={[styles.textColor]} >Charter Member</Text>
+            </TabHeading>
+          } style={styles.activeBorder}>
+          <Attendee profile='Charter Member'/> 
+        </Tab> 
+        <Tab
+          heading={
+            <TabHeading style={{backgroundColor : '#fff',minWidth:10,padding:0}}>
+              <Text navigation={this.props.navigation}  style={[styles.textColor]} >Eco System Partner</Text>
+            </TabHeading>
+          } style={styles.activeBorder}>
+          <Attendee profile='Eco System Partner'/> 
+        </Tab> 
+        <Tab 
+          heading={
+            <TabHeading style={{backgroundColor : '#fff'}}>
+              <Text  style={[styles.textColor]} >Exhibitor</Text>
+            </TabHeading>
+          } style={styles.activeBorder}> 
+          <Attendee profile='Exhibitor'/> 
         </Tab>
       </Tabs>
     );
@@ -103,17 +144,17 @@ render() {
 }
 let styles = RkStyleSheet.create(theme => ({
     screen: {
-      flex: 1,
       backgroundColor: theme.colors.screen.base
     },
     tabContent: {
-      backgroundColor: '#FFFFFF',   
+      backgroundColor: '#FFFFFF',
     },
     textColor : {
-      color: '#ed1b24'
+      color: '#ed1b24',
+      fontSize:11
     },
     activeBorder:{
-      borderColor: '#ed1b24',
+      borderColor: '#ed1b24', 
     }
   }));
 // var Directory=TabNavigator({

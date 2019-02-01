@@ -32,7 +32,10 @@ export class MenuEvents extends RkComponent {
         }
     }
 
+  
+
     componentWillMount() {
+
         if (Platform.OS !== 'ios') {
             NetInfo.isConnected.fetch().then(isConnected => {
                 if (isConnected) {

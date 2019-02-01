@@ -10,6 +10,7 @@ import * as Screens from '../index';
 import { ProgramsTab, QueTab} from  '../index';
 import { TabNavigator, TabView } from 'react-navigation'
 import EventCal from './schedule/EventCal';
+import { BackHandler } from 'react-native';
 
 export class HomePage extends React.Component {
   static navigationOptions = ({navigation}) => ({
@@ -23,7 +24,27 @@ export class HomePage extends React.Component {
       currentTab: 'Home' 
     };
   }
+  handleBackPress=()=>{
+    if(this.props.navigation.state.routeName=='GridV2' || this.props.navigation.state.routeName=='HomeMenu')
+    {
+      console.log("In ",this.props.navigation.state.routeName)
+      this.props.navigation.navigate('EventList');
+      return true;
 
+    }
+    else{
+    console.log("Out ",this.props.navigation.state.routeName)
+    return false;
+  }
+  }
+
+  componentWillMount(){
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
+
+  }
+  componentWillUnmount(){
+    BackHandler.removeEventListener('hardwareBackPress',this.handleBackPress);
+  }
   render() {
     
     return (
