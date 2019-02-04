@@ -4,6 +4,7 @@ import { Tabs, Tab, Icon, Text, TabHeading } from "native-base";
 import { Platform, View ,NetInfo} from 'react-native';
 import { AttendeeProfile } from './AttendeeProfile';
 import { SpeakerSessionList } from './SpeakerSessionList';
+import { BackHandler } from 'react-native';
 
 export class SpeakerDetailsTabs extends React.Component {
   static navigationOptions = {
@@ -15,7 +16,21 @@ export class SpeakerDetailsTabs extends React.Component {
       isOffline : false
     }
   }
+  handleBackPress=()=>{
+    console.log("1:",this.props.navigation)
+    this.props.navigation.pop();
+    // console.log("2:",this.props.navigation)
+    // this.props.navigation.pop();
+
+    //this.props.navigation.goBack();
+    console.log("after:")
+
+    return true;
+  }
+  
   componentWillMount() {
+    BackHandler.addEventListener('hardwareBackPress',this.handleBackPress);
+
     if(Platform.OS !== 'ios'){
       NetInfo.isConnected.fetch().then(isConnected => {
         if(isConnected) {
@@ -56,6 +71,8 @@ export class SpeakerDetailsTabs extends React.Component {
   };
   
   componentWillUnmount() {
+    BackHandler.removeEventListener('hardwareBackPress',this.handleBackPress);
+
     NetInfo.removeEventListener(
       'connectionChange',
       this.handleFirstConnectivityChange

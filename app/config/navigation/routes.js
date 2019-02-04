@@ -252,9 +252,17 @@ export const MainRoutes = [
     title: 'My Profile',
     icon: 'ios-person',
     screen: Screens.UserProfile,
-    children: [],
-  },
-  {
+    children: [
+      
+      {
+        id: 'EditProfile',
+        title: 'Edit Profile',
+        screen: Screens.editProfile,
+        children: []
+      }
+    ],
+  }, 
+  { 
     id: 'Speakers',
     title: 'Speakers',
     icon: 'ios-people',
@@ -302,6 +310,20 @@ export const MainRoutes = [
     icon: 'md-list',
     screen: Screens.MenuEvents,
     children: []
+  },
+  {
+    id: 'Directory',
+    title: 'Directory',
+    icon: 'md-list',
+    screen: Screens.Directory,
+    children: [      
+      {
+        id: 'AttendeeProfileDetails',
+        title: 'AttendeeProfileDetails',
+        screen: Screens.AttendeeProfileDetails,
+        children: []
+      }
+    ]
   }
 ];
 

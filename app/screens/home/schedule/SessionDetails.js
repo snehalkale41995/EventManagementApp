@@ -14,6 +14,8 @@ import * as questionFormService from '../../../serviceActions/questionForm';
 import {Loader} from '../../../components/loader';
 import {Footer} from '../../../components/footer';
 import _ from 'lodash'
+import { BackHandler } from 'react-native';
+
 import withPreventDoubleClick from '../../../components/withPreventDoubleClick/withPreventDoubleClick';
 const TouchableOpacityEx = withPreventDoubleClick(TouchableOpacity);
 
@@ -49,8 +51,16 @@ export class SessionDetails extends Component {
         isLoaded : false
       }
   }
+  handleBackPress=()=>{
+    console.log("Second:",this.props.navigation.state.routeName)
+    this.props.navigation.pop(1); 
+    return true;
+  }
+
 /**check */
 componentWillMount() {
+  BackHandler.addEventListener('hardwareBackPress',this.handleBackPress);
+
   if(Platform.OS !== 'ios'){
     NetInfo.isConnected.fetch().then(isConnected => {
       if(isConnected) {
@@ -86,6 +96,7 @@ handleFirstConnectivityChange = (connectionInfo) => {
 };
 
 componentWillUnmount() {
+  BackHandler.removeEventListener('hardwareBackPress',this.handleBackPress);
   NetInfo.removeEventListener(
     'connectionChange',
     this.handleFirstConnectivityChange
@@ -162,7 +173,8 @@ getCurrentUser() {
             avatar = <Image style={{ width: 44, height: 44, borderRadius: 20 }} source={require('../../../assets/images/defaultUserImg.png')} />
           }
           return (
-            <TouchableOpacityEx key={index} onPress={() => this.props.navigation.navigate('SpeakerDetailsTabs', { speakerDetails: speaker, speakersId: speaker._id, eventId: this.state.eventId })}>
+            <TouchableOpacityEx key={index} onPress={() =>{  BackHandler.removeEventListener('hardwareBackPress',this.handleBackPress);
+            this.props.navigation.navigate('SpeakerDetailsTabs', { speakerDetails: speaker, speakersId: speaker._id, eventId: this.state.eventId })}}>
               <View style={[styles.row, styles.heading, styles.speakerView]} >
                 {avatar}
                 <View style={styles.column}>

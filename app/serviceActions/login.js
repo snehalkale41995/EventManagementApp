@@ -25,4 +25,13 @@ import {AsyncStorage} from 'react-native';
                 }
         });
     }
- 
+    _storeData = async (data) => {
+        try {
+          await AsyncStorage.setItem('USER_DETAILS', data);
+          console.log('Success');
+
+        } catch (error) {
+          // Error saving data
+          console.log(error);
+        }
+      };

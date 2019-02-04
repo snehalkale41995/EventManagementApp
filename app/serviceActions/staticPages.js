@@ -66,3 +66,16 @@ export const getSponsorInfo = (eventId) =>{
       })
         return promise;
 }
+//Attendee
+export const getAttendeeInfo = (eventId) =>{
+  let promise = new Promise((resolve, reject) => {
+     axios.get(`${AppConfig.serverURL}/api/attendee/event/${eventId}`)
+     .then(response => {
+       resolve(response.data);
+     })
+     .catch(error => {
+        reject(error);
+     })
+  })
+    return promise;
+}

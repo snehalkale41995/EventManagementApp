@@ -21,6 +21,7 @@ export default class EventCal extends Component {
     }
  
     componentDidMount(){
+    //console.log(this.props.navigation.push('HomeMenu'))
      eventService.getCurrentEvent((eventDetails)=>{
       const __startDate = Moment(eventDetails.startDate).format("YYYY-MM-DD");
       const __endDate  =  Moment(eventDetails.endDate).format("YYYY-MM-DD");

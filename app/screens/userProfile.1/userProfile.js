@@ -4,16 +4,15 @@ import { Container } from 'native-base';
 import { Image, ScrollView, View, StyleSheet, Alert, AsyncStorage, ActivityIndicator, Text, Linking, TouchableOpacity,Platform,NetInfo } from 'react-native';
 import { scale, scaleModerate, scaleVertical } from '../../utils/scale';
 import * as loginService from '../../serviceActions/login';
-import QRCode from "react-native-qrcode"; 
+import QRCode from "react-native-qrcode";
 import {Loader} from '../../components/loader';
 import {Footer} from '../../components/footer';
-import { GradientButton } from '../../components/gradientButton';
 
 function renderIf(condition, content) {
   if (condition) {
     return content;
   } else {
-    return null; 
+    return null;
   }
 }
 export class UserProfile extends React.Component {
@@ -91,45 +90,28 @@ export class UserProfile extends React.Component {
     let attendeeCode = userInfo.attendeeLabel+"-"+userInfo.attendeeCount;
     let attendeeId = userInfo._id;
     let userName = userInfo.firstName +""+ userInfo.lastName;
-
     let qrText = "TIE" + ":" + attendeeCode + ":" + attendeeId + ":" + userName;
-    console.log(userInfo)
-
     return (
       <Container>
         <ScrollView style={styles.root}>
              <View style={styles.section}>
-             
                 <View style={[styles.column, styles.heading]}>
-                  <Image style={{ width: 120, height: 120,borderRadius:100 }} source={{ uri: userInfo.profileImageURL }} />
                   <RkText style={{color: '#E7060E',fontSize : 25, textAlign: 'center'}}>{userInfo.firstName + " " + userInfo.lastName}</RkText>
-                  <RkText style={{fontSize : 18, textAlign: 'center'}}>{userInfo.roleName}</RkText>
+                  <RkText style={{fontSize : 20, textAlign: 'center'}} >{userInfo.briefInfo}</RkText>
                 </View>
-                <View style={[styles.column]}>
-                  <RkText style={{color: '#E7060E', fontSize : 20, textAlign: 'center'}}>Contact Details</RkText>
-                  <RkText style={{fontSize : 18, textAlign: 'center'}}>{userInfo.contact}</RkText>
-                  <RkText style={{fontSize : 18, textAlign: 'center'}}>{userInfo.email}</RkText>
-                </View> 
-                <View style={[styles.column]}>
-                  <RkText style={{color: '#E7060E', fontSize : 20, textAlign: 'center'}}>Other Details</RkText>
-                  <RkText style={{fontSize : 18, textAlign: 'center'}}>{userInfo.briefInfo}</RkText>
-                  
-                </View>
-                <GradientButton colors={['#f20505', '#f55050']} text='Edit' style={{width: Platform.OS === 'ios' ? 150 :170 , alignSelf : 'center'}}
-                onPress={() => this.props.navigation.navigate('EditProfile', { sessionDetails: this.state.userInfo })}/>
-                {/* <View style={[styles.row]}>
+                <View style={[styles.row]}>
                    <QRCode
                    value={qrText}
                    size={160}
                    bgColor='black'
                    fgColor='white'/>  
-                   </View> */}
-                 {/* <View style={{marginTop:10}}>
+                   </View>
+                 <View style={{marginTop:10}}>
                    <RkText style={{fontSize : 15, textAlign: 'center'}}>{attendeeCode}</RkText>
-                 </View> */}
-                  {/* <View style={{marginTop:25,backgroundColor:'#E7060E',height:40}}>
+                 </View>
+                  <View style={{marginTop:25,backgroundColor:'#E7060E',height:40}}>
                    <RkText style={{fontSize : 25, textAlign: 'center', color:'white'}}>{userInfo.roleName}</RkText>
-                 </View> */}
+                 </View>
               </View>
         </ScrollView>
       </Container>
