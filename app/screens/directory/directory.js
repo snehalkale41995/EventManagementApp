@@ -21,7 +21,9 @@ import {  Tab, TabHeading,Tabs } from "native-base";
 import { TabView, TabBar, SceneMap } from 'react-native-tab-view';
 
 export class Directory extends RkComponent {
-
+  static navigationOptions = {
+    title:'Directory'.toUpperCase()
+}
     constructor(props) {
         super(props);
         this.state = {
@@ -120,7 +122,7 @@ render() {
               <Text  style={[styles.textColor]} >Charter Member</Text>
             </TabHeading>
           } style={styles.activeBorder}>
-          <Attendee profile='Charter Member'/> 
+          <Attendee  navigation={this.props.navigation}  profile='Charter Member'/> 
         </Tab> 
         <Tab
           heading={
@@ -128,7 +130,7 @@ render() {
               <Text navigation={this.props.navigation}  style={[styles.textColor]} >Eco System Partner</Text>
             </TabHeading>
           } style={styles.activeBorder}>
-          <Attendee profile='Eco System Partner'/> 
+          <Attendee  navigation={this.props.navigation}  profile='Eco System Partner'/> 
         </Tab> 
         <Tab 
           heading={
@@ -136,7 +138,7 @@ render() {
               <Text  style={[styles.textColor]} >Exhibitor</Text>
             </TabHeading>
           } style={styles.activeBorder}> 
-          <Attendee profile='Exhibitor'/> 
+          <Attendee  navigation={this.props.navigation}  profile='Exhibitor'/> 
         </Tab>
       </Tabs>
     );

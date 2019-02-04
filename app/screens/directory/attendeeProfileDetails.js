@@ -5,6 +5,8 @@ import {Avatar} from '../../components';
 import {Icon} from "native-base";
 
 export class AttendeeProfileDetails extends  React.Component {
+
+  
     constructor(props) {
         super(props);
         let {params} = this.props.navigation.state;

@@ -123,23 +123,63 @@ class Attendee extends React.Component{
       else return;
      }
 
+     searchAttendee=(searchString)=>{
+        // let attendeeList=[]
+        // this.state.Attendees.forEach((attendee,index)=>{
+        //     if(attendee.firstName.includes(searchString) || attendee.lastName.includes(searchString)){
+        //         attendeeList.push(attendee);
+        //     }
+        // })
+
+        this.setState({...this.state,searchString:searchString});
+     }
+
     displayAttendees = () => {
     //   console.warn("compref", this);
     //   console.warn("props", this.props.navigation);
         return this.state.Attendees.map((attendee, index) => {
+            if(this.state.searchString.length!=0){
+                if(attendee.roleName===this.props.profile)
+                {
+                    if(attendee.firstName.toLowerCase().includes(this.state.searchString.toLowerCase()) || attendee.lastName.toLowerCase().includes(this.state.searchString.toLowerCase())){ 
+                let avatar;
+                if (attendee.profileImageURL) {
+                    avatar = <Image style={{ width: 60, height: 60,borderRadius:100 }} source={{ uri: attendee.profileImageURL }} />
+                } else {
+                    avatar = <Image style={{ width: 60, height: 60,borderRadius:100 }} source={require('../../assets/images/defaultSponsorImg.png')} />
+                } 
+                return (
+                    <TouchableOpacity key={attendee._id} onPress={() => this.props.navigation.navigate('AttendeeProfileDetails',{ attendeeDetails: attendee})}
+                    >
+                        <RkCard rkType='shadowed' style={[styles.card]}>
+                            <View style={{ flexDirection: 'row' }}>
+                                <View style={{ flexDirection: 'column', alignItems: 'flex-start', marginVertical: 10, flex: 3, alignSelf: 'center', marginLeft: 10 }}>
+                                    {avatar}
+                                </View>
+                                <View style={{ flexDirection: 'column', alignItems: 'flex-start', marginVertical: 10, flex: 6, marginLeft: -10 }}>
+                                    <Text style={styles.headerText}>{attendee.firstName+' '+attendee.lastName}</Text>
+                                    <Text style={styles.infoText}>{attendee.briefInfo}</Text>
+                                </View >
+                            </View >
+                        </RkCard>
+                    </TouchableOpacity>
+                ) 
+            }
+        }
+        }else{
             if(attendee.roleName===this.props.profile)
             { 
             let avatar;
             if (attendee.profileImageURL) {
-                avatar = <Image style={{ width: 60, height: 60 }} source={{ uri: attendee.profileImageURL }} />
+                avatar = <Image style={{ width: 60, height: 60 ,borderRadius:100 }} source={{ uri: attendee.profileImageURL }} />
             } else {
-                avatar = <Image style={{ width: 60, height: 60 }} source={require('../../assets/images/defaultSponsorImg.png')} />
+                avatar = <Image style={{ width: 60, height: 60,borderRadius:100  }} source={require('../../assets/images/defaultSponsorImg.png')} />
             } 
             return (
                 <TouchableOpacity key={attendee._id} onPress={() => this.props.navigation.navigate('AttendeeProfileDetails',{ attendeeDetails: attendee})}
                 >
                     <RkCard rkType='shadowed' style={[styles.card]}>
-                        <View style={{ flexDirection: 'row' }}>
+                        <View style={{ flexDirection: 'row',elevation:3 }}>
                             <View style={{ flexDirection: 'column', alignItems: 'flex-start', marginVertical: 10, flex: 3, alignSelf: 'center', marginLeft: 10 }}>
                                 {avatar}
                             </View>
@@ -151,6 +191,7 @@ class Attendee extends React.Component{
                     </RkCard>
                 </TouchableOpacity>
             )
+        }
         }}); 
     }  
     render(){
@@ -158,17 +199,19 @@ class Attendee extends React.Component{
         if (this.state.isLoaded && !this.state.noDataFlag && this.state.count!=0) {
             return (
                 <Container style={[styles.root]}> 
-                    <ScrollView>
-                    <View style={styles.searchSection}>
-                        <Icon style={styles.searchIcon} name="ios-search" size={20} color="#000"/>
-                        <TextInput
                         
-                            style={styles.input}
-                            placeholder="Name of attendee"
-                            onChangeText={(searchString) => {this.setState({...this.state,searchString:searchString})}}
-                            underlineColorAndroid="transparent"
-                        />
-                    </View>
+
+                    <ScrollView stickyHeaderIndices={[0]}>
+                    <View style={styles.searchSection}>
+                            {/* <Icon style={styles.searchIcon} name="ios-search" size={20} color="#000"/> */}
+                            <TextInput
+                            
+                                style={styles.input}
+                                placeholder="Search here..."
+                                onChangeText={(searchString) => {this.searchAttendee(searchString)}}
+                                underlineColorAndroid="transparent"
+                            />
+                        </View>
                         <View>
                              {attendeeList} 
                         </View>
@@ -180,7 +223,7 @@ class Attendee extends React.Component{
             ) 
         }
         else if(this.state.isLoaded && !this.state.noDataFlag && this.state.count==0){
-            return (    <View style={{ flexDirection: 'column', alignItems: 'flex-start', marginVertical: 10, flex: 6, marginLeft: -10 }}>
+            return (    <View style={{ flexDirection: 'column', alignItems: 'center', marginVertical: 10, flex: 6}}>
             <Text style={styles.headerText}>No data found</Text>
         </View >)
         }
@@ -230,9 +273,10 @@ let styles = RkStyleSheet.create(theme => ({
         paddingTop: 10,
         paddingRight: 10,
         paddingBottom: 10,
-        paddingLeft: 0,
+        paddingLeft: 20,
         backgroundColor: '#fff',
         color: '#424242',
+
     },
 }));
 export default Attendee;

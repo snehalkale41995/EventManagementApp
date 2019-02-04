@@ -1,7 +1,7 @@
 import React from 'react';
 import { RkText, RkStyleSheet } from 'react-native-ui-kitten';
 import { Container } from 'native-base';
-import { Image, TextInput,ScrollView, View, StyleSheet, Alert, AsyncStorage, ActivityIndicator, Text, Linking, TouchableOpacity,Platform,NetInfo } from 'react-native';
+import { Image, TextInput,ScrollView, View, StyleSheet, Alert, AsyncStorage, ActivityIndicator, Text, Linking, TouchableOpacity,Platform,NetInfo ,TouchableHighlight } from 'react-native';
 import { scale, scaleModerate, scaleVertical } from '../../utils/scale';
 import * as loginService from '../../serviceActions/login';
 import QRCode from "react-native-qrcode"; 
@@ -59,20 +59,47 @@ export class editProfile extends React.Component {
       'connectionChange',
       this.handleFirstConnectivityChange
     );
-  }
+  } 
 
   getProfileImage=()=>{
     console.log('Inside get image');
-    ImagePicker.open({
-      takePhoto: true,
-      useLastPhoto: true,
-      chooseFromLibrary: true
-  }).then(({ uri, width, height }) => {
-      console.log('image asset', uri, width, height);
-  }, (error) => {
-      // Typically, user cancel  
-      console.log('error', error);
-  });
+    var options = {
+      title: 'Select Image',
+      customButtons: [
+        { name: 'customOptionKey', title: 'Choose Photo from Custom Option' },
+      ],
+      storageOptions: {
+        skipBackup: true,
+        path: 'images',
+      },
+   }; 
+    ImagePicker.showImagePicker(options, response => {
+    console.log('Response = ', response);
+    if (response.didCancel) {
+      console.log('User cancelled image picker');
+    } else if (response.error) {
+      console.log('ImagePicker Error: ', response.error);
+    } else if (response.customButton) {
+      console.log('User tapped custom button: ', response.customButton);
+      alert(response.customButton);
+    } else {
+      let source = response; 
+      this.setState({
+        filePath: source,
+      });
+    }
+ });
+
+  //   ImagePicker.open({
+  //     takePhoto: true, 
+  //     useLastPhoto: true,
+  //     chooseFromLibrary: true
+  // }).then(({ uri, width, height }) => {
+  //     console.log('image asset', uri, width, height);
+  // }, (error) => {
+  //     // Typically, user cancel  
+  //     console.log('error', error);
+  // });
   }
 
   handleFirstConnectivityChange = (connectionInfo) => {
@@ -204,7 +231,11 @@ validate=(fname,lname,contact,email)=>{
              <View style={styles.section}>  
              
                 <View style={[styles.column]} >
-                  <Image onPress={()=>this.getProfileImage()} style={{ width: 120, height: 120,borderRadius:100 }} source={{ uri: userInfo.profileImageURL }}  />
+                <TouchableOpacity key={userInfo.firstName} onPress={() => this.getProfileImage()}> 
+
+                  <Image style={{ width: 120, height: 120,borderRadius:100 }} source={{ uri: userInfo.profileImageURL }}  />
+                  </TouchableOpacity>
+
                   </View>
                   <View style={[styles.column]}>
 
