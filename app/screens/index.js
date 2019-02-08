@@ -10,3 +10,5 @@ export * from './static';
 export * from './events';
 export * from './userProfile';
 export * from './directory';
+export * from './socialFeed';
+

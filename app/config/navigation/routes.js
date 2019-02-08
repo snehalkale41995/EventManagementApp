@@ -206,9 +206,21 @@ export const MainRoutes = [
     screen: HomePageMenuScreen,
     children: [
       {
-        id: 'SpeakerDetailsTabs',
+        id: 'SpeakerDetailsTabs', 
         title: 'Speaker DetailsTabs',
         screen: Screens.SpeakerDetailsTabs,
+        children: []
+      },
+      {
+        id: 'Events',
+        title: 'Speaker DetailsTabs',
+        screen: Screens.Events,
+        children: []
+      },
+      {
+        id: 'EventsMenu',
+        title: 'Events',
+        screen: Screens.EventMenu,
         children: []
       },
       {
@@ -304,13 +316,13 @@ export const MainRoutes = [
     screen: Screens.AboutEternus,
     children: []
   },
-  {
-    id: 'EventList',
-    title: 'Event List',
-    icon: 'md-list',
-    screen: Screens.MenuEvents,
-    children: []
-  },
+  // {
+  //   id: 'EventList',
+  //   title: 'Event List',
+  //   icon: 'md-list',
+  //   screen: Screens.MenuEvents,
+  //   children: [] 
+  // }, 
   {
     id: 'Directory',
     title: 'Directory',
@@ -324,7 +336,14 @@ export const MainRoutes = [
         children: []
       }
     ]
-  }
+  },
+   {
+    id: 'SocialFeed',
+    title: 'Social Feed',
+    icon: 'md-qr-scanner',
+    screen: Screens.SocialFeed,
+    children: [],
+  },
 ];
 
 let menuRoutes = _.cloneDeep(MainRoutes);
