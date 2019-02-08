@@ -223,9 +223,7 @@ class Attendee extends React.Component{
             ) 
         }
         else if(this.state.isLoaded && !this.state.noDataFlag && this.state.count==0){
-            return (    <View style={{ flexDirection: 'column', alignItems: 'center', marginVertical: 10, flex: 6}}>
-            <Text style={styles.headerText}>No data found</Text>
-        </View >)
+            return (    <EmptyData isOffline ={this.state.isOffline}/>)
         }
        else if(this.state.isLoaded && this.state.noDataFlag){
         return (<EmptyData isOffline ={this.state.isOffline}/>)
