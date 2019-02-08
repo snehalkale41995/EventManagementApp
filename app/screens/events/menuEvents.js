@@ -107,7 +107,7 @@ export class MenuEvents extends RkComponent {
           });
           thisRef.displayEvents();
         }, function(error) {
-         console.error("Failed!", error);
+       //  console.error("Failed!", error);
         })
     }
 

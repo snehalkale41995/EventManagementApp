@@ -75,7 +75,7 @@ export default class EventCal extends Component {
         let eventId = this.state.eventDetails._id;
         sessionService.getSessionsByEventDate(eventId, currentDate).then(successFn)
         .catch(err =>{
-            console.warn(err);
+            //console.warn(err);
         });
     }
     /**

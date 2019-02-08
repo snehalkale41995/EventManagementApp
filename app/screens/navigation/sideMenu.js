@@ -39,7 +39,7 @@ export class SideMenu extends React.Component {
       })
       })
       .catch(err => {
-        console.warn('Errors');
+        //console.warn('Errors');
       });
   }
 

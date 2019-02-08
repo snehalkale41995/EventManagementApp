@@ -48,11 +48,11 @@ export class SessionDetails extends Component {
         sameTimeRegistration : false,
         isOffline : false,
         isAddingToAgenda :false,
-        isLoaded : false
+        isLoaded : false 
       }
   }
   handleBackPress=()=>{
-    console.log("Second:",this.props.navigation.state.routeName)
+    //console.log("Second:",this.props.navigation.state.routeName)
     this.props.navigation.pop(1); 
     return true;
   }
