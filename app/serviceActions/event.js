@@ -33,7 +33,7 @@ import {AsyncStorage} from 'react-native';
         AsyncStorage.getItem("EVENT_DETAILS").then((eventDetails)=>{
             successFn(JSON.parse(eventDetails));
             }).catch(err => {
-                console.warn('Errors');
+                // console.warn('Errors');
                 if(errorFn){
                     errorFn(err);
                 }
