@@ -340,7 +340,7 @@ export const MainRoutes = [
    {
     id: 'SocialFeed',
     title: 'Social Feed',
-    icon: 'md-qr-scanner',
+    icon: 'logo-twitter',
     screen: Screens.SocialFeed,
     children: [],
   },

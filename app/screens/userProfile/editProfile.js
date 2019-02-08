@@ -1,7 +1,7 @@
 import React from 'react';
 import { RkText, RkStyleSheet } from 'react-native-ui-kitten';
 import { Container } from 'native-base';
-import { Image, TextInput,ScrollView, View, StyleSheet, Alert, AsyncStorage, ActivityIndicator, Text, Linking, TouchableOpacity,Platform,NetInfo ,TouchableHighlight } from 'react-native';
+import { Image, TextInput,ScrollView, View, StyleSheet, Alert, AsyncStorage, ActivityIndicator, Text, Linking, TouchableOpacity,Platform,NetInfo ,TouchableHighlight,ToastAndroid } from 'react-native';
 import { scale, scaleModerate, scaleVertical } from '../../utils/scale';
 import * as loginService from '../../serviceActions/login';
 import QRCode from "react-native-qrcode"; 
@@ -184,7 +184,7 @@ export class editProfile extends React.Component {
   submit=()=>
   {
     let user={...this.state.userInfo};
-    if(this.validate(user.firstName,user.lastName,user.contact.toString(),user.email)){
+    if(this.validate(user.firstName,user.lastName,user.contact.toString())){
         delete user._id;
         delete user.__v;
                         
@@ -194,7 +194,15 @@ export class editProfile extends React.Component {
           let userInfo = JSON.stringify(response.data);
           AsyncStorage.setItem("USER_DETAILS", userInfo);
           console.log("(response)",response.data);
+          ToastAndroid.showWithGravity(
+            'Your profile has been updated successfully..',
+            ToastAndroid.LONG,
+            ToastAndroid.CENTER,
+            
+          );
           this.props.navigation.replace('MyProfile');
+
+
         // loginService._storeData(JSON.stringify(response.data));
         // console.log("NEw",this.state.userInfo); 
         // this.getUserInfo();
@@ -226,38 +234,41 @@ export class editProfile extends React.Component {
     // });
 }
 }
-validate=(fname,lname,contact,email)=>{
+validate=(fname,lname,contact)=>{
     var hasNumber = /\d/;
 
     if(fname.length>0 && !hasNumber.test(fname)){
         if(lname.length>0 && !hasNumber.test(lname)){
             if(contact.toString().length==10 && contact.toString().match(/^[0-9]+$/)){    
-                    if(email.length>0 && email.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i)){
+                    // if(email.length>0 && email.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i)){
+                    //     return true;
+                    // }else{ 
                         return true;
-                    }else{ 
-                        this.setState({...this.state, contactError:'',lnameError:'',fnameError:'',emailError:'Please enter valid email id'});
-              
-                        return false;
-                    }
             }else{
-                this.setState({...this.state, emailError:''});
-                this.setState({...this.state, lnameError:''});
-                this.setState({...this.state, fnameError:''});
-                this.setState({...this.state, contactError:'Please enter valid contact details'});
+              this.setState({...this.state, contactError:'Please enter valid contact details',lnameError:'',fnameError:''});
+
+                // this.setState({...this.state, emailError:''});
+                // this.setState({...this.state, lnameError:''});
+                // this.setState({...this.state, fnameError:''});
+                // this.setState({...this.state, contactError:'Please enter valid contact details'});
                 return false;
             }
         }else{
-            this.setState({...this.state, emailError:''});
-            this.setState({...this.state, contactError:''});
-            this.setState({...this.state, fnameError:''});
-            this.setState({...this.state, lnameError:'Please enter valid last name'});
+          this.setState({...this.state, contactError:'',lnameError:'Please enter valid last name',fnameError:''});
+
+            // this.setState({...this.state, emailError:''});
+            // this.setState({...this.state, contactError:''});
+            // this.setState({...this.state, fnameError:''});
+            // this.setState({...this.state, lnameError:'Please enter valid last name'});
             return false;
         }
     }else{
-        this.setState({...this.state, emailError:''});
-        this.setState({...this.state, contactError:''});
-        this.setState({...this.state, lnameError:''});
-        this.setState({...this.state, fnameError:'Please enter valid first name'});
+      this.setState({...this.state, contactError:'',lnameError:'',fnameError:'Please enter valid first name'});
+        
+      //    this.setState({...this.state, emailError:''});
+      //   this.setState({...this.state, contactError:''});
+      //   this.setState({...this.state, lnameError:''});
+      //   this.setState({...this.state, fnameError:'Please enter valid first name'});
         return false;
     } 
 }
@@ -300,25 +311,25 @@ validate=(fname,lname,contact,email)=>{
                   </View>
                   <View style={[styles.column]}>
 
-                  <RkText style={{color: '#E7060E',fontSize : 15, textAlign: 'left'}}>First name</RkText>
+                  <RkText style={{color: '#000',fontSize : 15, textAlign: 'left'}}>First name</RkText>
                   <TextInput  underlineColorAndroid='transparent' style={[styles.text]}  value={userInfo.firstName} onChangeText={(text) => this.editInput('fname',text)} />
-                  <Text ref='contact'>{this.state.fnameError}</Text>
+                  <Text style={[styles.errorStyle]} ref='contact'>{this.state.fnameError}</Text>
 
-                  <RkText style={{color: '#E7060E',fontSize : 15, textAlign: 'left'}}>Last name</RkText>
+                  <RkText style={{color: '#000',fontSize : 15, textAlign: 'left'}}>Last name</RkText>
                   <TextInput underlineColorAndroid='transparent' style={[styles.text]}  value={userInfo.lastName} onChangeText={(text) => this.editInput('lname',text)} />
-                  <Text ref='contact'>{this.state.lnameError}</Text>
+                  <Text style={[styles.errorStyle]} ref='contact'>{this.state.lnameError}</Text>
 
-                  <RkText style={{color: '#E7060E',fontSize : 15, textAlign: 'left'}}>Contact number</RkText>
+                  <RkText style={{color: '#000',fontSize : 15, textAlign: 'left'}}>Contact number</RkText>
                   <TextInput underlineColorAndroid='transparent' keyboardType='numeric'    style={[styles.text]}  value={''+userInfo.contact}  onChangeText={(text) => this.editInput('contact',text)} />
-                  <Text ref='contact'>{this.state.contactError}</Text>
+                  <Text style={[styles.errorStyle]} ref='contact'>{this.state.contactError}</Text>
 
-                  <RkText style={{color: '#E7060E',fontSize : 15, textAlign: 'left'}}>Linkedin profile</RkText>
+                  <RkText style={{color: '#000',fontSize : 15, textAlign: 'left'}}>Linkedin profile</RkText>
                   <TextInput underlineColorAndroid='transparent' placeholder='Profile url' style={[styles.text]}    onChangeText={(text) => this.editInput('contact',text)} />
-                  <Text ref='contact'>{this.state.contactError}</Text>
+                  <Text style={[styles.errorStyle]} ref='contact'>{this.state.contactError}</Text>
                   
-                  <RkText style={{color: '#E7060E',fontSize : 15, textAlign: 'left'}}>Facebook profile</RkText>
+                  <RkText style={{color: '#000',fontSize : 15, textAlign: 'left'}}>Facebook profile</RkText>
                   <TextInput underlineColorAndroid='transparent'  placeholder='Profile url'  style={[styles.text]}   onChangeText={(text) => this.editInput('contact',text)} />
-                  <Text ref='contact'>{this.state.contactError}</Text>
+                  <Text style={[styles.errorStyle]} ref='contact'>{this.state.contactError}</Text>
                   
                   <GradientButton colors={['#f20505', '#f55050']} text='Save' style={{width: Platform.OS === 'ios' ? 150 :170 , alignSelf : 'center'}}
                 onPress={() => this.submit()}/>
@@ -412,11 +423,16 @@ let styles = RkStyleSheet.create(theme => ({
     borderLeftColor: '#fff',
     borderTopColor: '#fff',
     borderRightColor: '#fff',
-    borderBottomColor: '#333',
-
+    borderBottomColor: '#808080',
+    color:'#808080',
     borderWidth: 1,
-    paddingLeft:4
+    paddingLeft:7
 
+    },
+    errorStyle:{
+      color:'#ff0000',
+      fontStyle: 'italic',
+      paddingLeft:8
     }
 }));
 
