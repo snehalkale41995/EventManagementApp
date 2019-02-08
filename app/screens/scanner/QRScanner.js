@@ -13,6 +13,7 @@ import * as loginService from "../../serviceActions/login";
 import * as sessionService from "../../serviceActions/session";
 import * as regResponseService from "../../serviceActions/registrationResponse";
 import * as attendanceService from "../../serviceActions/attendance";
+import { BackHandler } from 'react-native';
 
 const Item = Picker.Item;
 
@@ -55,7 +56,10 @@ export class QRScanner extends React.Component {
     this.subscribeToSessionUpdate = this.subscribeToSessionUpdate.bind(this);
     this._getSesssionsFromServer = this._getSesssionsFromServer.bind(this);
   }
-  
+  handleBackPress=()=>{
+    this.props.navigation.replace('HomeMenu');
+    return true;        
+}
  _getCurrentEventUser(){
     let compRef = this;
     loginService.getCurrentUser(userDetails => {
@@ -104,6 +108,8 @@ export class QRScanner extends React.Component {
 }
   
   componentWillMount() {
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
+
     this._requestCameraPermission();
     let thisRef = this;
     NetInfo.isConnected.fetch().then(isConnected => {
@@ -144,6 +150,8 @@ export class QRScanner extends React.Component {
   };
 
   componentWillUnmount() {
+    BackHandler.removeEventListener('hardwareBackPress',this.handleBackPress);
+
     NetInfo.removeEventListener(
       'connectionChange',
       this.handleFirstConnectivityChange

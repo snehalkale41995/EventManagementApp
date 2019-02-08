@@ -15,6 +15,7 @@ import * as speakerService from '../../serviceActions/speaker';
 import * as eventService from '../../serviceActions/event';
 import withPreventDoubleClick from '../../components/withPreventDoubleClick/withPreventDoubleClick';
 const TouchableOpacityEx = withPreventDoubleClick(TouchableOpacity);
+import { BackHandler } from 'react-native';
 
 export class Speakers extends RkComponent {
     static navigationOptions = {
@@ -30,8 +31,13 @@ export class Speakers extends RkComponent {
             eventId : " "
         }
     }
-
+    handleBackPress=()=>{
+        this.props.navigation.replace('HomeMenu');
+        return true;        
+    }
     componentWillMount() {
+        BackHandler.addEventListener('hardwareBackPress',this.handleBackPress);
+
         if (Platform.OS !== 'ios') {
             NetInfo.isConnected.fetch().then(isConnected => {
                 if (isConnected) {
@@ -75,6 +81,8 @@ export class Speakers extends RkComponent {
     };
 
     componentWillUnmount() {
+        BackHandler.removeEventListener('hardwareBackPress',this.handleBackPress);
+
         NetInfo.removeEventListener(
             'connectionChange',
             this.handleFirstConnectivityChange

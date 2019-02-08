@@ -1,22 +1,36 @@
 import React from 'react';
 import { Image, ScrollView, View, StyleSheet, Alert, AsyncStorage, ActivityIndicator ,Text} from 'react-native';
-import { RkText,RkComponent, RkTextInput, RkAvoidKeyboard, RkTheme, RkStyleSheet } from 'react-native-ui-kitten';
+import { RkText,RkComponent,RkCard, RkTextInput, RkAvoidKeyboard, RkTheme, RkStyleSheet } from 'react-native-ui-kitten';
 import {Avatar} from '../../components';
 import {Icon} from "native-base";
+import { BackHandler } from 'react-native';
 
 export class AttendeeProfileDetails extends  React.Component {
-
+  static navigationOptions = {
+    title: 'Profile Details'.toUpperCase()
+  };
   
     constructor(props) {
         super(props);
         let {params} = this.props.navigation.state;
         this.attendee = params.attendeeDetails;
-        
+       // console.log('100000',this.attendee)
         this.state = {
           attendee : this.attendee,
           pictureUrl: this.attendee.profileImageURL
         }
     }
+    handleBackPress=()=>{
+      this.props.navigation.pop();
+      return true;        
+  }
+  componentWillMount(){
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
+
+  }
+  componentWillUnmount(){
+    BackHandler.removeEventListener('hardwareBackPress',this.handleBackPress);
+  }
       render() {
         // let avatar;
         //  let speakerName = "";
@@ -33,9 +47,10 @@ export class AttendeeProfileDetails extends  React.Component {
             avatar = <Image style={{width: 100,height: 100, marginLeft:'auto', marginRight:'auto'}} source={require('../../../app/assets/images/defaultUserImg.png')}/>
         }
         return (
+          <View style={styles.root}>
             <ScrollView>
                
-               <View style={styles.header}>
+               <View style={[styles.column]}>
                 {avatar}
               </View>
               <View style={styles.section} pointerEvents='none'>
@@ -44,33 +59,54 @@ export class AttendeeProfileDetails extends  React.Component {
                   <RkText rkType='header6'>{this.state.attendee.roleName}</RkText>
         {/* <RkText style={{fontSize : 15, textAlign: 'center'}} rkType="small">{this.state.speaker.briefInfo}</RkText> */}
                 </View>
-                <View style={[styles.row]}>
-
-                <RkText rkType='header6'>Contact Details</RkText>
-                </View>
-                <View style={[styles.row]}>
+                <View style={[styles.column]}>
+                <RkText rkType='header5 primary'>Contact Details</RkText>
                   <Text style={{fontSize : 15, textAlign: 'justify'}}>
                     {this.state.attendee.email}
                   </Text>
-                </View> 
-                <View style={[styles.row]}>
                   <Text style={{fontSize : 15, textAlign: 'justify'}}>
                     {this.state.attendee.contact}
                   </Text>
                 </View>
+
+                <View style={[styles.column]}>
+                <RkText rkType='header5 primary'>Other Details</RkText>
+                  <Text style={{fontSize : 15, textAlign: 'justify'}}>
+                    {this.state.attendee.briefInfo}
+                  </Text>
                 </View>
+                </View>
+                {/* <RkCard rkType='shadowed' style={[styles.card]}>
+                <View style={{ flexDirection: 'row',elevation:3 }}>
+                      <View style={{ flexDirection: 'column', alignItems: 'flex-start', marginVertical: 10, flex: 6, marginLeft: -10 }}>
+                          <Text style={{fontSize : 15, textAlign: 'justify'}}>
+                            {this.state.attendee.contact}
+                          </Text>
+                      </View >
+                    </View >
+                </RkCard> */}
           </ScrollView>
-        )
+          </View>
+        ) 
       }
 }
 
 let styles = RkStyleSheet.create(theme => ({
+  root: {
+    flex:1,
+    backgroundColor: '#fff',
+    paddingTop:20
+  },
+  card: {
+    margin: 1,
+    padding: 4
+},
     header: {
       backgroundColor: theme.colors.screen.neutral,
       paddingVertical: 25
     },
     section: {
-     marginTop : 1
+     marginTop : 1,
     },
     heading: {
       paddingBottom: 12.5
@@ -78,7 +114,9 @@ let styles = RkStyleSheet.create(theme => ({
     column:{
       flexDirection : 'column',
       borderColor: theme.colors.border.base,
-      alignItems: 'center'
+      alignItems: 'center',
+      marginTop : 10,
+
     },
     row: {
       flexDirection: 'row',

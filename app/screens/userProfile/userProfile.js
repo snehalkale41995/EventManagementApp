@@ -8,6 +8,7 @@ import QRCode from "react-native-qrcode";
 import {Loader} from '../../components/loader';
 import {Footer} from '../../components/footer';
 import { GradientButton } from '../../components/gradientButton';
+import { BackHandler } from 'react-native';
 
 function renderIf(condition, content) {
   if (condition) {
@@ -29,8 +30,13 @@ export class UserProfile extends React.Component {
       isLoaded: false,
     }
   }
-
+  handleBackPress=()=>{
+    this.props.navigation.navigate('HomeMenu');
+    return true;        
+}
   componentWillMount() {
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
+
     if (Platform.OS !== 'ios') {
       NetInfo.isConnected.fetch().then(isConnected => {
         if (isConnected) {
@@ -66,6 +72,8 @@ export class UserProfile extends React.Component {
   };
 
   componentWillUnmount() {
+    BackHandler.removeEventListener('hardwareBackPress',this.handleBackPress);
+
     NetInfo.removeEventListener(
       'connectionChange',
       this.handleFirstConnectivityChange
@@ -93,7 +101,7 @@ export class UserProfile extends React.Component {
     let userName = userInfo.firstName +""+ userInfo.lastName;
 
     let qrText = "TIE" + ":" + attendeeCode + ":" + attendeeId + ":" + userName;
-    console.log(userInfo)
+    // console.log(userInfo)
 
     return (
       <Container>
@@ -115,7 +123,7 @@ export class UserProfile extends React.Component {
                   <RkText style={{fontSize : 18, textAlign: 'center'}}>{userInfo.briefInfo}</RkText>
                   
                 </View>
-                <GradientButton colors={['#f20505', '#f55050']} text='Edit' style={{width: Platform.OS === 'ios' ? 150 :170 , alignSelf : 'center'}}
+                <GradientButton colors={['#f20505', '#f55050']} text='Edit' style={{width: Platform.OS === 'ios' ? 150 :170 , alignSelf : 'center',marginTop:20}}
                 onPress={() => this.props.navigation.navigate('EditProfile', { sessionDetails: this.state.userInfo })}/>
                 {/* <View style={[styles.row]}>
                    <QRCode
