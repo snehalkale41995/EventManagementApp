@@ -19,6 +19,7 @@ import Attendee from './attendee';
 import Sponsors from './sponsers';
 import {  Tab, TabHeading,Tabs } from "native-base";
 import { TabView, TabBar, SceneMap } from 'react-native-tab-view';
+import { BackHandler } from 'react-native';
 
 export class Directory extends RkComponent {
   static navigationOptions = {
@@ -34,7 +35,17 @@ export class Directory extends RkComponent {
           
         };
       }
-    
+      handleBackPress=()=>{
+          this.props.navigation.replace('HomeMenu');
+          return true;        
+      }
+  componentWillMount(){
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
+
+  }
+  componentWillUnmount(){
+    BackHandler.removeEventListener('hardwareBackPress',this.handleBackPress);
+  }
       componentDidMount() {
         let compRef = this;
         loginService.getCurrentUser(userDetails => {
@@ -90,54 +101,55 @@ render() {
     //       first: Attendee,
     //       second: Attendee,
     //       first: Attendee,
-    //       second: Attendee,
+    //       second: Attendee, 
     //     })}
     //     onIndexChange={index => this.setState({ ...this.state.tabState,index:index })} 
         
     //   />
       <Tabs style={{ elevation: 3,width:400}} style={styles.tabContent}
         onChangeTab={() => {
-         this.fetchSessionList(eventId, userId);
+         //this.fetchSessionList(eventId, userId);
          }}
-      >
-        <Tab 
-          heading={
-            <TabHeading  style={{backgroundColor : '#fff'}} >
-              <Text  style={[styles.textColor]} >Deligates</Text> 
-            </TabHeading>
-          } style={styles.activeBorder} >        
+      > 
+        <Tab heading='Deligates' tabStyle={{backgroundColor : '#c0c0c0'}} activeTabStyle={{backgroundColor : '#c0c0c0'}} textStyle={{fontSize:11,color:'#000000'}} activeTextStyle={{fontSize:11,color:'#000000',fontWeight:'normal'}} 
+          // heading={
+          //   <TabHeading  style={{backgroundColor : '#fff',}} >
+          //     <Text  style={[styles.textColor]} >Deligates</Text> 
+          //   </TabHeading>
+          // } style={styles.activeBorder} 
+          >        
           <Attendee navigation={this.props.navigation} profile='Delegate'/> 
         </Tab>
-        <Tab
-          heading={
-            <TabHeading style={{backgroundColor : '#fff'}}>
-              <Text  style={[styles.textColor]} >Volunteers</Text>
-            </TabHeading>
-          } style={styles.activeBorder}>
+        <Tab heading='Volunteer'  tabStyle={{backgroundColor : '#c0c0c0'}} activeTabStyle={{backgroundColor : '#c0c0c0'}} textStyle={{fontSize:11,color:'#000000'}} activeTextStyle={{fontSize:11,color:'#000000',fontWeight:'normal'}} >
+         {/* heading={ */}
+          {/* //   <TabHeading style={{backgroundColor : '#fff'}}>
+          //     <Text  style={[styles.textColor]} >Volunteers</Text>
+          //   </TabHeading>
+          // } style={styles.activeBorder}> */}
           <Attendee navigation={this.props.navigation} profile='Volunteer'/> 
         </Tab>
-        <Tab
-          heading={
+        <Tab  heading='Charter Member' tabStyle={{backgroundColor : '#c0c0c0'}} activeTabStyle={{backgroundColor : '#c0c0c0'}} textStyle={{fontSize:11,color:'#000000'}} activeTextStyle={{fontSize:11,color:'#000000',fontWeight:'normal'}} >
+          {/* heading={
             <TabHeading style={{backgroundColor : '#fff',minWidth:8}}>
               <Text  style={[styles.textColor]} >Charter Member</Text>
             </TabHeading>
-          } style={styles.activeBorder}>
+          } style={styles.activeBorder}> */}
           <Attendee  navigation={this.props.navigation}  profile='Charter Member'/> 
         </Tab> 
-        <Tab
-          heading={
+        <Tab  heading='Eco System Partner' tabStyle={{backgroundColor : '#c0c0c0'}} activeTabStyle={{backgroundColor : '#c0c0c0'}}  textStyle={{fontSize:11,color:'#000000'}} activeTextStyle={{fontSize:11,color:'#000000',fontWeight:'normal'}} >
+          {/* heading={
             <TabHeading style={{backgroundColor : '#fff',minWidth:10,padding:0}}>
               <Text navigation={this.props.navigation}  style={[styles.textColor]} >Eco System Partner</Text>
             </TabHeading>
-          } style={styles.activeBorder}>
+          } style={styles.activeBorder}> */}
           <Attendee  navigation={this.props.navigation}  profile='Eco System Partner'/> 
         </Tab> 
-        <Tab 
-          heading={
+        <Tab  heading='Exhibitor' tabStyle={{backgroundColor : '#c0c0c0'}} activeTabStyle={{backgroundColor : '#c0c0c0'}} textStyle={{fontSize:11,color:'#000000'}} activeTextStyle={{fontSize:11,color:'#000000',fontWeight:'normal'}} >
+          {/* heading={
             <TabHeading style={{backgroundColor : '#fff'}}>
               <Text  style={[styles.textColor]} >Exhibitor</Text>
             </TabHeading>
-          } style={styles.activeBorder}> 
+          } style={styles.activeBorder}>  */}
           <Attendee  navigation={this.props.navigation}  profile='Exhibitor'/> 
         </Tab>
       </Tabs>
@@ -153,7 +165,8 @@ let styles = RkStyleSheet.create(theme => ({
     },
     textColor : {
       color: '#ed1b24',
-      fontSize:11
+      fontSize:11,
+      fontWeight:'normal'
     },
     activeBorder:{
       borderColor: '#ed1b24', 

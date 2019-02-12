@@ -12,6 +12,7 @@ import * as eventService from '../../serviceActions/event';
 import {Loader} from '../../components/loader';
 import {Footer} from '../../components/footer';
 import {EmptyData} from '../../components/emptyData';
+import { BackHandler } from 'react-native';
 
 export class Sponsors extends RkComponent {
     static navigationOptions = {
@@ -26,8 +27,13 @@ export class Sponsors extends RkComponent {
             noDataFlag : false
         }
     }
-
+    handleBackPress=()=>{
+        this.props.navigation.replace('HomeMenu');
+        return true;        
+    }
      componentWillMount() {
+        BackHandler.addEventListener('hardwareBackPress',this.handleBackPress);
+
         if (Platform.OS !== 'ios') {
             NetInfo.isConnected.fetch().then(isConnected => {
                 if (isConnected) {
@@ -63,6 +69,8 @@ export class Sponsors extends RkComponent {
     };
 
     componentWillUnmount() {
+        BackHandler.removeEventListener('hardwareBackPress',this.handleBackPress);
+
         NetInfo.removeEventListener(
             'connectionChange',
             this.handleFirstConnectivityChange

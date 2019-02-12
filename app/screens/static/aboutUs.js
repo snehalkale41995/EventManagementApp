@@ -8,6 +8,7 @@ import * as eventService from '../../serviceActions/event';
 import {Loader} from '../../components/loader';
 import {Footer} from '../../components/footer';
 import {EmptyData} from '../../components/emptyData';
+import { BackHandler } from 'react-native';
 
 function renderIf(condition, content) {
   if (condition) {
@@ -31,8 +32,13 @@ export class AboutUs extends React.Component {
       noDataFlag : false
     }
   }
-
+  handleBackPress=()=>{
+    this.props.navigation.replace('HomeMenu');
+    return true;        
+}
   componentWillMount() {
+    BackHandler.addEventListener('hardwareBackPress',this.handleBackPress);
+
     if (Platform.OS !== 'ios') {
       NetInfo.isConnected.fetch().then(isConnected => {
         if (isConnected) {
@@ -68,6 +74,8 @@ export class AboutUs extends React.Component {
   };
 
   componentWillUnmount() {
+    BackHandler.removeEventListener('hardwareBackPress',this.handleBackPress);
+
     NetInfo.removeEventListener(
       'connectionChange',
       this.handleFirstConnectivityChange

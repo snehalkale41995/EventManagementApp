@@ -19,7 +19,7 @@ export class HomePage extends React.Component {
 
   constructor(props) {
     super(props);
-    
+   // console.log('navigation',props)
     this.state = { 
       currentTab: 'Home' 
     };
@@ -27,13 +27,14 @@ export class HomePage extends React.Component {
   handleBackPress=()=>{
     if(this.props.navigation.state.routeName=='GridV2' || this.props.navigation.state.routeName=='HomeMenu')
     {
-      console.log("In ",this.props.navigation.state.routeName)
-      this.props.navigation.navigate('EventList');
+      //console.log("In ",this.props.navigation.state.routeName)
+      //this.props.navigation.popToTop();
+      this.props.navigation.replace('EventsMenu');
       return true;
 
     }
     else{
-    console.log("Out ",this.props.navigation.state.routeName)
+   // console.log("Out ",this.props.navigation.state.routeName)
     return false;
   }
   }

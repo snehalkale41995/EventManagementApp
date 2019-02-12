@@ -1,7 +1,7 @@
 import React from 'react';
 import { RkText, RkStyleSheet } from 'react-native-ui-kitten';
 import { Container } from 'native-base';
-import { Image, TextInput,ScrollView, View, StyleSheet, Alert, AsyncStorage, ActivityIndicator, Text, Linking, TouchableOpacity,Platform,NetInfo ,TouchableHighlight } from 'react-native';
+import { Image, TextInput,ScrollView, View, StyleSheet, Alert, AsyncStorage, ActivityIndicator, Text, Linking, TouchableOpacity,Platform,NetInfo ,TouchableHighlight,ToastAndroid } from 'react-native';
 import { scale, scaleModerate, scaleVertical } from '../../utils/scale';
 import * as loginService from '../../serviceActions/login';
 import QRCode from "react-native-qrcode"; 
@@ -11,8 +11,12 @@ import { GradientButton } from '../../components/gradientButton';
 import { TextField } from 'react-native-material-textfield';
 import { getEventById } from '../../serviceActions/event';
 import axios from "axios";
+import {Avatar} from '../../components';
+import { BackHandler } from 'react-native';
+
 import AppConfig from "../../constants/AppConfig";
-import ImagePicker from 'react-native-imagepicker'
+// import ImagePicker from 'componentsve-imagepicker'
+import { ImagePicker,Permissions } from 'expo';
 
 function renderIf(condition, content) {
   if (condition) {
@@ -38,8 +42,21 @@ export class editProfile extends React.Component {
       emailError:''
     }
   }
-
+  handleBackPress=()=>{
+    this.props.navigation.pop(1);
+    return true;        
+}
+  askPermissionsAsync = async () => {
+    await Permissions.askAsync(Permissions.CAMERA);
+    await Permissions.askAsync(Permissions.CAMERA_ROLL);
+    
+    };
+    componentDidMount(){
+      this.askPermissionsAsync();
+    }
   componentWillMount() {
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
+
     if (Platform.OS !== 'ios') {
       NetInfo.isConnected.fetch().then(isConnected => {
         if (isConnected) {
@@ -60,35 +77,52 @@ export class editProfile extends React.Component {
       this.handleFirstConnectivityChange
     );
   } 
+  _pickImage = async () => {
+    // console.log('Inside get image');
 
-  getProfileImage=()=>{
-    console.log('Inside get image');
-    var options = {
-      title: 'Select Image',
-      customButtons: [
-        { name: 'customOptionKey', title: 'Choose Photo from Custom Option' },
-      ],
-      storageOptions: {
-        skipBackup: true,
-        path: 'images',
-      },
-   }; 
-    ImagePicker.showImagePicker(options, response => {
-    console.log('Response = ', response);
-    if (response.didCancel) {
-      console.log('User cancelled image picker');
-    } else if (response.error) {
-      console.log('ImagePicker Error: ', response.error);
-    } else if (response.customButton) {
-      console.log('User tapped custom button: ', response.customButton);
-      alert(response.customButton);
-    } else {
-      let source = response; 
-      this.setState({
-        filePath: source,
-      });
+    let result = await ImagePicker.launchImageLibraryAsync({
+      allowsEditing: true,
+      aspect: [4, 4],
+    });
+
+    // console.log(result);
+
+    if (!result.cancelled) {
+      newUserInfo={...this.state.userInfo};
+      newUserInfo.profileImageURL=result.uri;
+      this.setState({ userInfo:{...newUserInfo}});
+
+
     }
- });
+  };
+  getProfileImage=()=>{
+    // console.log('Inside get image');
+//     var options = {
+//       title: 'Select Image',
+//       customButtons: [
+//         { name: 'customOptionKey', title: 'Choose Photo from Custom Option' },
+//       ],
+//       storageOptions: {
+//         skipBackup: true,
+//         path: 'images',
+//       },
+//    }; 
+//     ImagePicker.showImagePicker(options, response => {
+//     console.log('Response = ', response);
+//     if (response.didCancel) {
+//       console.log('User cancelled image picker');
+//     } else if (response.error) {
+//       console.log('ImagePicker Error: ', response.error);
+//     } else if (response.customButton) {
+//       console.log('User tapped custom button: ', response.customButton);
+//       alert(response.customButton);
+//     } else {
+//       let source = response; 
+//       this.setState({
+//         filePath: source,
+//       });
+//     }
+//  });
 
   //   ImagePicker.open({
   //     takePhoto: true, 
@@ -109,13 +143,15 @@ export class editProfile extends React.Component {
       this.setState({
         isOffline: true
       });
-    }
+    } 
     this.setState({
       isOffline: connectionInfo.type === 'none',
     });
   };
 
   componentWillUnmount() {
+    BackHandler.removeEventListener('hardwareBackPress',this.handleBackPress);
+
     NetInfo.removeEventListener(
       'connectionChange',
       this.handleFirstConnectivityChange
@@ -144,60 +180,95 @@ export class editProfile extends React.Component {
             this.setState({userInfo:user})
         break;
     }
-  } 
+  }
   submit=()=>
   {
     let user={...this.state.userInfo};
-    if(this.validate(user.firstName,user.lastName,user.contact.toString(),user.email)){
+    if(this.validate(user.firstName,user.lastName,user.contact.toString())){
         delete user._id;
         delete user.__v;
                         
         axios
         .put(`${AppConfig.serverURL}/api/attendee/`+this.state.userInfo._id, JSON.parse(JSON.stringify(user)))
         .then(response => {
-        console.log("(response)",response.data);
+          let userInfo = JSON.stringify(response.data);
+          AsyncStorage.setItem("USER_DETAILS", userInfo);
+          console.log("(response)",response.data);
+          ToastAndroid.showWithGravity(
+            'Your profile has been updated successfully..',
+            ToastAndroid.LONG,
+            ToastAndroid.CENTER,
+            
+          );
+          this.props.navigation.replace('MyProfile');
+
+
         // loginService._storeData(JSON.stringify(response.data));
-        // console.log("NEw",this.state.userInfo);
+        // console.log("NEw",this.state.userInfo); 
         // this.getUserInfo();
         // console.log("2",this.state.userInfo);
         })
         .catch(error => {
         // console.log("(error)", error.response);
     });
+
+    // let data=new FormData();
+    // for ( var key in user ) {
+    //   if(key!='profileImageURL')
+    //     data.append(key, user[key]);
+    // }
+    // data.append("profileImageURL",{
+    //   uri: user.profileImageURL,
+    //   type: 'image/jpeg', // or photo.type
+    //   name: 'testPhotoName'
+    // });
+    // fetch('http://localhost:3011/api/attendee/new/'+user._id, {
+    //   method: 'put',
+    //   headers: {
+    //     "Content-Type": "multipart/form-data",
+    //     // "Content-Type": "application/x-www-form-urlencoded",
+    // },
+    //   body: data
+    // }).then(res => {
+    //   // console.log(res)
+    // });
 }
 }
-validate=(fname,lname,contact,email)=>{
+validate=(fname,lname,contact)=>{
     var hasNumber = /\d/;
 
     if(fname.length>0 && !hasNumber.test(fname)){
         if(lname.length>0 && !hasNumber.test(lname)){
             if(contact.toString().length==10 && contact.toString().match(/^[0-9]+$/)){    
-                    if(email.length>0 && email.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i)){
+                    // if(email.length>0 && email.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i)){
+                    //     return true;
+                    // }else{ 
                         return true;
-                    }else{ 
-                        this.setState({...this.state, contactError:'',lnameError:'',fnameError:'',emailError:'Please enter valid email id'});
-              
-                        return false;
-                    }
             }else{
-                this.setState({...this.state, emailError:''});
-                this.setState({...this.state, lnameError:''});
-                this.setState({...this.state, fnameError:''});
-                this.setState({...this.state, contactError:'Please enter valid contact details'});
+              this.setState({...this.state, contactError:'Please enter valid contact details',lnameError:'',fnameError:''});
+
+                // this.setState({...this.state, emailError:''});
+                // this.setState({...this.state, lnameError:''});
+                // this.setState({...this.state, fnameError:''});
+                // this.setState({...this.state, contactError:'Please enter valid contact details'});
                 return false;
             }
         }else{
-            this.setState({...this.state, emailError:''});
-            this.setState({...this.state, contactError:''});
-            this.setState({...this.state, fnameError:''});
-            this.setState({...this.state, lnameError:'Please enter valid last name'});
+          this.setState({...this.state, contactError:'',lnameError:'Please enter valid last name',fnameError:''});
+
+            // this.setState({...this.state, emailError:''});
+            // this.setState({...this.state, contactError:''});
+            // this.setState({...this.state, fnameError:''});
+            // this.setState({...this.state, lnameError:'Please enter valid last name'});
             return false;
         }
     }else{
-        this.setState({...this.state, emailError:''});
-        this.setState({...this.state, contactError:''});
-        this.setState({...this.state, lnameError:''});
-        this.setState({...this.state, fnameError:'Please enter valid first name'});
+      this.setState({...this.state, contactError:'',lnameError:'',fnameError:'Please enter valid first name'});
+        
+      //    this.setState({...this.state, emailError:''});
+      //   this.setState({...this.state, contactError:''});
+      //   this.setState({...this.state, lnameError:''});
+      //   this.setState({...this.state, fnameError:'Please enter valid first name'});
         return false;
     } 
 }
@@ -227,37 +298,38 @@ validate=(fname,lname,contact,email)=>{
  
     return ( 
       <Container> 
-        <ScrollView style={styles.root}> 
-             <View style={styles.section}>  
+        {/* <ScrollView style={styles.root}>  */}
+             {/* <View style={styles.section}>   */}
              
-                <View style={[styles.column]} >
-                <TouchableOpacity key={userInfo.firstName} onPress={() => this.getProfileImage()}> 
-
-                  <Image style={{ width: 120, height: 120,borderRadius:100 }} source={{ uri: userInfo.profileImageURL }}  />
+                <View style={[styles.profileImageStyle]} >
+                <TouchableOpacity key={userInfo.firstName} onPress={() => this._pickImage()}> 
+                
+                  <Avatar  rkType='big'  imagePath={userInfo.profileImageURL} />
+                  {/* <Image style={{ width: 120, height: 120 }} source={{ uri: userInfo.profileImageURL }}  /> */}
                   </TouchableOpacity>
 
                   </View>
                   <View style={[styles.column]}>
 
-                  <RkText style={{color: '#E7060E',fontSize : 15, textAlign: 'left'}}>First name</RkText>
-                  <TextInput style={[styles.text]}  value={userInfo.firstName} onChangeText={(text) => this.editInput('fname',text)} />
-                  <Text ref='contact'>{this.state.fnameError}</Text>
+                  <RkText style={{color: '#000',fontSize : 15, textAlign: 'left'}}>First name</RkText>
+                  <TextInput  underlineColorAndroid='transparent' style={[styles.text]}  value={userInfo.firstName} onChangeText={(text) => this.editInput('fname',text)} />
+                  <Text style={[styles.errorStyle]} ref='contact'>{this.state.fnameError}</Text>
 
-                  <RkText style={{color: '#E7060E',fontSize : 15, textAlign: 'left'}}>Last name</RkText>
-                  <TextInput  style={[styles.text]}  value={userInfo.lastName} onChangeText={(text) => this.editInput('lname',text)} />
-                  <Text ref='contact'>{this.state.lnameError}</Text>
+                  <RkText style={{color: '#000',fontSize : 15, textAlign: 'left'}}>Last name</RkText>
+                  <TextInput underlineColorAndroid='transparent' style={[styles.text]}  value={userInfo.lastName} onChangeText={(text) => this.editInput('lname',text)} />
+                  <Text style={[styles.errorStyle]} ref='contact'>{this.state.lnameError}</Text>
 
-                  <RkText style={{color: '#E7060E',fontSize : 15, textAlign: 'left'}}>Contact number</RkText>
-                  <TextInput  keyboardType='numeric'    style={[styles.text]}  value={''+userInfo.contact}  onChangeText={(text) => this.editInput('contact',text)} />
-                  <Text ref='contact'>{this.state.contactError}</Text>
+                  <RkText style={{color: '#000',fontSize : 15, textAlign: 'left'}}>Contact number</RkText>
+                  <TextInput underlineColorAndroid='transparent' keyboardType='numeric'    style={[styles.text]}  value={''+userInfo.contact}  onChangeText={(text) => this.editInput('contact',text)} />
+                  <Text style={[styles.errorStyle]} ref='contact'>{this.state.contactError}</Text>
 
-                  <RkText style={{color: '#E7060E',fontSize : 15, textAlign: 'left'}}>Linkedin profile</RkText>
-                  <TextInput  placeholder='Profile url' style={[styles.text]}    onChangeText={(text) => this.editInput('contact',text)} />
-                  <Text ref='contact'>{this.state.contactError}</Text>
+                  <RkText style={{color: '#000',fontSize : 15, textAlign: 'left'}}>Linkedin profile</RkText>
+                  <TextInput underlineColorAndroid='transparent' placeholder='Profile url' style={[styles.text]}    onChangeText={(text) => this.editInput('contact',text)} />
+                  <Text style={[styles.errorStyle]} ref='contact'>{this.state.contactError}</Text>
                   
-                  <RkText style={{color: '#E7060E',fontSize : 15, textAlign: 'left'}}>Facebook profile</RkText>
-                  <TextInput placeholder='Profile url'  style={[styles.text]}   onChangeText={(text) => this.editInput('contact',text)} />
-                  <Text ref='contact'>{this.state.contactError}</Text>
+                  <RkText style={{color: '#000',fontSize : 15, textAlign: 'left'}}>Facebook profile</RkText>
+                  <TextInput underlineColorAndroid='transparent'  placeholder='Profile url'  style={[styles.text]}   onChangeText={(text) => this.editInput('contact',text)} />
+                  <Text style={[styles.errorStyle]} ref='contact'>{this.state.contactError}</Text>
                   
                   <GradientButton colors={['#f20505', '#f55050']} text='Save' style={{width: Platform.OS === 'ios' ? 150 :170 , alignSelf : 'center'}}
                 onPress={() => this.submit()}/>
@@ -280,8 +352,8 @@ validate=(fname,lname,contact,email)=>{
                   {/* <View style={{marginTop:25,backgroundColor:'#E7060E',height:40}}>
                    <RkText style={{fontSize : 25, textAlign: 'center', color:'white'}}>{userInfo.roleName}</RkText>
                  </View> */}
-              </View> 
-        </ScrollView>
+              {/* </View>  */}
+        {/* </ScrollView> */}
       </Container>
     );
   }
@@ -327,10 +399,16 @@ let styles = RkStyleSheet.create(theme => ({
       paddingBottom: 12.5
     },
   column: {
-    flexDirection: 'column',
     borderColor: theme.colors.border.base,
-    alignItems: "center"
+    alignItems: "flex-start",
+    paddingLeft:20,
+    paddingRight:20
+
     },
+    profileImageStyle: {
+      borderColor: theme.colors.border.base,
+      alignItems: "center"  
+      },
   row: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -339,9 +417,22 @@ let styles = RkStyleSheet.create(theme => ({
     borderColor :'black'
   },
   text:{
-    width:100,
-    height:60,
-    fontSize : 17
+    alignSelf: 'stretch',
+    fontSize : 17,
+    height:35,
+    borderLeftColor: '#fff',
+    borderTopColor: '#fff',
+    borderRightColor: '#fff',
+    borderBottomColor: '#808080',
+    color:'#808080',
+    borderWidth: 1,
+    paddingLeft:7
+
+    },
+    errorStyle:{
+      color:'#ff0000',
+      fontStyle: 'italic',
+      paddingLeft:8
     }
 }));
 

@@ -17,13 +17,13 @@ export class SpeakerDetailsTabs extends React.Component {
     }
   }
   handleBackPress=()=>{
-    console.log("1:",this.props.navigation)
+    //console.log("1:",this.props.navigation)
     this.props.navigation.pop();
     // console.log("2:",this.props.navigation)
     // this.props.navigation.pop();
 
     //this.props.navigation.goBack();
-    console.log("after:")
+    //console.log("after:")
 
     return true;
   }

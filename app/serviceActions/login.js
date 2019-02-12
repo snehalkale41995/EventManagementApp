@@ -19,7 +19,7 @@ import {AsyncStorage} from 'react-native';
         AsyncStorage.getItem("USER_DETAILS").then((userDetails)=>{
                 successFn(JSON.parse(userDetails));
             }).catch(err => {
-                console.warn('Errors');
+                // console.warn('Errors');
                 if(errorFn){
                     errorFn(err);
                 }
@@ -28,10 +28,10 @@ import {AsyncStorage} from 'react-native';
     _storeData = async (data) => {
         try {
           await AsyncStorage.setItem('USER_DETAILS', data);
-          console.log('Success');
+          // console.log('Success');
 
         } catch (error) {
           // Error saving data
-          console.log(error);
+          // console.log(error);
         }
       };
