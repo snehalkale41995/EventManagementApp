@@ -29,9 +29,10 @@ export class UserProfile extends React.Component {
       userInfo :{},
       isLoaded: false,
     }
+    console.log('0000');
   }
   handleBackPress=()=>{
-    this.props.navigation.navigate('HomeMenu');
+    this.props.navigation.replace('HomeMenu');
     return true;        
 }
   componentWillMount() {
@@ -102,29 +103,35 @@ export class UserProfile extends React.Component {
 
     let qrText = "TIE" + ":" + attendeeCode + ":" + attendeeId + ":" + userName;
     // console.log(userInfo)
-
+    let avatar;
+    if (userInfo.profileImageURL) {
+      avatar = <Image style={{ width: 110, height: 110,borderColor:'#f20505',borderWidth:2 }} source={{ uri: userInfo.profileImageURL }} />
+  } else {
+      avatar = <Image style={{ width: 110, height: 110,borderColor:'#f20505',borderWidth:2 }} source={require('../../assets/images/defaultUserImg.png')} />
+  } 
     return (
-      <Container>
-        <ScrollView style={styles.root}>
-             <View style={styles.section}>
-             
-                <View style={[styles.column, styles.heading]}>
-                  <Image style={{ width: 120, height: 120,borderRadius:100 }} source={{ uri: userInfo.profileImageURL }} />
+      // <Container >
+      //   <ScrollView style={styles.root}>
+      //        <View style={styles.section}>
+             <View style={{paddingTop:15}}>
+                <View  style={[styles.column, styles.heading]}>
+                  {/* <Image style={{ width: 120, height: 120,borderRadius:100 ,borderColor:'#f20505',borderWidth:1}} source={{ uri: userInfo.profileImageURL }} /> */}
+                  {avatar}
                   <RkText style={{color: '#E7060E',fontSize : 25, textAlign: 'center'}}>{userInfo.firstName + " " + userInfo.lastName}</RkText>
-                  <RkText style={{fontSize : 18, textAlign: 'center'}}>{userInfo.roleName}</RkText>
+                  <RkText style={{fontSize : 18, textAlign: 'center'}}>{userInfo.roleName}</RkText> 
                 </View>
                 <View style={[styles.column]}>
                   <RkText style={{color: '#E7060E', fontSize : 20, textAlign: 'center'}}>Contact Details</RkText>
                   <RkText style={{fontSize : 18, textAlign: 'center'}}>{userInfo.contact}</RkText>
                   <RkText style={{fontSize : 18, textAlign: 'center'}}>{userInfo.email}</RkText>
                 </View> 
-                <View style={[styles.column]}>
+                <View  style={[styles.column]}>
                   <RkText style={{color: '#E7060E', fontSize : 20, textAlign: 'center'}}>Other Details</RkText>
                   <RkText style={{fontSize : 18, textAlign: 'center'}}>{userInfo.briefInfo}</RkText>
                   
-                </View>
-                <GradientButton colors={['#f20505', '#f55050']} text='Edit' style={{width: Platform.OS === 'ios' ? 150 :170 , alignSelf : 'center',marginTop:20}}
-                onPress={() => this.props.navigation.navigate('EditProfile', { sessionDetails: this.state.userInfo })}/>
+                {/* </View> */}
+                <GradientButton colors={['#f20505', '#f55050']} text='Edit' style={{width: Platform.OS === 'ios' ? 150 :170 , alignSelf : 'center',marginTop:25}}
+                onPress={() => this.props.navigation.replace('EditProfile', { sessionDetails: this.state.userInfo })}/>
                 {/* <View style={[styles.row]}>
                    <QRCode
                    value={qrText}
@@ -139,8 +146,10 @@ export class UserProfile extends React.Component {
                    <RkText style={{fontSize : 25, textAlign: 'center', color:'white'}}>{userInfo.roleName}</RkText>
                  </View> */}
               </View>
-        </ScrollView>
-      </Container>
+              </View>
+
+      //   {/* </ScrollView> */}
+      // {/* </Container> */}
     );
   }
 
@@ -187,7 +196,8 @@ let styles = RkStyleSheet.create(theme => ({
   column: {
     flexDirection: 'column',
     borderColor: theme.colors.border.base,
-    alignItems: 'center'
+    alignItems: 'center',
+    paddingTop:10
   },
   row: {
     flexDirection: 'row',

@@ -224,7 +224,7 @@
 
 import React from "react";
 import moment from "moment";
-import { ScrollView, Platform, Image, NetInfo, Dimensions } from "react-native";
+import { ScrollView, Platform, Image, NetInfo, Dimensions,ToastAndroid } from "react-native";
 import { Text, View, Icon, Container, Label, Col } from "native-base";
 import {
   StyleSheet,
@@ -286,15 +286,36 @@ export class EventMenu extends RkComponent {
       isLoaded: false,
       isOffline: false,
       progress:0,
-      event:{}
+      event:{},
+      backCount:0
     };
     this.storeEventDetails = this.storeEventDetails.bind(this);
   }
 
   handleBackPress=()=>{
-    BackHandler.exitApp();
-      return true;
+    if(this.state.backCount===0){
+      setTimeout(this.cancelExit,2000);
+      ToastAndroid.showWithGravity(
+        'Press back again to exit....',
+        ToastAndroid.SHORT,
+        ToastAndroid.BOTTOM,
+      );
+      this.setState({backCount:1});
 
+      return true; 
+
+    }else{
+      this.exitApp();
+      return false;
+    }
+
+  } 
+
+  exitApp=()=>{
+    BackHandler.exitApp();
+  }
+  cancelExit=()=>{
+    this.setState({backCount:0});
   }
   componentWillMount() {
     BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
@@ -409,6 +430,7 @@ export class EventMenu extends RkComponent {
     //console.warn("this.props", this.props)
     if(this.state.progress===100){
       //this.props.navigation.pop();
+      
       this.props.navigation.replace("HomeMenu");
      // console.warn("iff")
     }else{
@@ -460,7 +482,7 @@ export class EventMenu extends RkComponent {
   //       );
   //     } else {
   //       avatar = (
-  //         <Image
+  //         <Image 
   //           style={{ width: 60, height: 60 }}
   //           source={require("../../assets/images/defaultSponsorImg.png")}
   //         />
@@ -754,13 +776,20 @@ export class EventMenu extends RkComponent {
       return (
         <Container style={[styles.root]}>
 
-          {this.state.progress>0?<View style={{flex:1, justifyContent: 'center',alignItems:'center',opacity:80,backgroundColor:'#fff'}}><ProgressCircle percent={this.state.progress} radius={120} borderWidth={5} color="#1aff1a" shadowColor="#8c8c8c" bgColor="#ff1a1a">
+          {this.state.progress>0?<View style={{flex:1, justifyContent: 'center',alignItems:'center',opacity:80,backgroundColor:'#fff'}}><ProgressCircle percent={this.state.progress} radius={120} borderWidth={10} color="#1affc6" shadowColor="#cccccc"  >
+          <LinearGradient
+            colors={["#d4145a", "#fbba50"]}
+            start={{ x: 0.0, y: 0.5 }} 
+            end={{ x: 1, y: 0.5 }}
+            style={[styles.linearGradient]}
+            style={{borderRadius:100,width:250,height:250,justifyContent: 'center',alignItems:'center'}}
+          >
           <Text style={{color:'#fff',fontSize:15,fontWeight:'bold'}}>{this.state.event.eventName}</Text>
           <Text style={{color:'#fff',fontSize:15,fontWeight:'bold'}}>{this.state.event.venue}</Text>
-          <Text style={{color:'#fff',fontSize:12,fontWeight:'bold'}}>{this.state.event.startDate}</Text>
+          {/* <Text style={{color:'#fff',fontSize:12,fontWeight:'bold'}}>{this.state.event.startDate}</Text> */}
           {/* <Image
             source={require('../../assets/images/logo.png')}/>  */}
-          </ProgressCircle></View>:  <ScrollView>
+          </LinearGradient></ProgressCircle></View>:  <ScrollView>
 
 <View>
   <View style={[styles.headerView]}>
