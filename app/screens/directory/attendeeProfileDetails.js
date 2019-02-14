@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, ScrollView, View, StyleSheet, Alert, AsyncStorage, ActivityIndicator ,Text} from 'react-native';
+import { Image, ScrollView, View, StyleSheet, Alert, AsyncStorage, ActivityIndicator ,Text,TouchableOpacity,Linking} from 'react-native';
 import { RkText,RkComponent,RkCard, RkTextInput, RkAvoidKeyboard, RkTheme, RkStyleSheet } from 'react-native-ui-kitten';
 import {Avatar} from '../../components';
 import {Icon} from "native-base";
@@ -14,7 +14,7 @@ export class AttendeeProfileDetails extends  React.Component {
         super(props);
         let {params} = this.props.navigation.state;
         this.attendee = params.attendeeDetails;
-       // console.log('100000',this.attendee)
+       //console.warn('100000',this.attendee)
         this.state = {
           attendee : this.attendee,
           pictureUrl: this.attendee.profileImageURL
@@ -31,6 +31,15 @@ export class AttendeeProfileDetails extends  React.Component {
   componentWillUnmount(){
     BackHandler.removeEventListener('hardwareBackPress',this.handleBackPress);
   }
+
+  displayWebsite(websiteURL){
+    //console.warn("websiteURL", websiteURL)
+    if(websiteURL){
+     Linking.openURL(websiteURL); 
+    }
+     else return;
+    }
+
       render() {
         // let avatar;
         //  let speakerName = "";
@@ -44,16 +53,19 @@ export class AttendeeProfileDetails extends  React.Component {
         } else {
             //let firstLetter = this.state.speaker.firstName ?  this.state.speaker.firstName[0]: '?';
             //avatar = <RkText rkType='big'  style={styles.avatar}>{firstLetter}</RkText>
-            avatar = <Image style={{width: 100,height: 100, marginLeft:'auto', marginRight:'auto'}} source={require('../../../app/assets/images/defaultUserImg.png')}/>
+            avatar = <Image style={{width: 100,height: 100,marginBottom:18}} source={require('../../../app/assets/images/defaultUserImg.png')}/>
         }
         return (
           <View style={styles.root}>
             <ScrollView>
                
-               <View style={[styles.column]}>
+               <View style={{flexDirection : 'column', alignItems: 'center',}}>
+               <View style={{width: 110, height: 110,borderColor:'#f20505',borderWidth:2,borderRadius:100,justifyContent:'center',alignItems:'center',paddingTop:18}}>
+
                 {avatar}
+                </View>
               </View>
-              <View style={styles.section} pointerEvents='none'>
+              <View style={styles.section}>
                 <View style={[styles.column, styles.heading]}>
                   <RkText rkType='header6 primary'>{this.state.attendee.firstName+' '+this.state.attendee.lastName}</RkText>
                   <RkText rkType='header6'>{this.state.attendee.roleName}</RkText>
@@ -67,6 +79,16 @@ export class AttendeeProfileDetails extends  React.Component {
                   <Text style={{fontSize : 15, textAlign: 'justify'}}>
                     {this.state.attendee.contact}
                   </Text>
+                </View>
+                <View style={{alignItems:'center',justifyContent:'center'}}>
+
+                <TouchableOpacity  onPress={() => this.displayWebsite(this.state.attendee.facebookProfileURL)}>
+                  <Image style={{ width: 63, height: 63,borderRadius:100}} source={require('../../assets/images/fb.png')} />
+                </TouchableOpacity>
+               
+                <TouchableOpacity  onPress={() => this.displayWebsite(this.state.attendee.linkedinProfileURL)} >
+                  <Image style={{ width: 63, height: 63,borderRadius:100}} source={require('../../assets/images/linkedin.png')} />
+                </TouchableOpacity>
                 </View>
 
                 <View style={[styles.column]}>

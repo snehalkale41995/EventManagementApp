@@ -111,7 +111,7 @@ render() {
          //this.fetchSessionList(eventId, userId);
          }}
       > 
-        <Tab heading='Deligates' tabStyle={{backgroundColor : '#c0c0c0'}} activeTabStyle={{backgroundColor : '#c0c0c0'}} textStyle={{fontSize:11,color:'#000000'}} activeTextStyle={{fontSize:11,color:'#000000',fontWeight:'normal'}} 
+        <Tab heading='Deligates' tabStyle={{backgroundColor : '#f20505'}} activeTabStyle={{backgroundColor : '#f20505'}} textStyle={{fontSize:11,color:'#ffffff'}} activeTextStyle={{fontSize:11,color:'#fff',fontWeight:'normal'}} 
           // heading={
           //   <TabHeading  style={{backgroundColor : '#fff',}} >
           //     <Text  style={[styles.textColor]} >Deligates</Text> 
@@ -120,7 +120,7 @@ render() {
           >        
           <Attendee navigation={this.props.navigation} profile='Delegate'/> 
         </Tab>
-        <Tab heading='Volunteer'  tabStyle={{backgroundColor : '#c0c0c0'}} activeTabStyle={{backgroundColor : '#c0c0c0'}} textStyle={{fontSize:11,color:'#000000'}} activeTextStyle={{fontSize:11,color:'#000000',fontWeight:'normal'}} >
+        <Tab heading='Volunteer'  tabStyle={{backgroundColor : '#f20505'}} activeTabStyle={{backgroundColor : '#f20505'}} textStyle={{fontSize:11,color:'#fff'}} activeTextStyle={{fontSize:11,color:'#fff',fontWeight:'normal'}} >
          {/* heading={ */}
           {/* //   <TabHeading style={{backgroundColor : '#fff'}}>
           //     <Text  style={[styles.textColor]} >Volunteers</Text>
@@ -128,7 +128,7 @@ render() {
           // } style={styles.activeBorder}> */}
           <Attendee navigation={this.props.navigation} profile='Volunteer'/> 
         </Tab>
-        <Tab  heading='Charter Member' tabStyle={{backgroundColor : '#c0c0c0'}} activeTabStyle={{backgroundColor : '#c0c0c0'}} textStyle={{fontSize:11,color:'#000000'}} activeTextStyle={{fontSize:11,color:'#000000',fontWeight:'normal'}} >
+        <Tab  heading='Charter Member' tabStyle={{backgroundColor : '#f20505'}} activeTabStyle={{backgroundColor : '#f20505'}} textStyle={{fontSize:11,color:'#fff'}} activeTextStyle={{fontSize:11,color:'#fff',fontWeight:'normal'}} >
           {/* heading={
             <TabHeading style={{backgroundColor : '#fff',minWidth:8}}>
               <Text  style={[styles.textColor]} >Charter Member</Text>
@@ -136,7 +136,7 @@ render() {
           } style={styles.activeBorder}> */}
           <Attendee  navigation={this.props.navigation}  profile='Charter Member'/> 
         </Tab> 
-        <Tab  heading='Eco System Partner' tabStyle={{backgroundColor : '#c0c0c0'}} activeTabStyle={{backgroundColor : '#c0c0c0'}}  textStyle={{fontSize:11,color:'#000000'}} activeTextStyle={{fontSize:11,color:'#000000',fontWeight:'normal'}} >
+        <Tab  heading='Eco System Partner' tabStyle={{backgroundColor : '#f20505'}} activeTabStyle={{backgroundColor : '#f20505'}}  textStyle={{fontSize:11,color:'#fff'}} activeTextStyle={{fontSize:11,color:'#fff',fontWeight:'normal'}} >
           {/* heading={
             <TabHeading style={{backgroundColor : '#fff',minWidth:10,padding:0}}>
               <Text navigation={this.props.navigation}  style={[styles.textColor]} >Eco System Partner</Text>
@@ -144,7 +144,7 @@ render() {
           } style={styles.activeBorder}> */}
           <Attendee  navigation={this.props.navigation}  profile='Eco System Partner'/> 
         </Tab> 
-        <Tab  heading='Exhibitor' tabStyle={{backgroundColor : '#c0c0c0'}} activeTabStyle={{backgroundColor : '#c0c0c0'}} textStyle={{fontSize:11,color:'#000000'}} activeTextStyle={{fontSize:11,color:'#000000',fontWeight:'normal'}} >
+        <Tab  heading='Exhibitor' tabStyle={{backgroundColor : '#f20505'}} activeTabStyle={{backgroundColor : '#f20505'}} textStyle={{fontSize:11,color:'#fff'}} activeTextStyle={{fontSize:11,color:'#fff',fontWeight:'normal'}} >
           {/* heading={
             <TabHeading style={{backgroundColor : '#fff'}}>
               <Text  style={[styles.textColor]} >Exhibitor</Text>

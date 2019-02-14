@@ -60,15 +60,36 @@ export class Events extends RkComponent {
       isLoaded: false,
       isOffline: false,
       progress:0,
-      event:{}
+      event:{},
+      backCount:0
     };
     this.storeEventDetails = this.storeEventDetails.bind(this);
   }
 
   handleBackPress=()=>{
-    BackHandler.exitApp();
-      return true;
+    if(this.state.backCount===0){
+      setTimeout(this.cancelExit,2000);
+      ToastAndroid.showWithGravity(
+        'Press back again to exit....',
+        ToastAndroid.SHORT,
+        ToastAndroid.BOTTOM,
+      );
+      this.setState({backCount:1});
 
+      return true; 
+
+    }else{
+      this.exitApp();
+      return false;
+    }
+
+  } 
+
+  exitApp=()=>{
+    BackHandler.exitApp();
+  }
+  cancelExit=()=>{
+    this.setState({backCount:0});
   }
   componentWillMount() {
     BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
@@ -528,13 +549,20 @@ export class Events extends RkComponent {
       return (
         <Container style={[styles.root]}>
 
-          {this.state.progress>0?<View style={{flex:1, justifyContent: 'center',alignItems:'center',opacity:80,backgroundColor:'#fff'}}><ProgressCircle percent={this.state.progress} radius={120} borderWidth={5} color="#1aff1a" shadowColor="#8c8c8c" bgColor="#ff1a1a">
+          {this.state.progress>0?<View style={{flex:1, justifyContent: 'center',alignItems:'center',opacity:80,backgroundColor:'#fff'}}><ProgressCircle percent={this.state.progress} radius={120} borderWidth={10} color="#1affc6" shadowColor="#cccccc"  >
+          <LinearGradient
+            colors={["#d4145a", "#fbba50"]}
+            start={{ x: 0.0, y: 0.5 }} 
+            end={{ x: 1, y: 0.5 }}
+            style={[styles.linearGradient]}
+            style={{borderRadius:100,width:250,height:250,justifyContent: 'center',alignItems:'center'}}
+          >
           <Text style={{color:'#fff',fontSize:15,fontWeight:'bold'}}>{this.state.event.eventName}</Text>
           <Text style={{color:'#fff',fontSize:15,fontWeight:'bold'}}>{this.state.event.venue}</Text>
-          <Text style={{color:'#fff',fontSize:12,fontWeight:'bold'}}>{this.state.event.startDate}</Text>
+          {/* <Text style={{color:'#fff',fontSize:12,fontWeight:'bold'}}>{this.state.event.startDate}</Text> */}
           {/* <Image
             source={require('../../assets/images/logo.png')}/>  */}
-          </ProgressCircle></View>:  <ScrollView>
+          </LinearGradient></ProgressCircle></View>:  <ScrollView>
 
 <View>
   <View style={[styles.headerView]}>

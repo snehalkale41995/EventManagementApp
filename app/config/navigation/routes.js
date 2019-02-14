@@ -42,6 +42,7 @@ export class HomePageMenuScreen extends React.Component {
   };
 
   constructor(props) {
+
     super(props)
     this.state = {
       showQuestions: false,
@@ -151,7 +152,7 @@ export class HomePageMenuScreen extends React.Component {
        let currentUserRole = this.state.userObj.roleName;
        let params = this.props.navigation.state.params || {};
        let show = params.showHome || false;
-      if (this.state.showQuestions == true && displayHomeQAceess.indexOf(currentUserRole)=== -1 && show === false) {
+      if (this.state.userObj.event===this.state.eventDetails._id&& this.state.showQuestions == true && displayHomeQAceess.indexOf(currentUserRole)=== -1 && show === false) {
       return (
         <Questions navigation={this.props.navigation} userId={this.state.userId}/>
       );

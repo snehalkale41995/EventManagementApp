@@ -171,9 +171,9 @@ class Attendee extends React.Component{
             { 
             let avatar;
             if (attendee.profileImageURL) {
-                avatar = <Image style={{ width: 60, height: 60 ,borderRadius:100 }} source={{ uri: attendee.profileImageURL }} />
+                avatar = <Image style={{ width: 60, height: 60  }} source={{ uri: attendee.profileImageURL }} />
             } else {
-                avatar = <Image style={{ width: 60, height: 60,borderRadius:100  }} source={require('../../assets/images/defaultSponsorImg.png')} />
+                avatar = <Image style={{ width: 60, height: 60  }} source={require('../../assets/images/defaultSponsorImg.png')} />
             } 
             return (
                 <TouchableOpacity key={attendee._id} onPress={() => this.props.navigation.navigate('AttendeeProfileDetails',{ attendeeDetails: attendee})}
