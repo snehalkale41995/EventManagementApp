@@ -10,6 +10,8 @@ import * as questionFormService from '../../serviceActions/questionForm';
 import * as eventService from '../../serviceActions/event';
 import {Loader} from '../../components/loader';
 import {Footer} from '../../components/footer';
+import { BackHandler } from 'react-native';
+
 export class Questions extends React.Component {
     static navigationOptions = {
         title: 'Questions'.toUpperCase()
@@ -30,8 +32,17 @@ export class Questions extends React.Component {
         this.onFormSelectValue = this.onFormSelectValue.bind(this);
         this.onRadioButtonChange = this.onRadioButtonChange.bind(this);
     }
+    handleBackPress=()=>{
+        //console.log('Here',this.props);
+          this.props.navigation.replace('EventsMenu');
+          return true;
+    
+      }
+     
 
     componentWillMount() {
+        BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
+
         if(Platform.OS !== 'ios'){
           NetInfo.isConnected.fetch().then(isConnected => {
             if(isConnected) {
@@ -75,6 +86,8 @@ export class Questions extends React.Component {
       };   
 
       componentWillUnmount() {
+        BackHandler.removeEventListener('hardwareBackPress',this.handleBackPress);
+
         NetInfo.removeEventListener(
           'connectionChange',
           this.handleFirstConnectivityChange
