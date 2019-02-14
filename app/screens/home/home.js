@@ -19,10 +19,11 @@ export class HomePage extends React.Component {
 
   constructor(props) {
     super(props);
-   // console.log('navigation',props)
+  
     this.state = { 
       currentTab: 'Home' 
     };
+    console.warn("in home constructor")
   }
   handleBackPress=()=>{
     if(this.props.navigation.state.routeName=='GridV2' || this.props.navigation.state.routeName=='HomeMenu')
@@ -47,7 +48,7 @@ export class HomePage extends React.Component {
     BackHandler.removeEventListener('hardwareBackPress',this.handleBackPress);
   }
   render() {
-    
+    //console.warn("in home render")
     return (
       <Container>
        <ProgramsTab navigation={this.props.navigation}/>
