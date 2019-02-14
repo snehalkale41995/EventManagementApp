@@ -43,7 +43,7 @@ export class editProfile extends React.Component {
     }
   }
   handleBackPress=()=>{
-    this.props.navigation.pop(1);
+    this.props.navigation.replace('MyProfile');
     return true;        
 }
   askPermissionsAsync = async () => {
@@ -174,29 +174,36 @@ export class editProfile extends React.Component {
             user.contact=val;
             this.setState({userInfo:user})
         break;
-        case 'email':
+        case 'facebook':
             user={...this.state.userInfo};
-            user.email=val;
+            user.facebookProfileURL=val;
             this.setState({userInfo:user})
         break;
+        case 'linkedin':
+            user={...this.state.userInfo};
+            user.linkedinProfileURL=val;
+        this.setState({userInfo:user})
+    break;
     }
   }
   submit=()=>
   {
     let user={...this.state.userInfo};
+    //console.warn("(response)",user);
+
     if(this.validate(user.firstName,user.lastName,user.contact.toString())){
         delete user._id;
         delete user.__v;
-                        
-        axios
-        .put(`${AppConfig.serverURL}/api/attendee/`+this.state.userInfo._id, JSON.parse(JSON.stringify(user)))
+        if(user.roleName==='Speaker'){
+          axios
+        .put(`${AppConfig.serverURL}/api/speaker/new/`+this.state.userInfo._id, JSON.parse(JSON.stringify(user)))
         .then(response => {
           let userInfo = JSON.stringify(response.data);
           AsyncStorage.setItem("USER_DETAILS", userInfo);
-          console.log("(response)",response.data);
+          //console.warn("(response)",response.data);
           ToastAndroid.showWithGravity(
             'Your profile has been updated successfully..',
-            ToastAndroid.LONG,
+            ToastAndroid.SHORT,
             ToastAndroid.CENTER,
             
           );
@@ -211,7 +218,31 @@ export class editProfile extends React.Component {
         .catch(error => {
         // console.log("(error)", error.response);
     });
+        }else{           
+        axios
+        .put(`${AppConfig.serverURL}/api/attendee/new/`+this.state.userInfo._id, JSON.parse(JSON.stringify(user)))
+        .then(response => {
+          let userInfo = JSON.stringify(response.data);
+          AsyncStorage.setItem("USER_DETAILS", userInfo);
+          //console.warn("(response)",response.data);
+          ToastAndroid.showWithGravity(
+            'Your profile has been updated successfully..',
+            ToastAndroid.SHORT,
+            ToastAndroid.CENTER,
+            
+          );
+          this.props.navigation.replace('MyProfile');
 
+
+        // loginService._storeData(JSON.stringify(response.data));
+        // console.log("NEw",this.state.userInfo); 
+        // this.getUserInfo();
+        // console.log("2",this.state.userInfo);
+        })
+        .catch(error => {
+        // console.log("(error)", error.response);
+    });
+  }
     // let data=new FormData();
     // for ( var key in user ) {
     //   if(key!='profileImageURL')
@@ -287,7 +318,6 @@ validate=(fname,lname,contact)=>{
       }
     })  
   } 
-
     displayInformation = () => {
     let userInfo = this.state.userInfo;
     let attendeeCode = userInfo.attendeeLabel+"-"+userInfo.attendeeCount;
@@ -295,23 +325,37 @@ validate=(fname,lname,contact)=>{
     let userName = userInfo.firstName +""+ userInfo.lastName;
 
     let qrText = "TIE" + ":" + attendeeCode + ":" + attendeeId + ":" + userName;
- 
+    let avatar;
+
+    if(!userInfo.facebookProfileURL){
+      userInfo.facebookProfileURL="";
+    }
+    if(!userInfo.linkedinProfileURL){
+      userInfo.linkedinProfileURL="";
+    }
+    if (userInfo.profileImageURL) {
+      avatar = <Image style={{ width: 100, height: 100,}} source={{ uri: userInfo.profileImageURL }} />
+  } else {
+      avatar = <Image style={{ width: 100, height: 100}} source={require('../../assets/images/defaultUserImg.png')} />
+  } 
     return ( 
-      <Container> 
-        {/* <ScrollView style={styles.root}>  */}
-             {/* <View style={styles.section}>   */}
-             
-                <View style={[styles.profileImageStyle]} >
+      // <Container>  
+        // {/* <ScrollView style={styles.root}>  */}
+        //      {/* <View style={styles.section}>   */}
+        <View style={{paddingTop:15}}>
+        <View style={[styles.profileImageStyle]} >
                 <TouchableOpacity key={userInfo.firstName} onPress={() => this._pickImage()}> 
-                
-                  <Avatar  rkType='big'  imagePath={userInfo.profileImageURL} />
-                  {/* <Image style={{ width: 120, height: 120 }} source={{ uri: userInfo.profileImageURL }}  /> */}
+                <View style={{borderColor:'#f20505',borderWidth:2}}>
+                {avatar}
+                </View>
+                  {/* <Avatar  rkType='big'  imagePath={userInfo.profileImageURL} /> */}
+                  {/* <Image style={{ width: 120, height: 120 ,borderColor:'#f20505',borderWidth:1}} source={{ uri: userInfo.profileImageURL }}  /> */}
                   </TouchableOpacity>
 
                   </View>
                   <View style={[styles.column]}>
 
-                  <RkText style={{color: '#000',fontSize : 15, textAlign: 'left'}}>First name</RkText>
+                   <RkText style={{color: '#000',fontSize : 15, textAlign: 'left'}}>First name</RkText>
                   <TextInput  underlineColorAndroid='transparent' style={[styles.text]}  value={userInfo.firstName} onChangeText={(text) => this.editInput('fname',text)} />
                   <Text style={[styles.errorStyle]} ref='contact'>{this.state.fnameError}</Text>
 
@@ -324,11 +368,11 @@ validate=(fname,lname,contact)=>{
                   <Text style={[styles.errorStyle]} ref='contact'>{this.state.contactError}</Text>
 
                   <RkText style={{color: '#000',fontSize : 15, textAlign: 'left'}}>Linkedin profile</RkText>
-                  <TextInput underlineColorAndroid='transparent' placeholder='Profile url' style={[styles.text]}    onChangeText={(text) => this.editInput('contact',text)} />
+                  <TextInput underlineColorAndroid='transparent' placeholder='Profile url' style={[styles.text]}   value={''+userInfo.linkedinProfileURL} onChangeText={(text) => this.editInput('linkedin',text)} />
                   <Text style={[styles.errorStyle]} ref='contact'>{this.state.contactError}</Text>
                   
                   <RkText style={{color: '#000',fontSize : 15, textAlign: 'left'}}>Facebook profile</RkText>
-                  <TextInput underlineColorAndroid='transparent'  placeholder='Profile url'  style={[styles.text]}   onChangeText={(text) => this.editInput('contact',text)} />
+                  <TextInput underlineColorAndroid='transparent'  placeholder='Profile url'  style={[styles.text]} value={''+userInfo.facebookProfileURL}  onChangeText={(text) => this.editInput('facebook',text)} />
                   <Text style={[styles.errorStyle]} ref='contact'>{this.state.contactError}</Text>
                   
                   <GradientButton colors={['#f20505', '#f55050']} text='Save' style={{width: Platform.OS === 'ios' ? 150 :170 , alignSelf : 'center'}}
@@ -338,23 +382,24 @@ validate=(fname,lname,contact)=>{
                   <Text ref='contact'>{this.state.emailError}</Text> */}
  
                 </View>
-                
-                 {/* <View style={[styles.row]}>
-                   <QRCode
-                   value={qrText}
-                   size={160}
-                   bgColor='black' 
-                   fgColor='white'/>  
-                   </View> */}
-                 {/* <View style={{marginTop:10}}>
-                   <RkText style={{fontSize : 15, textAlign: 'center'}}>{attendeeCode}</RkText>
-                 </View> */}
-                  {/* <View style={{marginTop:25,backgroundColor:'#E7060E',height:40}}>
-                   <RkText style={{fontSize : 25, textAlign: 'center', color:'white'}}>{userInfo.roleName}</RkText>
-                 </View> */}
-              {/* </View>  */}
-        {/* </ScrollView> */}
-      </Container>
+                </View>
+
+                //  {/* <View style={[styles.row]}>
+                //    <QRCode
+                //    value={qrText}
+                //    size={160}
+                //    bgColor='black' 
+                //    fgColor='white'/>  
+                //    </View> */}
+      //            {/* <View style={{marginTop:10}}>
+      //              <RkText style={{fontSize : 15, textAlign: 'center'}}>{attendeeCode}</RkText>
+      //            </View> */}
+      //             {/* <View style={{marginTop:25,backgroundColor:'#E7060E',height:40}}>
+      //              <RkText style={{fontSize : 25, textAlign: 'center', color:'white'}}>{userInfo.roleName}</RkText>
+      //            </View> */}
+      //         {/* </View>  */}
+      //   {/* </ScrollView> */}
+      // {/* </Container> */}
     );
   }
 
