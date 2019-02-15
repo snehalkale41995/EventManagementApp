@@ -1,7 +1,7 @@
 import React from 'react';
 import { RkText, RkStyleSheet } from 'react-native-ui-kitten';
 import { Container } from 'native-base';
-import { Image, ScrollView, View, StyleSheet, Alert, AsyncStorage, ActivityIndicator, Text, Linking, TouchableOpacity,Platform,NetInfo } from 'react-native';
+import { Image, ScrollView, View, StyleSheet, Alert, AsyncStorage, ActivityIndicator, Text, Linking, TouchableOpacity,Platform,NetInfo ,ImageBackground} from 'react-native';
 import { scale, scaleModerate, scaleVertical } from '../../utils/scale';
 import * as loginService from '../../serviceActions/login';
 import QRCode from "react-native-qrcode"; 
@@ -105,21 +105,30 @@ export class UserProfile extends React.Component {
     // console.log(userInfo)
     let avatar;
     if (userInfo.profileImageURL) {
-      avatar = <Image style={{ width: 110, height: 110,borderColor:'#f20505',borderWidth:2 }} source={{ uri: userInfo.profileImageURL }} />
+      avatar = <Image style={{ width: 110, height: 110,borderColor:'#00ffff',borderWidth:2,borderRadius:100 }} source={{ uri: userInfo.profileImageURL }} />
   } else {
-      avatar = <Image style={{ width: 110, height: 110,borderColor:'#f20505',borderWidth:2 }} source={require('../../assets/images/defaultUserImg.png')} />
+      avatar = <Image style={{ width: 110, height: 110,borderColor:'#00ffff',borderWidth:2 ,borderRadius:100}} source={require('../../assets/images/defaultUserImg.png')} />
   } 
     return (
-      // <Container >
-      //   <ScrollView style={styles.root}>
-      //        <View style={styles.section}>
-             <View style={{paddingTop:15}}>
+       <Container > 
+        <ScrollView style={styles.root}>
+              {/* <View style={styles.section}> */}
+              <ImageBackground
+      source={require('../../assets/images/profileBack.png')}
+      imageStyle=''
+      style={{width:'100%',height:200}}
+    >
+                <View style={{elevation:5}}>
                 <View  style={[styles.column, styles.heading]}>
                   {/* <Image style={{ width: 120, height: 120,borderRadius:100 ,borderColor:'#f20505',borderWidth:1}} source={{ uri: userInfo.profileImageURL }} /> */}
                   {avatar}
-                  <RkText style={{color: '#E7060E',fontSize : 25, textAlign: 'center'}}>{userInfo.firstName + " " + userInfo.lastName}</RkText>
-                  <RkText style={{fontSize : 18, textAlign: 'center'}}>{userInfo.roleName}</RkText> 
+                  <RkText style={{color: '#fff',fontSize : 25, textAlign: 'center'}}>{userInfo.firstName + " " + userInfo.lastName}</RkText>
+                  <RkText style={{fontSize : 18,color: '#fff', textAlign: 'center'}}>{userInfo.roleName}</RkText> 
+
                 </View>
+
+                </View>
+</ImageBackground>
                 <View style={[styles.column]}>
                   <RkText style={{color: '#E7060E', fontSize : 20, textAlign: 'center'}}>Contact Details</RkText>
                   <RkText style={{fontSize : 18, textAlign: 'center'}}>{userInfo.contact}</RkText>
@@ -130,8 +139,6 @@ export class UserProfile extends React.Component {
                   <RkText style={{fontSize : 18, textAlign: 'center'}}>{userInfo.briefInfo}</RkText>
                   
                 {/* </View> */}
-                <GradientButton colors={['#f20505', '#f55050']} text='Edit' style={{width: Platform.OS === 'ios' ? 150 :170 , alignSelf : 'center',marginTop:25}}
-                onPress={() => this.props.navigation.replace('EditProfile', { sessionDetails: this.state.userInfo })}/>
                 {/* <View style={[styles.row]}>
                    <QRCode
                    value={qrText}
@@ -145,12 +152,14 @@ export class UserProfile extends React.Component {
                   {/* <View style={{marginTop:25,backgroundColor:'#E7060E',height:40}}>
                    <RkText style={{fontSize : 25, textAlign: 'center', color:'white'}}>{userInfo.roleName}</RkText>
                  </View> */}
-              </View>
-              </View>
-
-      //   {/* </ScrollView> */}
-      // {/* </Container> */}
-    );
+              </View> 
+              
+              <GradientButton colors={['#f20505', '#f55050']} text='Edit' style={{width: Platform.OS === 'ios' ? 150 :170 , alignSelf : 'center',marginTop:25}}
+                onPress={() => this.props.navigation.replace('EditProfile', { sessionDetails: this.state.userInfo })}/>
+               
+</ScrollView>
+       </Container>
+    );  
   }
 
   render() {
@@ -184,7 +193,8 @@ export class UserProfile extends React.Component {
 
 let styles = RkStyleSheet.create(theme => ({
   root: {
-    backgroundColor: theme.colors.screen.base
+    backgroundColor: '#f2f2f2',
+    flex:1
   },
   section: {
     backgroundColor: theme.colors.screen.base,
@@ -197,7 +207,7 @@ let styles = RkStyleSheet.create(theme => ({
     flexDirection: 'column',
     borderColor: theme.colors.border.base,
     alignItems: 'center',
-    paddingTop:10
+    marginTop:25
   },
   row: {
     flexDirection: 'row',

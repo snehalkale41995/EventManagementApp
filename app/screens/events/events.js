@@ -201,33 +201,16 @@ export class Events extends RkComponent {
  
   startLoading=()=>{
 
-    console.warn("this.props", this.props)
     if(this.state.progress===100){
-      //this.props.navigation.pop();
       this.props.navigation.navigate("App");
-     // console.warn("iff")
     }else{
-     // console.warn("elase")
       let pr=this.state.progress;
       this.setState({progress:pr+5})
       setTimeout(this.startLoading,30)
     }
 
 
-    //setTimeout(() => { this.storeEventDetails(event) }, 5000);
-//     let timerId = setInterval(() => alert('tick'), 2000);
-
-// // after 5 seconds stop
-// setTimeout(() => { clearInterval(timerId); alert('stop'); }, 5000)
-    // let pr=this.state.progress;
-    // pr=pr+5;
-    // this.setState({progress:pr});
-    // if(pr>100){
-    //   let timerId=setInterval(() => this.setState({progress:this.state.progress+5})  , 50);
-    //   setTimeout(() => { clearInterval(timerId) }, 5000);
-    // }else{
-    //   setTimeout(this.startLoading,60)  
-    // }
+ 
   }
 
   storeEventDetails(event) {
@@ -549,7 +532,7 @@ export class Events extends RkComponent {
       return (
         <Container style={[styles.root]}>
 
-          {this.state.progress>0?<View style={{flex:1, justifyContent: 'center',alignItems:'center',opacity:80,backgroundColor:'#fff'}}><ProgressCircle percent={this.state.progress} radius={120} borderWidth={10} color="#1affc6" shadowColor="#cccccc"  >
+          {this.state.progress>0?<View style={{flex:1, justifyContent: 'center',alignItems:'center',opacity:80,backgroundColor:'#fff'}}><ProgressCircle percent={this.state.progress} radius={120} borderWidth={10} color="#00ff00" shadowColor="#cccccc"  >
           <LinearGradient
             colors={["#d4145a", "#fbba50"]}
             start={{ x: 0.0, y: 0.5 }} 

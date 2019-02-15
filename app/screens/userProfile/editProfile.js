@@ -334,9 +334,9 @@ validate=(fname,lname,contact)=>{
       userInfo.linkedinProfileURL="";
     }
     if (userInfo.profileImageURL) {
-      avatar = <Image style={{ width: 100, height: 100,}} source={{ uri: userInfo.profileImageURL }} />
+      avatar = <Image style={{ width: 100, height: 100,borderRadius:100}} source={{ uri: userInfo.profileImageURL }} />
   } else {
-      avatar = <Image style={{ width: 100, height: 100}} source={require('../../assets/images/defaultUserImg.png')} />
+      avatar = <Image style={{ width: 100, height: 100,borderRadius:100}} source={require('../../assets/images/defaultUserImg.png')} />
   } 
     return ( 
       // <Container>  
@@ -345,7 +345,7 @@ validate=(fname,lname,contact)=>{
         <View style={{paddingTop:15}}>
         <View style={[styles.profileImageStyle]} >
                 <TouchableOpacity key={userInfo.firstName} onPress={() => this._pickImage()}> 
-                <View style={{borderColor:'#f20505',borderWidth:2}}>
+                <View style={{borderColor:'#f20505',borderWidth:2,borderRadius:100}}>
                 {avatar}
                 </View>
                   {/* <Avatar  rkType='big'  imagePath={userInfo.profileImageURL} /> */}
@@ -369,13 +369,11 @@ validate=(fname,lname,contact)=>{
 
                   <RkText style={{color: '#000',fontSize : 15, textAlign: 'left'}}>Linkedin profile</RkText>
                   <TextInput underlineColorAndroid='transparent' placeholder='Profile url' style={[styles.text]}   value={''+userInfo.linkedinProfileURL} onChangeText={(text) => this.editInput('linkedin',text)} />
-                  <Text style={[styles.errorStyle]} ref='contact'>{this.state.contactError}</Text>
                   
                   <RkText style={{color: '#000',fontSize : 15, textAlign: 'left'}}>Facebook profile</RkText>
                   <TextInput underlineColorAndroid='transparent'  placeholder='Profile url'  style={[styles.text]} value={''+userInfo.facebookProfileURL}  onChangeText={(text) => this.editInput('facebook',text)} />
-                  <Text style={[styles.errorStyle]} ref='contact'>{this.state.contactError}</Text>
                   
-                  <GradientButton colors={['#f20505', '#f55050']} text='Save' style={{width: Platform.OS === 'ios' ? 150 :170 , alignSelf : 'center'}}
+                  <GradientButton colors={['#f20505', '#f55050']} text='Save' style={{marginTop:5,width: Platform.OS === 'ios' ? 150 :170 , alignSelf : 'center',marginTop:10}}
                 onPress={() => this.submit()}/>
                   {/* <RkText style={{color: '#E7060E',fontSize : 10, textAlign: 'left'}}>Email Id</RkText>
                   <TextInput    style={{height: 40}} value={userInfo.email} onChangeText={(text) => this.editInput('email',text)} />

@@ -104,7 +104,7 @@ export class SocialFeed extends React.Component {
       <Container style={[styles.root]}>
         <Tabs tabBarUnderlineStyle={{borderColor:'#00ffff'}} style={{ elevation: 3,width:400}} style={styles.tabContent}
                         onChangeTab={() => {   }}>
-        <Tab heading='Twitter'   tabStyle={{backgroundColor : '#f20505'}} activeTabStyle={{backgroundColor : '#f20505'}}  textStyle={{fontSize:11,color:'#fff'}} activeTextStyle={{fontSize:11,color:'#fff',fontWeight:'bold'}}> 
+        <Tab heading='Twitter'   tabStyle={{backgroundColor : '#f20505'}} activeTabStyle={{backgroundColor : '#f20505'}}  textStyle={{fontSize:15,color:'#fff'}} activeTextStyle={{fontSize:15,color:'#fff',fontWeight:'bold'}}> 
                         <View style={{flex:1,alignContent:'center',justifyContent:'center',padding:10,backgroundColor:'#d9d9d9'}}>
      
           <WebView
@@ -115,7 +115,7 @@ export class SocialFeed extends React.Component {
                         </View>        
     
           </Tab>
-        <Tab heading='Facebook' tabStyle={{backgroundColor : '#f20505'}} activeTabStyle={{backgroundColor : '#f20505'}}  textStyle={{fontSize:11,color:'#fff'}} activeTextStyle={{fontSize:11,color:'#fff',fontWeight:'bold'}}>
+        <Tab heading='Facebook' tabStyle={{backgroundColor : '#f20505'}} activeTabStyle={{backgroundColor : '#f20505'}}  textStyle={{fontSize:15,color:'#fff'}} activeTextStyle={{fontSize:15,color:'#fff',fontWeight:'bold'}}>
               <View style={{flex:1,alignContent:'center',justifyContent:'center',padding:10,backgroundColor:'#d9d9d9'}}>
               <WebView
 automaticallyAdjustContentInsets={false}

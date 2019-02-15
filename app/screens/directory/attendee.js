@@ -152,7 +152,7 @@ class Attendee extends React.Component{
                     <TouchableOpacity key={attendee._id} onPress={() => this.props.navigation.navigate('AttendeeProfileDetails',{ attendeeDetails: attendee})}
                     >
                         <RkCard rkType='shadowed' style={[styles.card]}>
-                            <View style={{ flexDirection: 'row' }}>
+                            <View style={{elevation:3, flexDirection: 'row' }}>
                                 <View style={{ flexDirection: 'column', alignItems: 'flex-start', marginVertical: 10, flex: 3, alignSelf: 'center', marginLeft: 10 }}>
                                     {avatar}
                                 </View>
@@ -243,7 +243,7 @@ class Attendee extends React.Component{
 
 let styles = RkStyleSheet.create(theme => ({
     root: {
-        backgroundColor: theme.colors.screen.base
+        backgroundColor: '#f2f2f2'
     },
     card: {
         margin: 1,
@@ -262,6 +262,11 @@ let styles = RkStyleSheet.create(theme => ({
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: '#fff',
+        borderWidth: 1,
+    borderStyle: 'solid',
+    borderRadius: 25,
+    borderColor:'#ff3333',
+    marginTop:3
     },
     searchIcon: {
         padding: 10,
@@ -274,6 +279,8 @@ let styles = RkStyleSheet.create(theme => ({
         paddingLeft: 20,
         backgroundColor: '#fff',
         color: '#424242',
+        borderRadius: 25,
+
 
     },
 }));

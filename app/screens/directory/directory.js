@@ -144,7 +144,7 @@ render() {
           } style={styles.activeBorder}> */}
           <Attendee  navigation={this.props.navigation}  profile='Eco System Partner'/> 
         </Tab> 
-        <Tab  heading='Exhibitor' tabStyle={{backgroundColor : '#f20505'}} activeTabStyle={{backgroundColor : '#f20505'}} textStyle={{fontSize:11,color:'#fff'}} activeTextStyle={{fontSize:11,color:'#fff',fontWeight:'normal'}} >
+        <Tab  heading='Exhibitor'  tabStyle={{backgroundColor : '#f20505'}} activeTabStyle={{backgroundColor : '#f20505'}} textStyle={{fontSize:11,color:'#fff'}} activeTextStyle={{fontSize:11,color:'#fff',fontWeight:'normal'}} >
           {/* heading={
             <TabHeading style={{backgroundColor : '#fff'}}>
               <Text  style={[styles.textColor]} >Exhibitor</Text>
