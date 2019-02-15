@@ -16,10 +16,10 @@ export class SpeakerDetailsTabs extends React.Component {
       isOffline : false
     }
   }
-  handleBackPress=()=>{
+  handleBackPress=()=>{ 
     //console.log("1:",this.props.navigation)
-    this.props.navigation.pop();
-    // console.log("2:",this.props.navigation)
+    this.props.navigation.pop(2);
+    console.log("2:",this.props.navigation)
     // this.props.navigation.pop();
 
     //this.props.navigation.goBack();

@@ -1,5 +1,5 @@
 import React from 'react';
-import { TouchableHighlight, View, ScrollView, Image, Platform, StyleSheet, Alert } from 'react-native';
+import { TouchableHighlight, View, ScrollView, Image, Platform, StyleSheet, Alert,ImageBackground } from 'react-native';
 import {NavigationActions} from 'react-navigation';
 import { RkStyleSheet, RkText, RkTheme } from 'react-native-ui-kitten';
 import {MainRoutes} from '../../config/navigation/routes';
@@ -125,9 +125,23 @@ export class SideMenu extends React.Component {
       <View style={styles.root}>
         <ScrollView
           showsVerticalScrollIndicator={false}>
-          <View style={[styles.container, styles.content]}>
+          <View style={{    borderTopWidth: StyleSheet.hairlineWidth,alignContent:'center',justifyContent:'center'}}>
             {/* {this._renderIcon()} */}
-            <RkText style={styles.tieName}>{this.state.eventName}</RkText>
+            <ImageBackground
+              source={require('../../assets/images/profileBack.png')}
+              imageStyle=''
+              style={{width:'100%',height:150}} >    
+              <View style={{flexDirection:'column',alignContent:'center',justifyContent:'center',paddingTop:10,paddingLeft:8}}>
+              {this.state.eventDetails.eventLogo?<Image
+                style={{width: 60, height: 60}}
+                source={{uri: this.state.eventDetails.eventLogo}}
+              />:null}
+                <RkText style={styles.tieName}>{this.state.eventName}</RkText>
+                <RkText style={{fontSize:14,color:'#000'}}>{this.state.eventDetails.venue}</RkText>
+
+                </View>
+                
+            </ImageBackground>
           </View>
           {menu}
           <TouchableHighlight
@@ -173,7 +187,8 @@ let styles = RkStyleSheet.create(theme => ({
     marginRight: 13,
   },
    tieName: {
-    fontSize: 16,    
+    fontSize: 16,
+    color:'#990000'    
   },
   sidebarIcon:{
     fontSize: 13,

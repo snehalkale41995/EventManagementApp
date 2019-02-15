@@ -48,17 +48,29 @@ export class SessionDetails extends Component {
         sameTimeRegistration : false,
         isOffline : false,
         isAddingToAgenda :false,
-        isLoaded : false 
+        isLoaded : false ,
+        sameEvent:false
       }
   }
   handleBackPress=()=>{
     //console.log("Second:",this.props.navigation.state.routeName)
-    this.props.navigation.pop(1); 
+    this.props.navigation.pop(); 
     return true;
   }
-
+  
 /**check */
 componentWillMount() {
+
+  loginService.getCurrentUser((userInfo)=>{
+    eventService.getCurrentEvent((eventDetails)=>{
+    if(userInfo && eventDetails){
+      if(userInfo.event===eventDetails._id){
+        this.setState({sameEvent:true})
+      }
+    }
+  })
+  })  
+
   BackHandler.addEventListener('hardwareBackPress',this.handleBackPress);
 
   if(Platform.OS !== 'ios'){
@@ -112,6 +124,10 @@ getCurrentUser() {
         userObj: userDetails,
         eventId : eventDetails._id
       });
+      //console.log('User and event data',this.state.userObj)
+
+    //console.log('User and event data',this.state.eventId)
+      
       compRef.fetchRegistrationStatus();
       })
   })
@@ -141,16 +157,16 @@ getCurrentUser() {
   getSurveyAccess = () => {
       return (
         <View style={{ width:Platform.OS === 'ios' ? 320 : 380 ,alignItems:'center' , flexDirection : 'row' , marginLeft :Platform.OS === 'android' ? 20 : 0  }}>
-          <View style={{ width: Platform.OS === 'ios' ? 160 : 180 ,alignItems:'center'}} >
+           {this.state.sameEvent?<View style={{ width: Platform.OS === 'ios' ? 160 : 180 ,alignItems:'center'}} >
             <GradientButton colors={['#f20505', '#f55050']} text='Panel Q&A' style={{width: Platform.OS === 'ios' ? 150 :170 , alignSelf : 'center'}}
               onPress={() => this.props.navigation.navigate('QueTab', { sessionDetails: this.state.sessionDetails })}
             />
-          </View>
-          <View style={{  width: Platform.OS === 'ios' ? 160 : 180 ,alignItems:'center'}} >
+          </View>:null}
+          {this.state.sameEvent?<View style={{  width: Platform.OS === 'ios' ? 160 : 180 ,alignItems:'center'}} >
             <GradientButton colors={['#f20505', '#f55050']} text='Feedback' style={{  width: Platform.OS === 'ios' ? 150 :170 ,alignSelf : 'center'}}
               onPress={this.onSurvey}
             />
-          </View>
+          </View>:null}
         </View>
       );
   }
@@ -173,7 +189,7 @@ getCurrentUser() {
             avatar = <Image style={{ width: 44, height: 44, borderRadius: 20 }} source={require('../../../assets/images/defaultUserImg.png')} />
           }
           return (
-            <TouchableOpacityEx key={index} onPress={() =>{  BackHandler.removeEventListener('hardwareBackPress',this.handleBackPress);
+            <TouchableOpacityEx key={index} onPress={() =>{  //BackHandler.removeEventListener('hardwareBackPress',this.handleBackPress);
             this.props.navigation.navigate('SpeakerDetailsTabs', { speakerDetails: speaker, speakersId: speaker._id, eventId: this.state.eventId })}}>
               <View style={[styles.row, styles.heading, styles.speakerView]} >
                 {avatar}
@@ -216,7 +232,7 @@ getCurrentUser() {
               </RkButton>
           </View>
         )
-      } 
+      }  
     }
     else if(this.state.sessionDetails.sessionType == 'invite'){
       return (
@@ -228,28 +244,28 @@ getCurrentUser() {
      else if(!this.state.regStatus  &&  this.state.sessionDetails.isRegistrationRequired){
       return (
         <View style = {[styles.attendBtn]} >
-          <RkButton
+           {this.state.sameEvent?<RkButton
             rkType='outline'
             style ={{borderColor : '#f20505', borderRadius : 30 , width : 100 ,height :30}}
             contentStyle={{ fontSize: 12 , color :'#f20505' }}
             onPress={this.onAttendRequest}
             >
             Register
-            </RkButton>
+            </RkButton>:null}
         </View>
       );
     }
     else{
       return (
         <View style = {[styles.attendBtn]} >
-          <RkButton
+          {this.state.sameEvent?<RkButton
             rkType='outline'
             style ={{borderColor : '#f20505', borderRadius : 30 , width : 150 ,height :30}}
             contentStyle={{ fontSize: 12 , color :'#f20505' }}
              onPress={this.onAttendRequest}  
             >
             Add to My Agenda
-            </RkButton>
+            </RkButton>:null}
         </View>
       );
     }

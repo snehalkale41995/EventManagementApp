@@ -99,13 +99,62 @@ export class SocialFeed extends React.Component {
   } 
   render() {
     return( 
-      <View style={{flex:1}}>
-      <WebView
-      style={{flex:1}}
-      originWhitelist={['*']}
-        source={{html: '<a class="twitter-timeline" href="https://twitter.com/TiEPune?ref_src=twsrc%5Etfw">Tweets by TiEPune</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>'}}
-      />
-    </View>  )
+
+
+      <Container style={[styles.root]}>
+        <Tabs tabBarUnderlineStyle={{borderColor:'#00ffff'}} style={{ elevation: 3,width:400}} style={styles.tabContent}
+                        onChangeTab={() => {   }}>
+        <Tab heading='Twitter'   tabStyle={{backgroundColor : '#f20505'}} activeTabStyle={{backgroundColor : '#f20505'}}  textStyle={{fontSize:15,color:'#fff'}} activeTextStyle={{fontSize:15,color:'#fff',fontWeight:'bold'}}> 
+                        <View style={{flex:1,alignContent:'center',justifyContent:'center',padding:10,backgroundColor:'#d9d9d9'}}>
+     
+          <WebView
+            style={{flex:1}}
+            originWhitelist={['*']}
+            source={{html: '<a class="twitter-timeline" href="https://twitter.com/TiEPune?ref_src=twsrc%5Etfw">Tweets by TiEPune</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>'}}
+            />   
+                        </View>        
+    
+          </Tab>
+        <Tab heading='Facebook' tabStyle={{backgroundColor : '#f20505'}} activeTabStyle={{backgroundColor : '#f20505'}}  textStyle={{fontSize:15,color:'#fff'}} activeTextStyle={{fontSize:15,color:'#fff',fontWeight:'bold'}}>
+              <View style={{flex:1,alignContent:'center',justifyContent:'center',padding:10,backgroundColor:'#d9d9d9'}}>
+              <WebView
+automaticallyAdjustContentInsets={false}
+source={{uri: 'https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Ftiepune%2F&tabs=timeline&small_header=true&hide_cover=false&show_facepile=false&appId=1279706002103925'}}
+javaScriptEnabled={true}
+domStorageEnabled={true}
+decelerationRate="normal"
+startInLoadingState={true}
+scalesPageToFit={true}
+/>
+              
+            </View>        
+            </Tab>  
+      </Tabs>
+                  <View>
+                  <Footer isOffline ={this.state.isOffline}/>    
+                  </View>
+        </Container>)
+
+
+
+
+
+
+
+
+
+
+   
+//https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fsitrccomp%2F&tabs=timeline&appId=1279706002103925
+
+{/* <View style={{flex:1}}>
+<WebView
+style={{flex:1}}
+originWhitelist={['*']}
+  source={{html: '<a class="twitter-timeline" href="https://twitter.com/TiEPune?ref_src=twsrc%5Etfw">Tweets by TiEPune</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>'}}
+/>
+</View> */}
+
     // <Container style={[styles.root]}>
     //                 <Tabs style={{ elevation: 3,width:400}} style={styles.tabContent}
     //                     onChangeTab={() => {
