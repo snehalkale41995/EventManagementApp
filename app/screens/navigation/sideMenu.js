@@ -138,9 +138,7 @@ export class SideMenu extends React.Component {
               />:null}
                 <RkText style={styles.tieName}>{this.state.eventName}</RkText>
                 <RkText style={{fontSize:14,color:'#000'}}>{this.state.eventDetails.venue}</RkText>
-
                 </View>
-                
             </ImageBackground>
           </View>
           {menu}

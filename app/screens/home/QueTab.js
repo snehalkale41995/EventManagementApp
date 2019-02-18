@@ -21,7 +21,6 @@ export  class QueTab extends React.Component {
     if(Platform.OS !== 'ios'){
       NetInfo.isConnected.fetch().then(isConnected => {
         if(isConnected) {
-         // this.getCurrentUser();
           this.setState({
             isLoading: true
           });
@@ -37,7 +36,6 @@ export  class QueTab extends React.Component {
         });
       });  
     }
-   // this.getCurrentUser();
     NetInfo.addEventListener(
       'connectionChange',
       this.handleFirstConnectivityChange
@@ -93,15 +91,6 @@ export  class QueTab extends React.Component {
           }
         >
           <PollSession navigation={this.props.navigation} sessionId = {this.state.sessionId}  UserName = {this.state.UserName}/>
-          {/* <View style={styles.footerOffline}>
-            {
-              this.state.isOffline ? <RkText rkType="small" style={styles.footerText}>The Internet connection appears to be offline. </RkText> : null
-            }
-          </View> 
-          <View style={styles.footer}>
-            <RkText rkType="small" style={styles.footerText}>Powered by</RkText>
-            <RkText rkType="small" style={styles.companyName}> Eternus Solutions Pvt. Ltd. </RkText>
-          </View> */}
         </Tab>
       </Tabs>
     );

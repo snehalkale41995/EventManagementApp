@@ -53,7 +53,6 @@ export class SessionDetails extends Component {
       }
   }
   handleBackPress=()=>{
-    //console.log("Second:",this.props.navigation.state.routeName)
     this.props.navigation.pop(); 
     return true;
   }
@@ -124,9 +123,6 @@ getCurrentUser() {
         userObj: userDetails,
         eventId : eventDetails._id
       });
-      //console.log('User and event data',this.state.userObj)
-
-    //console.log('User and event data',this.state.eventId)
       
       compRef.fetchRegistrationStatus();
       })

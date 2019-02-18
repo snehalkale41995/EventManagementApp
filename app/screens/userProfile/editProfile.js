@@ -95,46 +95,6 @@ export class editProfile extends React.Component {
 
     }
   };
-  getProfileImage=()=>{
-    // console.log('Inside get image');
-//     var options = {
-//       title: 'Select Image',
-//       customButtons: [
-//         { name: 'customOptionKey', title: 'Choose Photo from Custom Option' },
-//       ],
-//       storageOptions: {
-//         skipBackup: true,
-//         path: 'images',
-//       },
-//    }; 
-//     ImagePicker.showImagePicker(options, response => {
-//     console.log('Response = ', response);
-//     if (response.didCancel) {
-//       console.log('User cancelled image picker');
-//     } else if (response.error) {
-//       console.log('ImagePicker Error: ', response.error);
-//     } else if (response.customButton) {
-//       console.log('User tapped custom button: ', response.customButton);
-//       alert(response.customButton);
-//     } else {
-//       let source = response; 
-//       this.setState({
-//         filePath: source,
-//       });
-//     }
-//  });
-
-  //   ImagePicker.open({
-  //     takePhoto: true, 
-  //     useLastPhoto: true,
-  //     chooseFromLibrary: true
-  // }).then(({ uri, width, height }) => {
-  //     console.log('image asset', uri, width, height);
-  // }, (error) => {
-  //     // Typically, user cancel  
-  //     console.log('error', error);
-  // });
-  }
 
   handleFirstConnectivityChange = (connectionInfo) => {
     if (connectionInfo.type != 'none') {
@@ -189,8 +149,6 @@ export class editProfile extends React.Component {
   submit=()=>
   {
     let user={...this.state.userInfo};
-    //console.warn("(response)",user);
-
     if(this.validate(user.firstName,user.lastName,user.contact.toString())){
         delete user._id;
         delete user.__v;
@@ -200,7 +158,6 @@ export class editProfile extends React.Component {
         .then(response => {
           let userInfo = JSON.stringify(response.data);
           AsyncStorage.setItem("USER_DETAILS", userInfo);
-          //console.warn("(response)",response.data);
           ToastAndroid.showWithGravity(
             'Your profile has been updated successfully..',
             ToastAndroid.SHORT,
@@ -208,12 +165,7 @@ export class editProfile extends React.Component {
             
           );
           this.props.navigation.replace('MyProfile');
-
-
-        // loginService._storeData(JSON.stringify(response.data));
-        // console.log("NEw",this.state.userInfo); 
-        // this.getUserInfo();
-        // console.log("2",this.state.userInfo);
+       
         })
         .catch(error => {
         // console.log("(error)", error.response);
@@ -224,7 +176,6 @@ export class editProfile extends React.Component {
         .then(response => {
           let userInfo = JSON.stringify(response.data);
           AsyncStorage.setItem("USER_DETAILS", userInfo);
-          //console.warn("(response)",response.data);
           ToastAndroid.showWithGravity(
             'Your profile has been updated successfully..',
             ToastAndroid.SHORT,
@@ -232,37 +183,11 @@ export class editProfile extends React.Component {
             
           );
           this.props.navigation.replace('MyProfile');
-
-
-        // loginService._storeData(JSON.stringify(response.data));
-        // console.log("NEw",this.state.userInfo); 
-        // this.getUserInfo();
-        // console.log("2",this.state.userInfo);
         })
         .catch(error => {
         // console.log("(error)", error.response);
     });
   }
-    // let data=new FormData();
-    // for ( var key in user ) {
-    //   if(key!='profileImageURL')
-    //     data.append(key, user[key]);
-    // }
-    // data.append("profileImageURL",{
-    //   uri: user.profileImageURL,
-    //   type: 'image/jpeg', // or photo.type
-    //   name: 'testPhotoName'
-    // });
-    // fetch('http://localhost:3011/api/attendee/new/'+user._id, {
-    //   method: 'put',
-    //   headers: {
-    //     "Content-Type": "multipart/form-data",
-    //     // "Content-Type": "application/x-www-form-urlencoded",
-    // },
-    //   body: data
-    // }).then(res => {
-    //   // console.log(res)
-    // });
 }
 }
 validate=(fname,lname,contact)=>{
@@ -271,35 +196,18 @@ validate=(fname,lname,contact)=>{
     if(fname.length>0 && !hasNumber.test(fname)){
         if(lname.length>0 && !hasNumber.test(lname)){
             if(contact.toString().length==10 && contact.toString().match(/^[0-9]+$/)){    
-                    // if(email.length>0 && email.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i)){
-                    //     return true;
-                    // }else{ 
+                   
                         return true;
             }else{
               this.setState({...this.state, contactError:'Please enter valid contact details',lnameError:'',fnameError:''});
-
-                // this.setState({...this.state, emailError:''});
-                // this.setState({...this.state, lnameError:''});
-                // this.setState({...this.state, fnameError:''});
-                // this.setState({...this.state, contactError:'Please enter valid contact details'});
                 return false;
             }
         }else{
           this.setState({...this.state, contactError:'',lnameError:'Please enter valid last name',fnameError:''});
-
-            // this.setState({...this.state, emailError:''});
-            // this.setState({...this.state, contactError:''});
-            // this.setState({...this.state, fnameError:''});
-            // this.setState({...this.state, lnameError:'Please enter valid last name'});
             return false;
         }
     }else{
       this.setState({...this.state, contactError:'',lnameError:'',fnameError:'Please enter valid first name'});
-        
-      //    this.setState({...this.state, emailError:''});
-      //   this.setState({...this.state, contactError:''});
-      //   this.setState({...this.state, lnameError:''});
-      //   this.setState({...this.state, fnameError:'Please enter valid first name'});
         return false;
     } 
 }
@@ -339,19 +247,13 @@ validate=(fname,lname,contact)=>{
       avatar = <Image style={{ width: 100, height: 100,borderRadius:100}} source={require('../../assets/images/defaultUserImg.png')} />
   } 
     return ( 
-      // <Container>  
-        // {/* <ScrollView style={styles.root}>  */}
-        //      {/* <View style={styles.section}>   */}
         <View style={{paddingTop:15}}>
         <View style={[styles.profileImageStyle]} >
                 <TouchableOpacity key={userInfo.firstName} onPress={() => this._pickImage()}> 
                 <View style={{borderColor:'#f20505',borderWidth:2,borderRadius:100}}>
                 {avatar}
                 </View>
-                  {/* <Avatar  rkType='big'  imagePath={userInfo.profileImageURL} /> */}
-                  {/* <Image style={{ width: 120, height: 120 ,borderColor:'#f20505',borderWidth:1}} source={{ uri: userInfo.profileImageURL }}  /> */}
                   </TouchableOpacity>
-
                   </View>
                   <View style={[styles.column]}>
 
@@ -375,29 +277,8 @@ validate=(fname,lname,contact)=>{
                   
                   <GradientButton colors={['#f20505', '#f55050']} text='Save' style={{marginTop:5,width: Platform.OS === 'ios' ? 150 :170 , alignSelf : 'center',marginTop:10}}
                 onPress={() => this.submit()}/>
-                  {/* <RkText style={{color: '#E7060E',fontSize : 10, textAlign: 'left'}}>Email Id</RkText>
-                  <TextInput    style={{height: 40}} value={userInfo.email} onChangeText={(text) => this.editInput('email',text)} />
-                  <Text ref='contact'>{this.state.emailError}</Text> */}
- 
                 </View>
                 </View>
-
-                //  {/* <View style={[styles.row]}>
-                //    <QRCode
-                //    value={qrText}
-                //    size={160}
-                //    bgColor='black' 
-                //    fgColor='white'/>  
-                //    </View> */}
-      //            {/* <View style={{marginTop:10}}>
-      //              <RkText style={{fontSize : 15, textAlign: 'center'}}>{attendeeCode}</RkText>
-      //            </View> */}
-      //             {/* <View style={{marginTop:25,backgroundColor:'#E7060E',height:40}}>
-      //              <RkText style={{fontSize : 25, textAlign: 'center', color:'white'}}>{userInfo.roleName}</RkText>
-      //            </View> */}
-      //         {/* </View>  */}
-      //   {/* </ScrollView> */}
-      // {/* </Container> */}
     );
   }
 

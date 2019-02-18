@@ -127,9 +127,6 @@ export class LoginV2 extends React.Component {
             <RkButton style={styles.button} rkType='sponsors' style={{marginTop: 5}}>
               <Image style={styles.eternusLogo} source={require('../../assets/images/eternusLogoMain.png')}/>;
             </RkButton>
-            {/* <RkButton style={styles.button} rkType='sponsors' style={{marginTop: 5}}>
-              <Image style={styles.image} source={require('../../assets/images/bajajLogo.jpg')}/>;
-            </RkButton> */}
           </View>
         </View>
         {renderIf(this.state.isLoading, 

@@ -13,8 +13,7 @@ import {Loader} from '../../components/loader';
 import {Footer} from '../../components/footer'; 
 import {EmptyData} from '../../components/emptyData';
 import RegisterUserToSession from '../scanner/RegisterUserToSession';
-//import AttendeeProfileDetails from './attendeeProfileDetails';
-//import{ SpeakerDetailsTabs } from '../home/profile/SpeakerDetailsTabs';
+
 class Attendee extends React.Component{
     static navigationOptions={
         tabLabel: 'Attendee'
@@ -124,19 +123,10 @@ class Attendee extends React.Component{
      }
 
      searchAttendee=(searchString)=>{
-        // let attendeeList=[]
-        // this.state.Attendees.forEach((attendee,index)=>{
-        //     if(attendee.firstName.includes(searchString) || attendee.lastName.includes(searchString)){
-        //         attendeeList.push(attendee);
-        //     }
-        // })
-
         this.setState({...this.state,searchString:searchString});
      }
 
     displayAttendees = () => {
-    //   console.warn("compref", this);
-    //   console.warn("props", this.props.navigation);
         return this.state.Attendees.map((attendee, index) => {
             if(this.state.searchString.length!=0){
                 if(attendee.roleName===this.props.profile)
@@ -205,7 +195,6 @@ class Attendee extends React.Component{
                     <View style={styles.searchSection}>
                             {/* <Icon style={styles.searchIcon} name="ios-search" size={20} color="#000"/> */}
                             <TextInput
-                            
                                 style={styles.input}
                                 placeholder="Search here..."
                                 onChangeText={(searchString) => {this.searchAttendee(searchString)}}

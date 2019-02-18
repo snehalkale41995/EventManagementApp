@@ -33,16 +33,13 @@ export class Questions extends React.Component {
         this.onRadioButtonChange = this.onRadioButtonChange.bind(this);
     }
     handleBackPress=()=>{
-        //console.log('Here',this.props);
           this.props.navigation.replace('EventsMenu');
           return true;
-    
       }
      
 
     componentWillMount() {
         BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
-
         if(Platform.OS !== 'ios'){
           NetInfo.isConnected.fetch().then(isConnected => {
             if(isConnected) {

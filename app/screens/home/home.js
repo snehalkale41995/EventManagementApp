@@ -23,19 +23,15 @@ export class HomePage extends React.Component {
     this.state = { 
       currentTab: 'Home' 
     };
-    console.warn("in home constructor")
   }
   handleBackPress=()=>{
     if(this.props.navigation.state.routeName=='GridV2' || this.props.navigation.state.routeName=='HomeMenu')
     {
-      //console.log("In ",this.props.navigation.state.routeName)
-      //this.props.navigation.popToTop();
       this.props.navigation.replace('EventsMenu');
       return true;
 
     }
     else{
-   // console.log("Out ",this.props.navigation.state.routeName)
     return false;
   }
   }
@@ -48,33 +44,9 @@ export class HomePage extends React.Component {
     BackHandler.removeEventListener('hardwareBackPress',this.handleBackPress);
   }
   render() {
-    //console.warn("in home render")
     return (
       <Container>
        <ProgramsTab navigation={this.props.navigation}/>
-        {/*
-        //Networking is not supported in current release hence commenting below block of code
-           <Tabs tabBarPosition="bottom" style={{ elevation: 3 }}>
-          <Tab
-            heading={
-              <TabHeading style={{ flexDirection: 'column' }}><Icon name="calendar"/><Text>Program</Text></TabHeading>
-            }
-          >
-            <ProgramsTab navigation={this.props.navigation}/>
-          </Tab>
-          <Tab
-            heading={
-              <TabHeading style={{ flexDirection: 'column' }}><Icon name="ios-link"/><Text>Connect</Text></TabHeading>
-            }
-          >
-          </Tab>
-          <Tab
-            heading={
-              <TabHeading style={{ flexDirection: 'column' }}><Icon name="ios-people"/><Text>Speakers</Text></TabHeading>
-            }
-          >
-          </Tab>
-        </Tabs>*/}
       </Container>
     )
   }

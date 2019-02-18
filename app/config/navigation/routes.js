@@ -317,13 +317,6 @@ export const MainRoutes = [
     screen: Screens.AboutEternus,
     children: []
   },
-  // {
-  //   id: 'EventList',
-  //   title: 'Event List',
-  //   icon: 'md-list',
-  //   screen: Screens.MenuEvents,
-  //   children: [] 
-  // }, 
   {
     id: 'Directory',
     title: 'Directory',

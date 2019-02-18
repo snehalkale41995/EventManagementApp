@@ -1,44 +1,57 @@
-import React from 'react';
-import { RkText, RkStyleSheet } from 'react-native-ui-kitten';
-import { Container } from 'native-base';
-import { Image, ScrollView, View, StyleSheet, Alert, AsyncStorage, ActivityIndicator, Text, Linking, TouchableOpacity,Platform,NetInfo ,ImageBackground} from 'react-native';
-import { scale, scaleModerate, scaleVertical } from '../../utils/scale';
-import * as loginService from '../../serviceActions/login';
-import QRCode from "react-native-qrcode"; 
-import {Loader} from '../../components/loader';
-import {Footer} from '../../components/footer';
-import { GradientButton } from '../../components/gradientButton';
-import { BackHandler } from 'react-native';
+import React from "react";
+import { RkText, RkStyleSheet } from "react-native-ui-kitten";
+import { Container } from "native-base";
+import {
+  Image,
+  ScrollView,
+  View,
+  StyleSheet,
+  Alert,
+  AsyncStorage,
+  ActivityIndicator,
+  Text,
+  Linking,
+  TouchableOpacity,
+  Platform,
+  NetInfo,
+  ImageBackground
+} from "react-native";
+import { scale, scaleModerate, scaleVertical } from "../../utils/scale";
+import * as loginService from "../../serviceActions/login";
+import QRCode from "react-native-qrcode";
+import { Loader } from "../../components/loader";
+import { Footer } from "../../components/footer";
+import { GradientButton } from "../../components/gradientButton";
+import { BackHandler } from "react-native";
 
 function renderIf(condition, content) {
   if (condition) {
     return content;
   } else {
-    return null; 
+    return null;
   }
 }
 export class UserProfile extends React.Component {
   static navigationOptions = {
-    title: 'Profile'.toUpperCase()
+    title: "Profile".toUpperCase()
   };
 
   constructor(props) {
     super(props);
     this.state = {
       isOffline: false,
-      userInfo :{},
-      isLoaded: false,
-    }
-    console.log('0000');
+      userInfo: {},
+      isLoaded: false
+    };
   }
-  handleBackPress=()=>{
-    this.props.navigation.replace('HomeMenu');
-    return true;        
-}
+  handleBackPress = () => {
+    this.props.navigation.replace("HomeMenu");
+    return true;
+  };
   componentWillMount() {
-    BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
+    BackHandler.addEventListener("hardwareBackPress", this.handleBackPress);
 
-    if (Platform.OS !== 'ios') {
+    if (Platform.OS !== "ios") {
       NetInfo.isConnected.fetch().then(isConnected => {
         if (isConnected) {
           this.getUserInfo();
@@ -52,15 +65,15 @@ export class UserProfile extends React.Component {
         });
       });
     }
-     this.getUserInfo();
+    this.getUserInfo();
     NetInfo.addEventListener(
-      'connectionChange',
+      "connectionChange",
       this.handleFirstConnectivityChange
     );
   }
 
-  handleFirstConnectivityChange = (connectionInfo) => {
-    if (connectionInfo.type != 'none') {
+  handleFirstConnectivityChange = connectionInfo => {
+    if (connectionInfo.type != "none") {
       this.getUserInfo();
     } else {
       this.setState({
@@ -68,152 +81,182 @@ export class UserProfile extends React.Component {
       });
     }
     this.setState({
-      isOffline: connectionInfo.type === 'none',
+      isOffline: connectionInfo.type === "none"
     });
   };
 
   componentWillUnmount() {
-    BackHandler.removeEventListener('hardwareBackPress',this.handleBackPress);
+    BackHandler.removeEventListener("hardwareBackPress", this.handleBackPress);
 
     NetInfo.removeEventListener(
-      'connectionChange',
+      "connectionChange",
       this.handleFirstConnectivityChange
     );
   }
 
-  getUserInfo(){
-    loginService.getCurrentUser((userInfo)=>{
-      if(userInfo){
+  getUserInfo() {
+    loginService.getCurrentUser(userInfo => {
+      if (userInfo) {
         this.setState({
-          userInfo : userInfo,
-          isLoaded : true
-        })
-       }
-      else{
-        this.setState({isLoaded:false})
+          userInfo: userInfo,
+          isLoaded: true
+        });
+      } else {
+        this.setState({ isLoaded: false });
       }
-    })
+    });
   }
 
-    displayInformation = () => {
+  displayInformation = () => {
     let userInfo = this.state.userInfo;
-    let attendeeCode = userInfo.attendeeLabel+"-"+userInfo.attendeeCount;
+    let attendeeCode = userInfo.attendeeLabel + "-" + userInfo.attendeeCount;
     let attendeeId = userInfo._id;
-    let userName = userInfo.firstName +""+ userInfo.lastName;
+    let userName = userInfo.firstName + "" + userInfo.lastName;
 
     let qrText = "TIE" + ":" + attendeeCode + ":" + attendeeId + ":" + userName;
-    // console.log(userInfo)
     let avatar;
     if (userInfo.profileImageURL) {
-      avatar = <Image style={{ width: 110, height: 110,borderColor:'#00ffff',borderWidth:2,borderRadius:100 }} source={{ uri: userInfo.profileImageURL }} />
-  } else {
-      avatar = <Image style={{ width: 110, height: 110,borderColor:'#00ffff',borderWidth:2 ,borderRadius:100}} source={require('../../assets/images/defaultUserImg.png')} />
-  } 
+      avatar = (
+        <Image
+          style={{
+            width: 110,
+            height: 110,
+            borderColor: "#00ffff",
+            borderWidth: 2,
+            borderRadius: 100
+          }}
+          source={{ uri: userInfo.profileImageURL }}
+        />
+      );
+    } else {
+      avatar = (
+        <Image
+          style={{
+            width: 110,
+            height: 110,
+            borderColor: "#00ffff",
+            borderWidth: 2,
+            borderRadius: 100
+          }}
+          source={require("../../assets/images/defaultUserImg.png")}
+        />
+      );
+    }
     return (
-       <Container > 
+      <Container>
         <ScrollView style={styles.root}>
-              {/* <View style={styles.section}> */}
-              <ImageBackground
-      source={require('../../assets/images/profileBack.png')}
-      imageStyle=''
-      style={{width:'100%',height:200}}
-    >
-                <View style={{elevation:5}}>
-                <View  style={[styles.column, styles.heading]}>
-                  {/* <Image style={{ width: 120, height: 120,borderRadius:100 ,borderColor:'#f20505',borderWidth:1}} source={{ uri: userInfo.profileImageURL }} /> */}
-                  {avatar}
-                  <RkText style={{color: '#fff',fontSize : 25, textAlign: 'center'}}>{userInfo.firstName + " " + userInfo.lastName}</RkText>
-                  <RkText style={{fontSize : 18,color: '#fff', textAlign: 'center'}}>{userInfo.roleName}</RkText> 
+          <ImageBackground
+            source={require("../../assets/images/profileBack.png")}
+            imageStyle=""
+            style={{ width: "100%", height: 200 }}
+          >
+            <View style={{ elevation: 5 }}>
+              <View style={[styles.column, styles.heading]}>
+                {avatar}
+                <RkText
+                  style={{ color: "#fff", fontSize: 25, textAlign: "center" }}
+                >
+                  {userInfo.firstName + " " + userInfo.lastName}
+                </RkText>
+                <RkText
+                  style={{ fontSize: 18, color: "#fff", textAlign: "center" }}
+                >
+                  {userInfo.roleName}
+                </RkText>
+              </View>
+            </View>
+          </ImageBackground>
+          <View style={[styles.column]}>
+            <RkText
+              style={{ color: "#E7060E", fontSize: 20, textAlign: "center" }}
+            >
+              Contact Details
+            </RkText>
+            <RkText style={{ fontSize: 18, textAlign: "center" }}>
+              {userInfo.contact}
+            </RkText>
+            <RkText style={{ fontSize: 18, textAlign: "center" }}>
+              {userInfo.email}
+            </RkText>
+          </View>
+          <View style={[styles.column]}>
+            <RkText
+              style={{ color: "#E7060E", fontSize: 20, textAlign: "center" }}
+            >
+              Other Details
+            </RkText>
+            <RkText style={{ fontSize: 18, textAlign: "center" }}>
+              {userInfo.briefInfo}
+            </RkText>
+          </View>
 
-                </View>
-
-                </View>
-</ImageBackground>
-                <View style={[styles.column]}>
-                  <RkText style={{color: '#E7060E', fontSize : 20, textAlign: 'center'}}>Contact Details</RkText>
-                  <RkText style={{fontSize : 18, textAlign: 'center'}}>{userInfo.contact}</RkText>
-                  <RkText style={{fontSize : 18, textAlign: 'center'}}>{userInfo.email}</RkText>
-                </View> 
-                <View  style={[styles.column]}>
-                  <RkText style={{color: '#E7060E', fontSize : 20, textAlign: 'center'}}>Other Details</RkText>
-                  <RkText style={{fontSize : 18, textAlign: 'center'}}>{userInfo.briefInfo}</RkText>
-                  
-                {/* </View> */}
-                {/* <View style={[styles.row]}>
-                   <QRCode
-                   value={qrText}
-                   size={160}
-                   bgColor='black'
-                   fgColor='white'/>  
-                   </View> */}
-                 {/* <View style={{marginTop:10}}>
-                   <RkText style={{fontSize : 15, textAlign: 'center'}}>{attendeeCode}</RkText>
-                 </View> */}
-                  {/* <View style={{marginTop:25,backgroundColor:'#E7060E',height:40}}>
-                   <RkText style={{fontSize : 25, textAlign: 'center', color:'white'}}>{userInfo.roleName}</RkText>
-                 </View> */}
-              </View> 
-              
-              <GradientButton colors={['#f20505', '#f55050']} text='Edit' style={{width: Platform.OS === 'ios' ? 150 :170 , alignSelf : 'center',marginTop:25}}
-                onPress={() => this.props.navigation.replace('EditProfile', { sessionDetails: this.state.userInfo })}/>
-               
-</ScrollView>
-       </Container>
-    );  
-  }
+          <GradientButton
+            colors={["#f20505", "#f55050"]}
+            text="Edit"
+            style={{
+              width: Platform.OS === "ios" ? 150 : 170,
+              alignSelf: "center",
+              marginTop: 25
+            }}
+            onPress={() =>
+              this.props.navigation.replace("EditProfile", {
+                sessionDetails: this.state.userInfo
+              })}
+          />
+        </ScrollView>
+      </Container>
+    );
+  };
 
   render() {
-   let Info = this.displayInformation();
-        if (this.state.isLoaded) {
-            return (
-                <Container style={[styles.root]}>
-                    <ScrollView>
-                        <View>
-                            {Info} 
-                        </View>
-                    </ScrollView>
-                  <View>
-                  <Footer isOffline ={this.state.isOffline}/>    
-                  </View>
-         </Container>
-            )
-        }
-        else {
-            return (
-               <Container style={[styles.root]}>
-                    <Loader/> 
-                    <View>
-                    <Footer isOffline ={this.state.isOffline}/> 
-                    </View>
-                </Container>
-            )
-        }
-   }
+    let Info = this.displayInformation();
+    if (this.state.isLoaded) {
+      return (
+        <Container style={[styles.root]}>
+          <ScrollView>
+            <View>{Info}</View>
+          </ScrollView>
+          <View>
+            <Footer isOffline={this.state.isOffline} />
+          </View>
+        </Container>
+      );
+    } else {
+      return (
+        <Container style={[styles.root]}>
+          <Loader />
+          <View>
+            <Footer isOffline={this.state.isOffline} />
+          </View>
+        </Container>
+      );
+    }
+  }
 }
 
 let styles = RkStyleSheet.create(theme => ({
   root: {
-    backgroundColor: '#f2f2f2',
-    flex:1
+    backgroundColor: "#f2f2f2",
+    flex: 1
   },
   section: {
     backgroundColor: theme.colors.screen.base,
     marginTop: 35
   },
- heading: {
-      paddingBottom: 12.5
-    },
+  heading: {
+    paddingBottom: 12.5
+  },
   column: {
-    flexDirection: 'column',
+    flexDirection: "column",
     borderColor: theme.colors.border.base,
-    alignItems: 'center',
-    marginTop:25
+    alignItems: "center",
+    marginTop: 25
   },
   row: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
     marginTop: 40,
-    borderColor :'black'
+    borderColor: "black"
   }
 }));

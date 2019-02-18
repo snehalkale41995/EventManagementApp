@@ -87,9 +87,6 @@ export class SplashScreen extends React.Component {
             <Image style={styles.sponsorsImage} source={require('../../assets/images/eternusLogoMain.png')}/>;
             
           </RkButton>
-          {/* <RkButton style={styles.button} rkType='sponsorsSplashScreen' style={{marginTop: 5}}>
-            <Image style={styles.sponsorsImage} source={require('../../assets/images/bajajLogo.png')}/>;            
-          </RkButton> */}
         </View>
         <ProgressBar
           color={RkTheme.current.colors.accent}
