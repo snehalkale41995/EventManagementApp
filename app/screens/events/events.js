@@ -9,7 +9,8 @@ import {
   Keyboard,
   Alert,
   AsyncStorage,
-  ActivityIndicator
+  ActivityIndicator,
+  ToastAndroid
 } from "react-native";
 import {
   RkComponent,
@@ -208,13 +209,9 @@ export class Events extends RkComponent {
       this.setState({progress:pr+5})
       setTimeout(this.startLoading,30)
     }
-
-
- 
   }
 
   storeEventDetails(event) {
-
     if (event) {
       let eventInfo = JSON.stringify(event);
       AsyncStorage.setItem("EVENT_DETAILS", eventInfo);
