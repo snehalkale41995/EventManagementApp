@@ -93,7 +93,11 @@ export class UserProfile extends React.Component {
       this.handleFirstConnectivityChange
     );
   }
-
+  displayWebsite(websiteURL) {
+    if (websiteURL) {
+      Linking.openURL(websiteURL);
+    } else return;
+  }
   getUserInfo() {
     loginService.getCurrentUser(userInfo => {
       if (userInfo) {
@@ -115,6 +119,7 @@ export class UserProfile extends React.Component {
 
     let qrText = "TIE" + ":" + attendeeCode + ":" + attendeeId + ":" + userName;
     let avatar;
+    console.log(userInfo)
     if (userInfo.profileImageURL) {
       avatar = (
         <Image
@@ -143,70 +148,104 @@ export class UserProfile extends React.Component {
       );
     }
     return (
-      <Container>
-        <ScrollView style={styles.root}>
-          <ImageBackground
-            source={require("../../assets/images/profileBack.png")}
-            imageStyle=""
-            style={{ width: "100%", height: 200 }}
-          >
-            <View style={{ elevation: 5 }}>
-              <View style={[styles.column, styles.heading]}>
-                {avatar}
-                <RkText
-                  style={{ color: "#fff", fontSize: 25, textAlign: "center" }}
-                >
-                  {userInfo.firstName + " " + userInfo.lastName}
-                </RkText>
-                <RkText
-                  style={{ fontSize: 18, color: "#fff", textAlign: "center" }}
-                >
-                  {userInfo.roleName}
-                </RkText>
-              </View>
-            </View>
-          </ImageBackground>
-          <View style={[styles.column]}>
-            <RkText
-              style={{ color: "#E7060E", fontSize: 20, textAlign: "center" }}
-            >
-              Contact Details
-            </RkText>
-            <RkText style={{ fontSize: 18, textAlign: "center" }}>
-              {userInfo.contact}
-            </RkText>
-            <RkText style={{ fontSize: 18, textAlign: "center" }}>
-              {userInfo.email}
-            </RkText>
-          </View>
-          <View style={[styles.column]}>
-            <RkText
-              style={{ color: "#E7060E", fontSize: 20, textAlign: "center" }}
-            >
-              Other Details
-            </RkText>
-            <RkText style={{ fontSize: 18, textAlign: "center" }}>
-              {userInfo.briefInfo}
-            </RkText>
-          </View>
+        <View style={styles.root}>
+              {/* <View style={styles.section}> */}
+              <ImageBackground
+      source={require('../../assets/images/profileBack.png')}
+      imageStyle=''
+      style={{width:'100%',height:200}}
+    >
+                <View style={{elevation:5}}>
+                <View  style={[styles.column, styles.heading]}>
+                  {/* <Image style={{ width: 120, height: 120,borderRadius:100 ,borderColor:'#f20505',borderWidth:1}} source={{ uri: userInfo.profileImageURL }} /> */}
+                  {avatar}
+                  <RkText style={{color: '#fff',fontSize : 25, textAlign: 'center'}}>{userInfo.firstName + " " + userInfo.lastName}</RkText>
+                  <RkText style={{fontSize : 18,color: '#fff', textAlign: 'center'}}>{userInfo.roleName}</RkText> 
 
-          <GradientButton
-            colors={["#f20505", "#f55050"]}
-            text="Edit"
-            style={{
-              width: Platform.OS === "ios" ? 150 : 170,
-              alignSelf: "center",
-              marginTop: 25
-            }}
-            onPress={() =>
-              this.props.navigation.replace("EditProfile", {
-                sessionDetails: this.state.userInfo
-              })}
-          />
-        </ScrollView>
-      </Container>
-    );
-  };
+                </View>
+
+                </View>
+</ImageBackground>
+                <View style={[styles.column]}>
+                  <RkText style={{color: '#E7060E', fontSize : 18, textAlign: 'center'}}>Contact Details</RkText>
+                  <RkText style={{fontSize : 18, textAlign: 'center'}}>{userInfo.contact}</RkText>
+                  <RkText style={{fontSize : 18, textAlign: 'center'}}>{userInfo.email}</RkText>
+                </View> 
+                <View  style={[styles.column]}>
+                  <RkText style={{color: '#E7060E', fontSize : 18, textAlign: 'center'}}>Other Details</RkText>
+                  <RkText style={{fontSize : 18, textAlign: 'center'}}>{userInfo.briefInfo}</RkText>
+                  
+                {/* </View> */}
+                {/* <View style={[styles.row]}>
+                   <QRCode
+                   value={qrText}
+                   size={160}
+                   bgColor='black'
+                   fgColor='white'/>  
+                   </View> */}
+                 {/* <View style={{marginTop:10}}>
+                   <RkText style={{fontSize : 15, textAlign: 'center'}}>{attendeeCode}</RkText>
+                 </View> */}
+                  {/* <View style={{marginTop:25,backgroundColor:'#E7060E',height:40}}>
+                   <RkText style={{fontSize : 25, textAlign: 'center', color:'white'}}>{userInfo.roleName}</RkText>
+                 </View> */}
+              </View> 
+              <View  style={[styles.column]}>
+
+              <RkText style={{color: '#E7060E', fontSize : 18, textAlign: 'center'}}>Social Media</RkText>
+
+              <View style={{flexDirection:'row', marginTop:5}}>
+
+              {userInfo.linkedinProfileURL ? (
+              <TouchableOpacity
+                onPress={() =>
+                  this.displayWebsite(userInfo.linkedinProfileURL)}
+              >
+                <Image
+                  style={[styles.sociallogo]}
+                  source={require("../../assets/images/linkedin.png")}
+                />
+              </TouchableOpacity>
+            ) : <Image
+            style={[styles.sociallogo]}
+            source={require("../../assets/images/linkedinDisabled.png")}
+          />}
+               {userInfo.facebookProfileURL ? (
+              <TouchableOpacity
+                onPress={() =>
+                  this.displayWebsite(userInfo.facebookProfileURL)}
+              >
+                <Image
+                  style={[styles.sociallogo]}
+                  source={require("../../assets/images/fb.png")}
+                />
+              </TouchableOpacity>
+            ) : <Image
+            style={[styles.sociallogo]}
+            source={require("../../assets/images/fbDisabled.png")}
+          />}
+               {userInfo.twitterProfileURL ? (
+              <TouchableOpacity
+                onPress={() =>
+                  this.displayWebsite(userInfo.twitterProfileURL)}
+              >
+                <Image
+                  style={[styles.sociallogo]}
+                  source={require("../../assets/images/twitter.png")}
+                />
+              </TouchableOpacity>
+            ) : <Image
+            style={[styles.sociallogo]}
+            source={require("../../assets/images/twitterDisabled.png")}
+          />}            
+      </View>
+      </View>
+              <GradientButton colors={['#f20505', '#f55050']} text='Edit' style={{width: Platform.OS === 'ios' ? 150 :170 , alignSelf : 'center',marginTop:15}}
+                onPress={() => this.props.navigation.replace('EditProfile', { sessionDetails: this.state.userInfo })}/>
+               
+</View>
+    );  
+  }
 
   render() {
     let Info = this.displayInformation();
@@ -250,7 +289,7 @@ let styles = RkStyleSheet.create(theme => ({
     flexDirection: "column",
     borderColor: theme.colors.border.base,
     alignItems: "center",
-    marginTop: 25
+    marginTop: 15
   },
   row: {
     flexDirection: "row",
@@ -258,5 +297,11 @@ let styles = RkStyleSheet.create(theme => ({
     alignItems: "center",
     marginTop: 40,
     borderColor: "black"
+  },
+  sociallogo:{
+    width: 50,
+    height: 50,
+    borderRadius: 100,
+    padding:8
   }
 }));
