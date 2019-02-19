@@ -80,15 +80,10 @@ export class editProfile extends React.Component {
     );
   } 
   _pickImage = async () => {
-    // console.log('Inside get image');
-
     let result = await ImagePicker.launchImageLibraryAsync({
       allowsEditing: true,
       aspect: [4, 4],
     });
-
-    // console.log(result);
-
     if (!result.cancelled) {
       newUserInfo={...this.state.userInfo};
       newUserInfo.profileImageURL=result.uri;
@@ -159,8 +154,6 @@ export class editProfile extends React.Component {
     if(user.profileImageURL==null){
       user.profileImageURL='';
     }
-    console.log(user)
-
     if(this.validate(user.firstName,user.lastName,user.contact.toString())){
         delete user._id;
         delete user.__v;

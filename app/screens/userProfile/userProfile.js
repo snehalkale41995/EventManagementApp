@@ -119,7 +119,6 @@ export class UserProfile extends React.Component {
 
     let qrText = "TIE" + ":" + attendeeCode + ":" + attendeeId + ":" + userName;
     let avatar;
-    console.log(userInfo)
     if (userInfo.profileImageURL) {
       avatar = (
         <Image
@@ -174,21 +173,7 @@ export class UserProfile extends React.Component {
                 <View  style={[styles.column]}>
                   <RkText style={{color: '#E7060E', fontSize : 18, textAlign: 'center'}}>Other Details</RkText>
                   <RkText style={{fontSize : 18, textAlign: 'center'}}>{userInfo.briefInfo}</RkText>
-                  
-                {/* </View> */}
-                {/* <View style={[styles.row]}>
-                   <QRCode
-                   value={qrText}
-                   size={160}
-                   bgColor='black'
-                   fgColor='white'/>  
-                   </View> */}
-                 {/* <View style={{marginTop:10}}>
-                   <RkText style={{fontSize : 15, textAlign: 'center'}}>{attendeeCode}</RkText>
-                 </View> */}
-                  {/* <View style={{marginTop:25,backgroundColor:'#E7060E',height:40}}>
-                   <RkText style={{fontSize : 25, textAlign: 'center', color:'white'}}>{userInfo.roleName}</RkText>
-                 </View> */}
+               
               </View> 
               <View  style={[styles.column]}>
 

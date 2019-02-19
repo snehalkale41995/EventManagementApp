@@ -118,7 +118,6 @@ export class EventMenu extends RkComponent {
     })
     .catch(err => {
       if (errorFn) {
-        console.warn("Errors");
       }
     });
     setTimeout(() => {
@@ -186,9 +185,6 @@ export class EventMenu extends RkComponent {
             event.Registered = false;
           }
         });
-        //console.log("Event Response", Events);
-        //console.log("User", user);
-        
         thisRef.setState({
           Events: Events,
           pastEvents: pastEvents,
@@ -203,35 +199,14 @@ export class EventMenu extends RkComponent {
   }
  
   startLoading=()=>{
-
-    //console.warn("this.props", this.props)
     if(this.state.progress===100){
-      //this.props.navigation.pop();
-      
       this.props.navigation.replace("HomeMenu");
-     // console.warn("iff")
     }else{
-      //console.warn("elase")
       let pr=this.state.progress;
       this.setState({progress:pr+5})
       setTimeout(this.startLoading,30)
     }
-
-
-    //setTimeout(() => { this.storeEventDetails(event) }, 5000);
-//     let timerId = setInterval(() => alert('tick'), 2000);
-
-// // after 5 seconds stop
-// setTimeout(() => { clearInterval(timerId); alert('stop'); }, 5000)
-    // let pr=this.state.progress;
-    // pr=pr+5;
-    // this.setState({progress:pr});
-    // if(pr>100){
-    //   let timerId=setInterval(() => this.setState({progress:this.state.progress+5})  , 50);
-    //   setTimeout(() => { clearInterval(timerId) }, 5000);
-    // }else{
-    //   setTimeout(this.startLoading,60)  
-    // }
+  
   }
 
   storeEventDetails(event) {
@@ -246,111 +221,7 @@ export class EventMenu extends RkComponent {
       AsyncStorage.setItem("EVENT_DETAILS", {});
     }
   }
-
-  // displayEvents = () => {
-  //   return this.state.Events.map((event, index) => {
-  //     let avatar;
-  //     if (event.eventLogo) {
-  //       avatar = (
-  //         <Image
-  //           style={{ width: 60, height: 60 }}
-  //           source={{ uri: event.eventLogo }}
-  //         />
-  //       );
-  //     } else {
-  //       avatar = (
-  //         <Image 
-  //           style={{ width: 60, height: 60 }}
-  //           source={require("../../assets/images/defaultSponsorImg.png")}
-  //         />
-  //       );
-  //     }
-  //     return (
-  //       <TouchableOpacity
-  //         key={index}
-  //         onPress={() => this.storeEventDetails(event)}
-  //       >
-  //         <RkCard rkType="shadowed" style={[styles.card]}>
-  //           <View style={{ flexDirection: "row" }}>
-  //             <View
-  //               style={{
-  //                 flexDirection: "column",
-  //                 alignItems: "flex-start",
-  //                 marginVertical: 10,
-  //                 flex: 3,
-  //                 alignSelf: "center",
-  //                 marginLeft: 10
-  //               }}
-  //             >
-  //               {avatar}
-  //             </View>
-  //             <View
-  //               style={{
-  //                 flexDirection: "column",
-  //                 alignItems: "flex-start",
-  //                 marginVertical: 10,
-  //                 flex: 6,
-  //                 marginLeft: -10
-  //               }}
-  //             >
-  //               <View style={{ flexDirection: "row" }}>
-  //                 <Text style={styles.headerText}>{event.eventName}</Text>
-  //               </View>
-  //               <View style={{ flexDirection: "row" }}>
-  //                 <View
-  //                   style={{
-  //                     flexDirection: "column",
-  //                     alignItems: "flex-start",
-  //                     marginVertical: 10,
-  //                     flex: 1
-  //                   }}
-  //                 >
-  //                   <Icon style={[styles.iconStyle]} name="check-circle" />
-  //                 </View>
-  //                 <View
-  //                   style={{
-  //                     flexDirection: "column",
-  //                     alignItems: "flex-start",
-  //                     marginVertical: 10,
-  //                     flex: 7
-  //                   }}
-  //                 >
-  //                   <Text style={styles.infoText}>
-  //                     {" "}
-  //                     {moment(event.startDate).format("DD.MM.YYYY")} -{" "}
-  //                     {moment(event.endDate).format("DD.MM.YYYY")}{" "}
-  //                   </Text>
-  //                 </View>
-  //               </View>
-  //               <View style={{ flexDirection: "row", marginTop: 0 }}>
-  //                 <View
-  //                   style={{
-  //                     flexDirection: "column",
-  //                     alignItems: "flex-start",
-  //                     marginVertical: 0,
-  //                     flex: 1
-  //                   }}
-  //                 >
-  //                   <Icon style={[styles.iconStyle]} name="pin" />
-  //                 </View>
-  //                 <View
-  //                   style={{
-  //                     flexDirection: "column",
-  //                     alignItems: "flex-start",
-  //                     marginVertical: 0,
-  //                     flex: 7
-  //                   }}
-  //                 >
-  //                   <Text style={styles.infoText}>{event.venue}</Text>
-  //                 </View>
-  //               </View>
-  //             </View>
-  //           </View>
-  //         </RkCard>
-  //       </TouchableOpacity>
-  //     );
-  //   });
-  // };
+ 
   _renderItem({ item, index }) {
     let { gradient } = this.defineStyles();
     let avatar;
@@ -548,7 +419,6 @@ export class EventMenu extends RkComponent {
     }
   }
   render() {
-    //let eventList = this.displayEvents(); C:\Users\ismail.saiyyed\Documents\Tiecon\Merged\EventManagementApp\app\assets\images\logo.png
     if (this.state.isLoaded) {
       return (
         <Container style={[styles.root]}>
