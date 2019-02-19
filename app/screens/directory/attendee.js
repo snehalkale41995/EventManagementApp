@@ -134,19 +134,19 @@ class Attendee extends React.Component{
                     if(attendee.firstName.toLowerCase().includes(this.state.searchString.toLowerCase()) || attendee.lastName.toLowerCase().includes(this.state.searchString.toLowerCase())){ 
                 let avatar;
                 if (attendee.profileImageURL) {
-                    avatar = <Image style={{ width: 60, height: 60,borderRadius:100 }} source={{ uri: attendee.profileImageURL }} />
+                    avatar = <Avatar rkType='large' style={{ width: 44, height: 44, borderRadius: 60 }} imagePath={attendee.profileImageURL} />
                 } else {
-                    avatar = <Image style={{ width: 60, height: 60,borderRadius:100 }} source={require('../../assets/images/defaultSponsorImg.png')} />
-                } 
+                    avatar = <Image style={{ width: 34, height: 34 }} source={require('../../assets/images/defaultUserImg.png')} />  
+                              } 
                 return (
                     <TouchableOpacity key={attendee._id} onPress={() => this.props.navigation.navigate('AttendeeProfileDetails',{ attendeeDetails: attendee})}
                     >
                         <RkCard rkType='shadowed' style={[styles.card]}>
-                            <View style={{elevation:3, flexDirection: 'row' }}>
-                                <View style={{ flexDirection: 'column', alignItems: 'flex-start', marginVertical: 10, flex: 3, alignSelf: 'center', marginLeft: 10 }}>
+                           <View style={{ flexDirection: 'row' }}>
+                               <View style={{ flexDirection: 'column', alignItems: 'flex-start', marginVertical: 10, marginLeft: 5, width: 50, flex: 2 }}>
                                     {avatar}
                                 </View>
-                                <View style={{ flexDirection: 'column', alignItems: 'flex-start', marginVertical: 10, flex: 6, marginLeft: -10 }}>
+                                 <View style={{ flexDirection: 'column', marginVertical: 10, flex: 7, marginLeft: 5 }}>
                                     <Text style={styles.headerText}>{attendee.firstName+' '+attendee.lastName}</Text>
                                     <Text style={styles.infoText}>{attendee.briefInfo}</Text>
                                 </View >
@@ -161,16 +161,16 @@ class Attendee extends React.Component{
             { 
             let avatar;
             if (attendee.profileImageURL) {
-                avatar = <Image style={{ width: 60, height: 60  }} source={{ uri: attendee.profileImageURL }} />
+                avatar = <Avatar rkType='large' style={{ width: 44, height: 44, borderRadius: 60 }} imagePath={attendee.profileImageURL} />
             } else {
-                avatar = <Image style={{ width: 60, height: 60  }} source={require('../../assets/images/defaultSponsorImg.png')} />
+                avatar = <Image style={{ width: 34, height: 34 }} source={require('../../assets/images/defaultUserImg.png')} />  
             } 
             return (
                 <TouchableOpacity key={attendee._id} onPress={() => this.props.navigation.navigate('AttendeeProfileDetails',{ attendeeDetails: attendee})}
                 >
                     <RkCard rkType='shadowed' style={[styles.card]}>
                         <View style={{ flexDirection: 'row',elevation:3 }}>
-                            <View style={{ flexDirection: 'column', alignItems: 'flex-start', marginVertical: 10, flex: 3, alignSelf: 'center', marginLeft: 10 }}>
+                            <View style={{ flexDirection: 'column', alignItems: 'flex-start', marginVertical: 10, flex: 2, alignSelf: 'center', marginLeft: 10 }}>
                                 {avatar}
                             </View>
                             <View style={{ flexDirection: 'column', alignItems: 'flex-start', marginVertical: 10, flex: 6, marginLeft: -10 }}>

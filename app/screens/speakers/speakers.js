@@ -115,7 +115,7 @@ export class Speakers extends RkComponent {
             let speakerName = "";
             speakerName = speaker.firstName + " " + speaker.lastName;
             if (speaker.profileImageURL) {
-                avatar = <Avatar rkType='small' style={{ width: 44, height: 44, borderRadius: 60 }} imagePath={speaker.profileImageURL} />
+                avatar = <Avatar rkType='large' style={{ width: 44, height: 44, borderRadius: 60 }} imagePath={speaker.profileImageURL} />
             } else {
                 avatar = <Image style={{ width: 34, height: 34 }} source={require('../../assets/images/defaultUserImg.png')} />
             }
