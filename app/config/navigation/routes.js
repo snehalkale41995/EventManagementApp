@@ -266,7 +266,6 @@ export const MainRoutes = [
     icon: 'ios-person',
     screen: Screens.UserProfile,
     children: [
-      
       {
         id: 'EditProfile',
         title: 'Edit Profile',
@@ -278,9 +277,32 @@ export const MainRoutes = [
   { 
     id: 'Speakers',
     title: 'Speakers',
-    icon: 'ios-people',
+    icon: 'ios-mic',
+  
     screen: Screens.Speakers,
     children: []
+  },
+  {
+    id: 'Directory',
+    title: 'Directory',
+    icon: 'ios-people',
+   // icon: 'md-list',
+    screen: Screens.Directory,
+    children: [      
+      {
+        id: 'AttendeeProfileDetails',
+        title: 'AttendeeProfileDetails',
+        screen: Screens.AttendeeProfileDetails,
+        children: []
+      }
+    ]
+  },
+   {
+    id: 'SocialFeed',
+    title: 'Social Feed',
+    icon: 'logo-twitter',
+    screen: Screens.SocialFeed,
+    children: [],
   },
   {
     id: 'Sponsors',
@@ -306,7 +328,7 @@ export const MainRoutes = [
    {
     id: 'AboutUs',
     title: 'About Event',
-    icon: 'md-information-circle',
+    icon: 'ios-information-circle-outline',
     screen: Screens.AboutUs,
     children: []
   },
@@ -316,27 +338,6 @@ export const MainRoutes = [
     icon: 'md-information-circle',
     screen: Screens.AboutEternus,
     children: []
-  },
-  {
-    id: 'Directory',
-    title: 'Directory',
-    icon: 'md-list',
-    screen: Screens.Directory,
-    children: [      
-      {
-        id: 'AttendeeProfileDetails',
-        title: 'AttendeeProfileDetails',
-        screen: Screens.AttendeeProfileDetails,
-        children: []
-      }
-    ]
-  },
-   {
-    id: 'SocialFeed',
-    title: 'Social Feed',
-    icon: 'logo-twitter',
-    screen: Screens.SocialFeed,
-    children: [],
   },
 ];
 
