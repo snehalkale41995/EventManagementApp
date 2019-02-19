@@ -13,6 +13,8 @@ import { getEventById } from '../../serviceActions/event';
 import axios from "axios";
 import {Avatar} from '../../components';
 import { BackHandler } from 'react-native';
+import { Icon } from "native-base";
+
 
 import AppConfig from "../../constants/AppConfig";
 // import ImagePicker from 'componentsve-imagepicker'
@@ -143,12 +145,22 @@ export class editProfile extends React.Component {
             user={...this.state.userInfo};
             user.linkedinProfileURL=val;
         this.setState({userInfo:user})
-    break;
+        case 'twitter':
+            user={...this.state.userInfo};
+            user.twitterProfileURL=val;
+            this.setState({userInfo:user})
+
+        break;
     }
   }
   submit=()=>
   {
     let user={...this.state.userInfo};
+    if(user.profileImageURL==null){
+      user.profileImageURL='';
+    }
+    console.log(user)
+
     if(this.validate(user.firstName,user.lastName,user.contact.toString())){
         delete user._id;
         delete user.__v;
@@ -185,7 +197,7 @@ export class editProfile extends React.Component {
           this.props.navigation.replace('MyProfile');
         })
         .catch(error => {
-        // console.log("(error)", error.response);
+         console.log("(error)", error.response);
     });
   }
 }
@@ -241,8 +253,12 @@ validate=(fname,lname,contact)=>{
     if(!userInfo.linkedinProfileURL){
       userInfo.linkedinProfileURL="";
     }
+    if(!userInfo.twitterProfileURL){
+      userInfo.twitterProfileURL="";
+    }
     if (userInfo.profileImageURL) {
-      avatar = <Image style={{ width: 100, height: 100,borderRadius:100}} source={{ uri: userInfo.profileImageURL }} />
+      avatar = <Image style={{ width: 100, height: 100,borderRadius:100}} source={{ uri: userInfo.profileImageURL }} />     
+
   } else {
       avatar = <Image style={{ width: 100, height: 100,borderRadius:100}} source={require('../../assets/images/defaultUserImg.png')} />
   } 
@@ -250,8 +266,9 @@ validate=(fname,lname,contact)=>{
         <View style={{paddingTop:15}}>
         <View style={[styles.profileImageStyle]} >
                 <TouchableOpacity key={userInfo.firstName} onPress={() => this._pickImage()}> 
-                <View style={{borderColor:'#f20505',borderWidth:2,borderRadius:100}}>
+                <View style={{borderColor:'#999999',borderWidth:2,borderRadius:100}}>
                 {avatar}
+               
                 </View>
                   </TouchableOpacity>
                   </View>
@@ -274,6 +291,9 @@ validate=(fname,lname,contact)=>{
                   
                   <RkText style={{color: '#000',fontSize : 15, textAlign: 'left'}}>Facebook profile</RkText>
                   <TextInput underlineColorAndroid='transparent'  placeholder='Profile url'  style={[styles.text]} value={''+userInfo.facebookProfileURL}  onChangeText={(text) => this.editInput('facebook',text)} />
+                  
+                  <RkText style={{color: '#000',fontSize : 15, textAlign: 'left'}}>Twitter profile</RkText>
+                  <TextInput underlineColorAndroid='transparent'  placeholder='Profile url'  style={[styles.text]} value={''+userInfo.twitterProfileURL}  onChangeText={(text) => this.editInput('twitter',text)} />
                   
                   <GradientButton colors={['#f20505', '#f55050']} text='Save' style={{marginTop:5,width: Platform.OS === 'ios' ? 150 :170 , alignSelf : 'center',marginTop:10}}
                 onPress={() => this.submit()}/>

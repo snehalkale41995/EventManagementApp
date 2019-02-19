@@ -134,10 +134,7 @@ export class AttendeeProfileDetails extends React.Component {
           </View>
           <View style={[styles.column]}>
             <RkText rkType="header5 primary">Social Media</RkText>
-            {this.state.attendee.facebookProfileURL &&
-            this.state.attendee.linkedinProfileURL ? null : (
-              <Text style={{ color: "#999999" }}>Data not available..</Text>
-            )}
+            
           </View>
 
           <View
@@ -147,17 +144,7 @@ export class AttendeeProfileDetails extends React.Component {
               justifyContent: "center"
             }}
           >
-            {this.state.attendee.facebookProfileURL ? (
-              <TouchableOpacity
-                onPress={() =>
-                  this.displayWebsite(this.state.attendee.facebookProfileURL)}
-              >
-                <Image
-                  style={{ width: 63, height: 63, borderRadius: 100 }}
-                  source={require("../../assets/images/fb.png")}
-                />
-              </TouchableOpacity>
-            ) : null}
+            
 
             {this.state.attendee.linkedinProfileURL ? (
               <TouchableOpacity
@@ -165,11 +152,44 @@ export class AttendeeProfileDetails extends React.Component {
                   this.displayWebsite(this.state.attendee.linkedinProfileURL)}
               >
                 <Image
-                  style={{ width: 68, height: 68, borderRadius: 100 }}
+                  style={[styles.sociallogo]}
                   source={require("../../assets/images/linkedin.png")}
                 />
               </TouchableOpacity>
-            ) : null}
+            ) : <Image
+            style={[styles.sociallogo]}
+            source={require("../../assets/images/linkedinDisabled.png")}
+          />}
+
+          {this.state.attendee.facebookProfileURL ? (
+              <TouchableOpacity
+                onPress={() =>
+                  this.displayWebsite(this.state.attendee.facebookProfileURL)}
+              >
+                <Image
+                  style={[styles.sociallogo]}
+                  source={require("../../assets/images/fb.png")}
+                />
+              </TouchableOpacity>
+            ) : <Image
+            style={[styles.sociallogo]}
+            source={require("../../assets/images/fbDisabled.png")}
+          />}
+          {this.state.attendee.twitterProfileURL ? (
+            <TouchableOpacity
+              onPress={() =>
+                this.displayWebsite(this.state.attendee.twitterProfileURL)}
+            >
+              <Image
+                style={[styles.sociallogo]}
+                source={require("../../assets/images/twitter.png")}
+              />
+            </TouchableOpacity>
+          ) : <Image
+          style={[styles.sociallogo]}
+          source={require("../../assets/images/twitterDisabled.png")}
+        />}
+            
           </View>
         </ScrollView>
       </View>
@@ -219,5 +239,11 @@ let styles = RkStyleSheet.create(theme => ({
     textAlignVertical: "center",
     marginRight: 5,
     alignSelf: "center"
+  },
+  sociallogo:{
+    width: 50,
+    height: 50,
+    borderRadius: 100,
+    padding:7
   }
 }));
