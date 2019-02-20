@@ -283,15 +283,21 @@ validate=(fname,lname,contact)=>{
                   <RkText style={{color: '#000',fontSize : 15, textAlign: 'left'}}>Linkedin profile</RkText>
                   <TextInput underlineColorAndroid='transparent' placeholder='Profile url' style={[styles.text]}   value={''+userInfo.linkedinProfileURL} onChangeText={(text) => this.editInput('linkedin',text)} />
                   
-                  <RkText style={{color: '#000',fontSize : 15, textAlign: 'left'}}>Facebook profile</RkText>
+                  <RkText style={{color: '#000',fontSize : 15, textAlign: 'left', marginTop :7}}>Facebook profile</RkText>
                   <TextInput underlineColorAndroid='transparent'  placeholder='Profile url'  style={[styles.text]} value={''+userInfo.facebookProfileURL}  onChangeText={(text) => this.editInput('facebook',text)} />
                   
-                  <RkText style={{color: '#000',fontSize : 15, textAlign: 'left'}}>Twitter profile</RkText>
+                  <RkText style={{color: '#000',fontSize : 15, textAlign: 'left', marginTop :7}}>Twitter profile</RkText>
                   <TextInput underlineColorAndroid='transparent'  placeholder='Profile url'  style={[styles.text]} value={''+userInfo.twitterProfileURL}  onChangeText={(text) => this.editInput('twitter',text)} />
-                  
-                  <GradientButton colors={['#f20505', '#f55050']} text='Save' style={{marginTop:5,width: Platform.OS === 'ios' ? 150 :170 , alignSelf : 'center',marginTop:10}}
-                onPress={() => this.submit()}/>
+
+             {/* <View style={{ width: Platform.OS === 'ios' ? 300 : 360  ,alignItems:'center', marginTop : 5, marginBottom : 5}} >
+             <GradientButton colors={['#f20505', '#f55050']} text='Save' style={{width: Platform.OS === 'ios' ? 130 :150 , alignSelf : 'center', marginRight:10}}
+              onPress={() => this.submit()}/>
+             </View>  */}
                 </View>
+                   <View style={{width: Platform.OS === 'ios' ? 300 : 360, alignItems:'center', marginTop : 5, marginBottom : 5}}>
+                   <GradientButton colors={['#f20505', '#f55050']} text='Save' style={{marginTop:5,width: Platform.OS === 'ios' ? 150 :170 , alignSelf : 'center',marginTop:10, marginBotton:5}}
+                   onPress={() => this.submit()}/> 
+                  </View>
                 </View>
     );
   }

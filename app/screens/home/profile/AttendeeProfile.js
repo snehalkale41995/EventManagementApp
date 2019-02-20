@@ -45,7 +45,7 @@ export class AttendeeProfile extends RkComponent {
                   <RkText rkType='header6 primary'>{speakerName}</RkText>
                   <RkText style={{fontSize : 15, textAlign: 'center'}} rkType="small">{this.state.speaker.briefInfo}</RkText>
                 </View>
-                <View style={{flexDirection:'row',alignContent:'center',justifyContent:'center',padding:10}}>
+                <View style={{flexDirection:'row',alignContent:'center',justifyContent:'center',padding:5, marginTop:-5}}>
                 {this.state.speaker.linkedinProfileURL ? (
               <TouchableOpacity
                 onPress={() =>

@@ -54,8 +54,6 @@ export class EventMenu extends RkComponent {
   };
   constructor(props) {
     super(props);
-   
-
     this.state = {
       userData:{},
       Events: [],
@@ -228,7 +226,7 @@ export class EventMenu extends RkComponent {
     if (item.eventLogo) {
       avatar = (
         <Image
-          style={{ width: 60, height: 60 }}
+          style={{ width: 45, height: 45 }}
           source={{ uri: item.eventLogo }}
         />
       );
@@ -307,7 +305,7 @@ export class EventMenu extends RkComponent {
                 marginTop: 10
               }}
             >
-              <Text style={[styles.infoText]}>{item.venue}</Text>
+              <Text style={[styles.infoText]} numberOfLines={1}>{item.venue}</Text>
             </View>
             <View
               style={{
@@ -398,7 +396,7 @@ export class EventMenu extends RkComponent {
                 marginTop: 10
               }}
             >
-              <Text style={[styles.infoText]}>{item.venue}</Text>
+              <Text style={[styles.infoText]} numberOfLines={1}>{item.venue}</Text>
             </View>
             <View
               style={{
@@ -422,17 +420,24 @@ export class EventMenu extends RkComponent {
     if (this.state.isLoaded) {
       return (
         <Container style={[styles.root]}>
-
-          {this.state.progress>0?<View style={{flex:1, justifyContent: 'center',alignItems:'center',opacity:80,backgroundColor:'#fff'}}><ProgressCircle percent={this.state.progress} radius={120} borderWidth={10} color="#1affc6" shadowColor="#cccccc"  >
+          {this.state.progress>0?<View style={{flex:1, justifyContent: 'center',alignItems:'center',opacity:80,backgroundColor:'#fff'}}>
+            <ProgressCircle percent={this.state.progress} radius={120}  borderWidth={8}
+                color="#c9c5c5" shadowColor="#FFF" >
           <LinearGradient
-            colors={["#d4145a", "#fbba50"]}
+            colors={["#CD0911", "#CD0911"]}
+            // colors={["#d4145a", "#fbba50"]}
             start={{ x: 0.0, y: 0.5 }} 
             end={{ x: 1, y: 0.5 }}
-            style={[styles.linearGradient]}
-            style={{borderRadius:100,width:250,height:250,justifyContent: 'center',alignItems:'center'}}
+            style={{borderRadius:100,
+            width: 240,
+            height: 240,
+            padding:20,
+           justifyContent: 'center',
+            alignItems:'center'
+            }}
           >
           <Text style={{color:'#fff',fontSize:15,fontWeight:'bold'}}>{this.state.event.eventName}</Text>
-          <Text style={{color:'#fff',fontSize:15,fontWeight:'bold'}}>{this.state.event.venue}</Text>
+          <Text style={{color:'#fff',fontSize:15,fontWeight:'bold'}} numberOfLines={1}>{this.state.event.venue}</Text>
           {/* <Text style={{color:'#fff',fontSize:12,fontWeight:'bold'}}>{this.state.event.startDate}</Text> */}
           {/* <Image
             source={require('../../assets/images/logo.png')}/>  */}

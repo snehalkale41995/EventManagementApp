@@ -137,7 +137,7 @@ export class SideMenu extends React.Component {
                 source={{uri: this.state.eventDetails.eventLogo}}
               />:null}
                 <RkText style={styles.tieName}>{this.state.eventName}</RkText>
-                <RkText style={{fontSize:14,color:'#000'}}>{this.state.eventDetails.venue}</RkText>
+                 <RkText style={{fontSize:14,color:'#000'}} numberOfLines={1} >{this.state.eventDetails.venue}</RkText> 
                 </View>
             </ImageBackground>
           </View>
@@ -186,7 +186,8 @@ let styles = RkStyleSheet.create(theme => ({
   },
    tieName: {
     fontSize: 16,
-    color:'#990000'    
+    color:'#990000',
+    marginTop : 5   
   },
   sidebarIcon:{
     fontSize: 13,

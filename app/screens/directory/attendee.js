@@ -112,8 +112,6 @@ class Attendee extends React.Component{
        }
     })
     }
-
-   
   
      displayWebsite(websiteURL){
      if(websiteURL){
@@ -252,10 +250,10 @@ let styles = RkStyleSheet.create(theme => ({
         alignItems: 'center',
         backgroundColor: '#fff',
         borderWidth: 1,
-    borderStyle: 'solid',
-    borderRadius: 25,
-    borderColor:'#ff3333',
-    marginTop:3
+        borderStyle: 'solid',
+        borderRadius: 25,
+        borderColor:'#D3D3D3',
+        marginTop:3
     },
     searchIcon: {
         padding: 10,

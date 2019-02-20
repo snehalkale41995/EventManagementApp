@@ -221,7 +221,7 @@ export class Events extends RkComponent {
     if (item.eventLogo) {
       avatar = (
         <Image
-          style={{ width: 60, height: 60 }}
+          style={{ width: 45, height: 45 }}
           source={{ uri: item.eventLogo }}
         />
       );
@@ -299,7 +299,7 @@ export class Events extends RkComponent {
                 marginTop: 10
               }}
             >
-              <Text style={[styles.infoText]}>{item.venue}</Text>
+              <Text style={[styles.infoText]} numberOfLines={1}>{item.venue}</Text>
             </View>
             <View
               style={{
@@ -388,7 +388,7 @@ export class Events extends RkComponent {
                 marginTop: 10
               }}
             >
-              <Text style={[styles.infoText]}>{item.venue}</Text>
+              <Text style={[styles.infoText]} numberOfLines={1}>{item.venue}</Text>
             </View>
             <View
               style={{
@@ -425,30 +425,32 @@ export class Events extends RkComponent {
               <ProgressCircle
                 percent={this.state.progress}
                 radius={120}
-                borderWidth={10}
-                color="#00ff00"
-                shadowColor="#cccccc"
+                borderWidth={8}
+                color="#c9c5c5"
+                shadowColor="#FFF"
               >
                 <LinearGradient
-                  colors={["#d4145a", "#fbba50"]}
+                 colors={["#CD0911", "#CD0911"]}
+                 // colors={["#d4145a", "#fbba50"]}
                   start={{ x: 0.0, y: 0.5 }}
                   end={{ x: 1, y: 0.5 }}
-                  style={[styles.linearGradient]}
                   style={{
                     borderRadius: 100,
-                    width: 250,
-                    height: 250,
+                    width: 240,
+                    height: 240,
+                    padding:20,
                     justifyContent: "center",
                     alignItems: "center"
                   }}
                 >
                   <Text
-                    style={{ color: "#fff", fontSize: 15, fontWeight: "bold" }}
+                    style={{ color: "#fff", fontSize: 14, fontWeight: "bold" }}
                   >
                     {this.state.event.eventName}
                   </Text>
                   <Text
-                    style={{ color: "#fff", fontSize: 15, fontWeight: "bold" }}
+                    style={{ color: "#fff", fontSize: 14, fontWeight: "bold" }}
+                   numberOfLines={1}
                   >
                     {this.state.event.venue}
                   </Text>

@@ -150,9 +150,9 @@ export class UserProfile extends React.Component {
         <View style={styles.root}>
               {/* <View style={styles.section}> */}
               <ImageBackground
-      source={require('../../assets/images/profileBack.png')}
-      imageStyle=''
-      style={{width:'100%',height:200}}
+              source={require('../../assets/images/profileBack.png')}
+              imageStyle=''
+              style={{width:'100%',height:200}}
     >
                 <View style={{elevation:5}}>
                 <View  style={[styles.column, styles.heading]}>
@@ -160,11 +160,9 @@ export class UserProfile extends React.Component {
                   {avatar}
                   <RkText style={{color: '#fff',fontSize : 25, textAlign: 'center'}}>{userInfo.firstName + " " + userInfo.lastName}</RkText>
                   <RkText style={{fontSize : 18,color: '#fff', textAlign: 'center'}}>{userInfo.roleName}</RkText> 
-
                 </View>
-
                 </View>
-</ImageBackground>
+                </ImageBackground>
                 <View style={[styles.column]}>
                   <RkText style={{color: '#E7060E', fontSize : 18, textAlign: 'center'}}>Contact Details</RkText>
                   <RkText style={{fontSize : 18, textAlign: 'center'}}>{userInfo.contact}</RkText>
@@ -176,11 +174,8 @@ export class UserProfile extends React.Component {
                
               </View> 
               <View  style={[styles.column]}>
-
               <RkText style={{color: '#E7060E', fontSize : 18, textAlign: 'center'}}>Social Media</RkText>
-
               <View style={{flexDirection:'row', marginTop:5}}>
-
               {userInfo.linkedinProfileURL ? (
               <TouchableOpacity
                 onPress={() =>
@@ -223,12 +218,13 @@ export class UserProfile extends React.Component {
             style={[styles.sociallogo]}
             source={require("../../assets/images/twitterDisabled.png")}
           />}            
-      </View>
-      </View>
-              <GradientButton colors={['#f20505', '#f55050']} text='Edit' style={{width: Platform.OS === 'ios' ? 150 :170 , alignSelf : 'center',marginTop:15}}
-                onPress={() => this.props.navigation.replace('EditProfile', { sessionDetails: this.state.userInfo })}/>
-               
-</View>
+              </View>
+              </View>
+              <View style={{ width: Platform.OS === 'ios' ? 320 : 380  ,alignItems:'center', marginTop : 5}} >
+             <GradientButton colors={['#f20505', '#f55050']} text='Edit' style={{width: Platform.OS === 'ios' ? 150 :170 , alignSelf : 'center'}}
+              onPress={() => this.props.navigation.replace('EditProfile', { sessionDetails: this.state.userInfo })}/>
+             </View> 
+         </View>
     );  
   }
 
