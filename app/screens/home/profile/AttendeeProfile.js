@@ -39,6 +39,51 @@ export class AttendeeProfile extends RkComponent {
                   <RkText rkType='header6 primary'>{speakerName}</RkText>
                   <RkText style={{fontSize : 15, textAlign: 'center'}} rkType="small">{this.state.speaker.briefInfo}</RkText>
                 </View>
+                <View style={{flexDirection:'row',alignContent:'center',justifyContent:'center',padding:10}}>
+                {this.state.speaker.linkedinProfileURL ? (
+              <TouchableOpacity
+                onPress={() =>
+                  this.displayWebsite(this.state.speaker.linkedinProfileURL)}
+              >
+                <Image
+                  style={[styles.sociallogo]}
+                  source={require("../../../assets/images/linkedin.png")}
+                />
+              </TouchableOpacity>
+            ) : <Image
+            style={[styles.sociallogo]}
+            source={require("../../../assets/images/linkedinDisabled.png")}
+          />}
+
+          {this.state.speaker.facebookProfileURL ? (
+              <TouchableOpacity
+                onPress={() =>
+                  this.displayWebsite(this.state.speaker.facebookProfileURL)}
+              >
+                <Image
+                  style={[styles.sociallogo]}
+                  source={require("../../../assets/images/fb.png")}
+                />
+              </TouchableOpacity>
+            ) : <Image
+            style={[styles.sociallogo]}
+            source={require("../../../assets/images/fbDisabled.png")}
+          />}
+          {this.state.speaker.twitterProfileURL ? (
+            <TouchableOpacity
+              onPress={() =>
+                this.displayWebsite(this.state.speaker.twitterProfileURL)}
+            >
+              <Image
+                style={[styles.sociallogo]}
+                source={require("../../../assets/images/twitter.png")}
+              />
+            </TouchableOpacity>
+          ) : <Image
+          style={[styles.sociallogo]}
+          source={require("../../../assets/images/twitterDisabled.png")}
+        />}
+        </View>
                 <View style={[styles.row]}>
                   <Text style={{fontSize : 15, textAlign: 'justify'}}>
                     {speakerInfo}
@@ -83,5 +128,11 @@ let styles = RkStyleSheet.create(theme => ({
       textAlignVertical: 'center',
       marginRight: 5,
       alignSelf: 'center'
+  },
+  sociallogo:{
+    width: 50,
+    height: 50,
+    borderRadius: 100,
+    padding:7
   }
   }));
