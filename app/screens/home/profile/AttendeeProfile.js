@@ -1,5 +1,6 @@
 import React from 'react';
-import { Image, ScrollView, View, StyleSheet, Alert, AsyncStorage, ActivityIndicator ,Text} from 'react-native';
+import { Image, ScrollView, View, StyleSheet, Alert, AsyncStorage, ActivityIndicator ,  TouchableOpacity,
+  Text} from 'react-native';
 import { RkText,RkComponent, RkTextInput, RkAvoidKeyboard, RkTheme, RkStyleSheet } from 'react-native-ui-kitten';
 import {data} from '../../../data';
 import {Avatar} from '../../../components';
