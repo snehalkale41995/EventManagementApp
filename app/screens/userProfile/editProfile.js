@@ -1,7 +1,7 @@
 import React from 'react';
 import { RkText, RkStyleSheet } from 'react-native-ui-kitten';
 import { Container } from 'native-base';
-import { Image, TextInput,ScrollView, View, StyleSheet, Alert, AsyncStorage, ActivityIndicator, Text, Linking, TouchableOpacity,Platform,NetInfo ,TouchableHighlight,ToastAndroid } from 'react-native';
+import { Image, ImageBackground,TextInput,ScrollView, View, StyleSheet, Alert, AsyncStorage, ActivityIndicator, Text, Linking, TouchableOpacity,Platform,NetInfo ,TouchableHighlight,ToastAndroid } from 'react-native';
 import { scale, scaleModerate, scaleVertical } from '../../utils/scale';
 import * as loginService from '../../serviceActions/login';
 import QRCode from "react-native-qrcode"; 
@@ -251,10 +251,10 @@ validate=(fname,lname,contact)=>{
       userInfo.twitterProfileURL="";
     }
     if (userInfo.profileImageURL) {
-      avatar = <Image style={{ width: 100, height: 100,borderRadius:100}} source={{ uri: userInfo.profileImageURL }} />     
+      avatar = <ImageBackground imageStyle={{borderRadius:100}} style={{ width: 100, height: 100}} source={{ uri: userInfo.profileImageURL }} ><View style={{paddingLeft:75,paddingTop:70}}><Image style={{ width: 25, height: 25}} source={require('../../assets/images/edit.png')}></Image></View></ImageBackground>
 
   } else {
-      avatar = <Image style={{ width: 100, height: 100,borderRadius:100}} source={require('../../assets/images/defaultUserImg.png')} />
+      avatar = <ImageBackground imageStyle={{borderRadius:100}} style={{ width: 100, height: 100}} source={require('../../assets/images/defaultUserImg.png')} />
   } 
     return ( 
         <View style={{paddingTop:15}}>
