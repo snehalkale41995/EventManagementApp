@@ -139,7 +139,8 @@ export class editProfile extends React.Component {
         case 'linkedin':
             user={...this.state.userInfo};
             user.linkedinProfileURL=val;
-        this.setState({userInfo:user})
+            this.setState({userInfo:user});
+        break;
         case 'twitter':
             user={...this.state.userInfo};
             user.twitterProfileURL=val;
