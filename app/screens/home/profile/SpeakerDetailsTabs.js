@@ -47,6 +47,7 @@ export class SpeakerDetailsTabs extends React.Component {
     );
   }
   
+  
   handleFirstConnectivityChange = (connectionInfo) => {
     if(connectionInfo.type != 'none') {
         this.setState({

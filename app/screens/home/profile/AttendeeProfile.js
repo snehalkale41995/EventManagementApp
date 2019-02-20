@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, ScrollView, View, StyleSheet, Alert, AsyncStorage, ActivityIndicator ,  TouchableOpacity,
+import { Image, Linking,ScrollView, View, StyleSheet, Alert, AsyncStorage, ActivityIndicator ,  TouchableOpacity,
   Text} from 'react-native';
 import { RkText,RkComponent, RkTextInput, RkAvoidKeyboard, RkTheme, RkStyleSheet } from 'react-native-ui-kitten';
 import {data} from '../../../data';
@@ -40,7 +40,7 @@ export class AttendeeProfile extends RkComponent {
                <View style={styles.header}>
                 {avatar}
               </View>
-              <View style={styles.section} pointerEvents='none'>
+              <View style={styles.section} >
                 <View style={[styles.column, styles.heading]}>
                   <RkText rkType='header6 primary'>{speakerName}</RkText>
                   <RkText style={{fontSize : 15, textAlign: 'center'}} rkType="small">{this.state.speaker.briefInfo}</RkText>
