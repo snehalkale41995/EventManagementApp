@@ -14,6 +14,11 @@ export class AttendeeProfile extends RkComponent {
             pictureUrl: this.speaker.profileImageURL
         }
     }
+    displayWebsite(websiteURL) {
+      if (websiteURL) {
+        Linking.openURL(websiteURL);
+      } else return;
+    }
       render() {
         let avatar;
          let speakerName = "";
