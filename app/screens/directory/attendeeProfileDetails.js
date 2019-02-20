@@ -96,24 +96,24 @@ export class AttendeeProfileDetails extends React.Component {
                 </View>
               </View>
               <View style={[styles.column, styles.heading]}>
-                <RkText style={{ color: "#fff" }} rkType="header4 ">
+                <RkText  style={{color: '#fff',fontSize : 25, textAlign: 'center'}}>
                   {this.state.attendee.firstName +
                     " " +
                     this.state.attendee.lastName}
                 </RkText>
-                <RkText rkType="header6">{this.state.attendee.roleName}</RkText>
+                <RkText style={{fontSize : 18,color: '#fff', textAlign: 'center'}}>{this.state.attendee.roleName}</RkText>
               </View>
             </View>
           </ImageBackground>
           <View style={styles.section}>
             <View style={[styles.column]}>
-              <RkText rkType="header5 primary">Contact Details</RkText>
-              <Text style={{ fontSize: 15, textAlign: "justify" }}>
+              <RkText style={{color: '#E7060E', fontSize : 18, textAlign: 'center'}}>Contact Details</RkText>
+              <RkText style={{ fontSize: 18, textAlign: "justify" }}>
                 {this.state.attendee.email}
-              </Text>
-              <Text style={{ fontSize: 15, textAlign: "justify" }}>
+              </RkText>
+              <RkText style={{ fontSize: 18, textAlign: "justify" }}>
                 {this.state.attendee.contact}
-              </Text>
+              </RkText>
             </View>
 
             <View
@@ -126,14 +126,14 @@ export class AttendeeProfileDetails extends React.Component {
                 paddingLeft: 10
               }}
             >
-              <RkText rkType="header5 primary">Other Details</RkText>
-              <Text style={{ fontSize: 15, textAlign: "justify" }}>
+              <RkText style={{color: '#E7060E', fontSize : 18, textAlign: 'center'}}>Other Details</RkText>
+              <RkText style={{ fontSize: 18, textAlign: "justify" }}>
                 {this.state.attendee.briefInfo}
-              </Text>
+              </RkText>
             </View>
           </View>
           <View style={[styles.column]}>
-            <RkText rkType="header5 primary">Social Media</RkText>
+            <RkText style={{color: '#E7060E', fontSize : 18, textAlign: 'center'}}>Social Media</RkText>
             
           </View>
 
