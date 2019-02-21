@@ -56,39 +56,12 @@ export class Directory extends RkComponent {
           });
         });
       }
-      fetchSessionList = (eventId, userId) => {
-        regResponseService
-          .getRegResponseByEventUser(eventId, userId)
-          .then(response => {
-            let sessions = [];
-            response.forEach(data => {
-             let session = data.session;
-              sessions.push({
-                key: session._id,
-                sessionName: session.sessionName,
-                event: session.event,
-                speakers: session.speakers,
-                volunteers: session.volunteers,
-                room: session.room,
-                description: session.description,
-                sessionType: session.sessionType,
-                sessionCapacity: session.sessionCapacity,
-                startTime: session.startTime,
-                endTime: session.endTime,
-                isBreak: !!session.isBreak,
-                isRegistrationRequired: !!session.isRegistrationRequired
-              });
-            });
-          this.setState({sessionList : sessions, isLoaded : true})
-          });
-      };
     
 render() { 
     let {eventId, userId} = this.state;
     return (
       <Tabs style={{ elevation: 3,width:400}} style={styles.tabContent}
         onChangeTab={() => {
-         //this.fetchSessionList(eventId, userId);
          }}
       > 
         <Tab heading='Deligates' tabStyle={{backgroundColor : '#f20505'}} activeTabStyle={{backgroundColor : '#f20505'}} textStyle={{fontSize:11,color:'#ffffff'}} activeTextStyle={{fontSize:11,color:'#fff',fontWeight:'normal'}} 

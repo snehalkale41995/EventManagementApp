@@ -88,8 +88,6 @@ export class editProfile extends React.Component {
       newUserInfo={...this.state.userInfo};
       newUserInfo.profileImageURL=result.uri;
       this.setState({ userInfo:{...newUserInfo}});
-
-
     }
   };
 
@@ -145,8 +143,7 @@ export class editProfile extends React.Component {
             user={...this.state.userInfo};
             user.twitterProfileURL=val;
             this.setState({userInfo:user})
-
-        break;
+            break;
     }
   }
   submit=()=>
@@ -163,6 +160,7 @@ export class editProfile extends React.Component {
         .put(`${AppConfig.serverURL}/api/speaker/new/`+this.state.userInfo._id, JSON.parse(JSON.stringify(user)))
         .then(response => {
           let userInfo = JSON.stringify(response.data);
+         
           AsyncStorage.setItem("USER_DETAILS", userInfo);
           ToastAndroid.showWithGravity(
             'Your profile has been updated successfully..',
@@ -191,7 +189,7 @@ export class editProfile extends React.Component {
           this.props.navigation.replace('MyProfile');
         })
         .catch(error => {
-         console.log("(error)", error.response);
+         console.warn("(error)", error.response);
     });
   }
 }
@@ -232,6 +230,7 @@ validate=(fname,lname,contact)=>{
       }
     })  
   } 
+  
     displayInformation = () => {
     let userInfo = this.state.userInfo;
     let attendeeCode = userInfo.attendeeLabel+"-"+userInfo.attendeeCount;
@@ -251,10 +250,10 @@ validate=(fname,lname,contact)=>{
       userInfo.twitterProfileURL="";
     }
     if (userInfo.profileImageURL) {
-      avatar = <ImageBackground imageStyle={{borderRadius:100}} style={{ width: 100, height: 100}} source={{ uri: userInfo.profileImageURL }} ><View style={{paddingLeft:75,paddingTop:70}}><Image style={{ width: 25, height: 25}} source={require('../../assets/images/edit.png')}></Image></View></ImageBackground>
+      avatar = <ImageBackground imageStyle={{borderRadius:50}} style={{ width: 100, height: 100}} source={{ uri: userInfo.profileImageURL }} ><View style={{paddingLeft:75,paddingTop:70}}><Image style={{ width: 25, height: 25}} source={require('../../assets/images/edit.png')}></Image></View></ImageBackground>
 
   } else {
-      avatar = <ImageBackground imageStyle={{borderRadius:100}} style={{ width: 100, height: 100}} source={require('../../assets/images/defaultUserImg.png')} />
+      avatar = <ImageBackground imageStyle={{borderRadius:50}} style={{ width: 100, height: 100}} source={require('../../assets/images/defaultUserImg.png')} />
   } 
     return ( 
         <View style={{paddingTop:15}}>

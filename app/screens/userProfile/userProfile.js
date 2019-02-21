@@ -94,11 +94,13 @@ export class UserProfile extends React.Component {
       this.handleFirstConnectivityChange
     );
   }
+  
   displayWebsite(websiteURL) {
     if (websiteURL) {
       Linking.openURL(websiteURL);
     } else return;
   }
+
   getUserInfo() {
     loginService.getCurrentUser(userInfo => {
       if (userInfo) {
@@ -114,25 +116,20 @@ export class UserProfile extends React.Component {
 
   displayInformation = () => {
     let userInfo = this.state.userInfo;
-    let attendeeCode = userInfo.attendeeLabel + "-" + userInfo.attendeeCount;
-    let attendeeId = userInfo._id;
-    let userName = userInfo.firstName + "" + userInfo.lastName;
-
-    let qrText = "TIE" + ":" + attendeeCode + ":" + attendeeId + ":" + userName;
     let avatar;
     if (userInfo.profileImageURL) {
       // avatar = (
-        // <Image
-        //   style={{
-        //     width: 110,
-        //     height: 110,
-        //     borderColor: "#00ffff",
-        //     borderWidth: 2,
-        //     borderRadius: 100
-        //   }}
-        //   source={{ uri: userInfo.profileImageURL }}
-        // /> );
-      avatar = <Avatar  rkType='big'  imagePath={userInfo.profileImageURL} />
+      //   <Image
+      //     style={{
+      //       width: 110,
+      //       height: 110,
+      //       borderColor: "#00ffff",
+      //       borderWidth: 2,
+      //       borderRadius: 50
+      //     }}
+      //     source={{ uri: userInfo.profileImageURL }}
+      //   /> );
+       avatar = <Avatar  rkType='big'  imagePath={userInfo.profileImageURL} />
     } else {
       avatar = (
         <Image
@@ -141,7 +138,7 @@ export class UserProfile extends React.Component {
             height: 110,
             borderColor: "#00ffff",
             borderWidth: 2,
-            borderRadius: 100
+            borderRadius: 50
           }}
           source={require("../../assets/images/defaultUserImg.png")}
         />

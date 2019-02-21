@@ -66,7 +66,7 @@ export class AttendeeProfileDetails extends React.Component {
             height: 100,
             borderColor: "#00ffff",
             borderWidth: 2,
-            borderRadius: 100
+            borderRadius: 50
           }}
           source={require("../../../app/assets/images/defaultUserImg.png")}
         />
