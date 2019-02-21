@@ -95,13 +95,13 @@ export class AttendeeProfileDetails extends React.Component {
                   {avatar}
                 </View>
               </View>
-              <View style={[styles.column, styles.heading]}>
-                <RkText  style={{color: '#fff',fontSize : 25, textAlign: 'center'}}>
+              <View style={[styles.roleStyle]}>
+                <RkText  style={{color: '#000',fontSize : 18, textAlign: 'center'}}>
                   {this.state.attendee.firstName +
                     " " +
                     this.state.attendee.lastName}
                 </RkText>
-                <RkText style={{fontSize : 18,color: '#fff', textAlign: 'center'}}>{this.state.attendee.roleName}</RkText>
+                <RkText style={{fontSize : 15,color: '#000', textAlign: 'center'}}>{this.state.attendee.roleName}</RkText>
               </View>
             </View>
           </ImageBackground>
@@ -221,6 +221,13 @@ let styles = RkStyleSheet.create(theme => ({
     borderColor: theme.colors.border.base,
     alignItems: "center",
     marginTop: 10
+  },
+   roleStyle: {
+    flexDirection: "column",
+    borderColor: theme.colors.border.base,
+    alignItems: "center",
+    marginTop: 15,
+    marginBottom:10
   },
   row: {
     flexDirection: "row",

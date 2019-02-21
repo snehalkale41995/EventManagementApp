@@ -25,7 +25,20 @@ import {AsyncStorage} from 'react-native';
                 }
         });
     }
-      
+
+  export const  getUserDetails = (id) =>{
+      let promise = new Promise((resolve, reject) => {
+         axios.post(`${AppConfig.serverURL}/api/attendee/`+id)
+         .then(response => {
+           resolve(response.data);
+         })
+         .catch(error => {
+            reject(error.response.data);
+         })
+      })
+        return promise;
+     }
+
     _storeData = async (data) => {
         try {
           await AsyncStorage.setItem('USER_DETAILS', data);
