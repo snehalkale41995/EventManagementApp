@@ -1,6 +1,7 @@
 import React from "react";
 import { RkText, RkStyleSheet } from "react-native-ui-kitten";
 import { Container } from "native-base";
+import {Avatar} from '../../components';
 import {
   Image,
   ScrollView,
@@ -120,18 +121,18 @@ export class UserProfile extends React.Component {
     let qrText = "TIE" + ":" + attendeeCode + ":" + attendeeId + ":" + userName;
     let avatar;
     if (userInfo.profileImageURL) {
-      avatar = (
-        <Image
-          style={{
-            width: 110,
-            height: 110,
-            borderColor: "#00ffff",
-            borderWidth: 2,
-            borderRadius: 100
-          }}
-          source={{ uri: userInfo.profileImageURL }}
-        />
-      );
+      // avatar = (
+        // <Image
+        //   style={{
+        //     width: 110,
+        //     height: 110,
+        //     borderColor: "#00ffff",
+        //     borderWidth: 2,
+        //     borderRadius: 100
+        //   }}
+        //   source={{ uri: userInfo.profileImageURL }}
+        // /> );
+      avatar = <Avatar  rkType='big'  imagePath={userInfo.profileImageURL} />
     } else {
       avatar = (
         <Image
@@ -197,11 +198,11 @@ export class UserProfile extends React.Component {
               >
                 <Image
                   style={[styles.sociallogo]}
-                  source={require("../../assets/images/fb.png")}
+                 source={require("../../assets/images/fb.png")}
                 />
               </TouchableOpacity>
             ) : <Image
-            style={[styles.sociallogo]}
+                style={[styles.sociallogo]}
             source={require("../../assets/images/fbDisabled.png")}
           />}
                {userInfo.twitterProfileURL ? (
@@ -220,10 +221,7 @@ export class UserProfile extends React.Component {
           />}            
               </View>
               </View>
-              <View style={{ width: Platform.OS === 'ios' ? 320 : 380  ,alignItems:'center', marginTop : 5}} >
-             <GradientButton colors={['#f20505', '#f55050']} text='Edit' style={{width: Platform.OS === 'ios' ? 150 :170 , alignSelf : 'center'}}
-              onPress={() => this.props.navigation.replace('EditProfile', { sessionDetails: this.state.userInfo })}/>
-             </View> 
+             
          </View>
     );  
   }
@@ -236,6 +234,10 @@ export class UserProfile extends React.Component {
           <ScrollView>
             <View>{Info}</View>
           </ScrollView>
+           <View style={{ width: Platform.OS === 'ios' ? 360 : 380  ,alignItems:'center', marginTop : 5, marginBottom : 10}} >
+             <GradientButton colors={['#f20505', '#f55050']} text='Edit' style={{width: Platform.OS === 'ios' ? 150 :170 , alignSelf : 'center'}}
+              onPress={() => this.props.navigation.replace('EditProfile', { sessionDetails: this.state.userInfo })}/>
+             </View> 
           <View>
             <Footer isOffline={this.state.isOffline} />
           </View>
@@ -282,7 +284,6 @@ let styles = RkStyleSheet.create(theme => ({
   sociallogo:{
     width: 50,
     height: 50,
-    borderRadius: 100,
     padding:8
   }
 }));

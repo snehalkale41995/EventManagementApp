@@ -243,7 +243,7 @@ let styles = RkStyleSheet.create(theme => ({
   sociallogo:{
     width: 50,
     height: 50,
-    borderRadius: 100,
+   // borderRadius: 100,
     padding:7
   }
 }));

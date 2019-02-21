@@ -294,10 +294,7 @@ validate=(fname,lname,contact)=>{
               onPress={() => this.submit()}/>
              </View>  */}
                 </View>
-                   <View style={{width: Platform.OS === 'ios' ? 300 : 360, alignItems:'center', marginTop : 5, marginBottom : 5}}>
-                   <GradientButton colors={['#f20505', '#f55050']} text='Save' style={{marginTop:5,width: Platform.OS === 'ios' ? 150 :170 , alignSelf : 'center',marginTop:10, marginBotton:5}}
-                   onPress={() => this.submit()}/> 
-                  </View>
+                  
                 </View>
     );
   }
@@ -312,6 +309,10 @@ validate=(fname,lname,contact)=>{
                             {Info} 
                         </View>
                     </ScrollView>
+               <View style={{width: Platform.OS === 'ios' ? 360 : 360, alignItems:'center', marginTop : 5, marginBottom : 5}}>
+                   <GradientButton colors={['#f20505', '#f55050']} text='Save' style={{marginTop:5,width: Platform.OS === 'ios' ? 150 :170 , alignSelf : 'center',marginTop:10, marginBotton:5}}
+                   onPress={() => this.submit()}/> 
+              </View>    
                   <View>
                   <Footer isOffline ={this.state.isOffline}/>    
                   </View>
