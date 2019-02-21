@@ -41,7 +41,8 @@ export class editProfile extends React.Component {
       fnameError:'',
       lnameError:'',
       contactError:'',
-      emailError:''
+      emailError:'',
+      imageFile:{}
     }
   }
   handleBackPress=()=>{
@@ -85,6 +86,18 @@ export class editProfile extends React.Component {
       aspect: [4, 4],
     });
     if (!result.cancelled) {
+      const uriParts = result.uri.split('.');
+      const fileType = uriParts[uriParts.length - 1];
+      let image={
+        uri:result.uri,
+        type:'image/jpeg',
+        name:this.state.userInfo.email
+      };
+      // image.name="profile";
+      // image.type= `image/${fileType}`;
+      // image.uri=result.uri;
+      this.setState({imageFile:image});
+      console.warn(this.state.imageFile)
       newUserInfo={...this.state.userInfo};
       newUserInfo.profileImageURL=result.uri;
       this.setState({ userInfo:{...newUserInfo}});
@@ -143,24 +156,31 @@ export class editProfile extends React.Component {
             user={...this.state.userInfo};
             user.twitterProfileURL=val;
             this.setState({userInfo:user})
-            break;
+        break;
     }
   }
   submit=()=>
   {
     let user={...this.state.userInfo};
-    if(user.profileImageURL==null){
-      user.profileImageURL='';
+    console.warn(user)
+
+    delete user._id;
+    delete user.__v; 
+
+    let data = new FormData();
+    for (var key in user) {
+      if (key != "profileImageURL") data.append(key, user[key]);
     }
+    data.append("profileImageURL", this.state.imageFile);
     if(this.validate(user.firstName,user.lastName,user.contact.toString())){
-        delete user._id;
-        delete user.__v;
-        if(user.roleName==='Speaker'){
+        
+        if(data.roleName==='Speaker'){
           axios
-        .put(`${AppConfig.serverURL}/api/speaker/new/`+this.state.userInfo._id, JSON.parse(JSON.stringify(user)))
+        .put(`${AppConfig.serverURL}/api/speaker/new/`+this.state.userInfo._id,data)
         .then(response => {
           let userInfo = JSON.stringify(response.data);
-         
+          console.warn("(success)",response);
+
           AsyncStorage.setItem("USER_DETAILS", userInfo);
           ToastAndroid.showWithGravity(
             'Your profile has been updated successfully..',
@@ -172,13 +192,16 @@ export class editProfile extends React.Component {
        
         })
         .catch(error => {
-        // console.log("(error)", error.response);
+        console.log("(error)", error.response);
     });
-        }else{           
+        }else{ 
+        //data.delete("info")
         axios
-        .put(`${AppConfig.serverURL}/api/attendee/new/`+this.state.userInfo._id, JSON.parse(JSON.stringify(user)))
+        .put(`${AppConfig.serverURL}/api/attendee/new/`+this.state.userInfo._id, data)
         .then(response => {
           let userInfo = JSON.stringify(response.data);
+          console.warn("(success)",response);
+
           AsyncStorage.setItem("USER_DETAILS", userInfo);
           ToastAndroid.showWithGravity(
             'Your profile has been updated successfully..',
