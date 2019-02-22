@@ -128,37 +128,38 @@ export class editProfile extends React.Component {
       this.handleFirstConnectivityChange
     );
   } 
+   
   editInput=(field,val,event)=>{ 
     switch(field){
         case 'fname':
             user={...this.state.userInfo};
             user.firstName=val;
-            this.setState({userInfo:user})
+            this.setState({userInfo:user, fnameError:""})
         break; 
         case 'lname':
             user={...this.state.userInfo};
             user.lastName=val;
-            this.setState({userInfo:user})
+            this.setState({userInfo:user, lnameError:""})
         break;
         case 'contact':
             user={...this.state.userInfo};
             user.contact=val;
-            this.setState({userInfo:user})
+            this.setState({userInfo:user, contactError:""})
         break;
         case 'facebook':
             user={...this.state.userInfo};
             user.facebookProfileURL=val;
-            this.setState({userInfo:user})
+            this.setState({userInfo:user, fbError:""})
         break;
         case 'linkedin':
             user={...this.state.userInfo};
             user.linkedinProfileURL=val;
-            this.setState({userInfo:user});
+            this.setState({userInfo:user, lnError:""});
         break;
         case 'twitter':
             user={...this.state.userInfo};
             user.twitterProfileURL=val;
-            this.setState({userInfo:user})
+            this.setState({userInfo:user, trError:""})
         break;
     }
   }
@@ -179,15 +180,9 @@ export class editProfile extends React.Component {
     }
     if(this.validate(user.firstName,user.lastName,user.contact.toString(),user.facebookProfileURL,user.linkedinProfileURL,user.twitterProfileURL)){
         if(user.roleName==='Speaker'){
-          axios
-        .put(`${AppConfig.serverURL}/api/speaker/new/`+this.state.userInfo._id,data)
+        axios.put(`${AppConfig.serverURL}/api/speaker/new/`+this.state.userInfo._id,data)
         .then(response => {
-          this.props.navigation.replace('MyProfile');
-          ToastAndroid.showWithGravity(
-            'Your profile has been updated successfully..',
-            ToastAndroid.SHORT,
-            ToastAndroid.CENTER,
-          );
+          this.navigateToProfile()
         })
         .catch(error => {
         // console.log("(error)", error.response);
@@ -196,12 +191,7 @@ export class editProfile extends React.Component {
         axios
         .put(`${AppConfig.serverURL}/api/attendee/new/`+this.state.userInfo._id, data)
         .then(response => {
-          ToastAndroid.showWithGravity(
-            'Your profile has been updated successfully..',
-            ToastAndroid.SHORT,
-            ToastAndroid.CENTER,
-          );
-          this.props.navigation.replace('MyProfile');
+         this.navigateToProfile()
         })
         .catch(error => {
         // console.warn("(error)", error.response);
@@ -209,6 +199,22 @@ export class editProfile extends React.Component {
   }
 }
 }
+
+  navigateToProfile(){
+    if(Platform.OS === 'android'){
+      ToastAndroid.showWithGravity(
+            'Your profile has been updated successfully..',
+            ToastAndroid.SHORT,
+            ToastAndroid.CENTER,
+          );
+    }
+    else{
+       Alert.alert("Your profile has been updated successfully..");
+    }
+     this.props.navigation.replace('MyProfile');
+  }
+
+
 validate=(fname,lname,contact,fb,ln,tr)=>{
   var hasNumber = /\d/;
   var pattern = /^(http[s]?:\/\/){0,1}(www\.){0,1}[a-zA-Z0-9\.\-]+\.[a-zA-Z]{2,5}[\.]{0,1}/;
