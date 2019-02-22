@@ -42,7 +42,10 @@ export class editProfile extends React.Component {
       lnameError:'',
       contactError:'',
       emailError:'',
-      imageFile:{}
+      fbError:'',
+      lnError:'',
+      trError:'',
+      imageFile:null
     }
   }
   handleBackPress=()=>{
@@ -171,15 +174,18 @@ export class editProfile extends React.Component {
     for (var key in user) {
       if (key != "profileImageURL") data.append(key, user[key]);
     }
-    data.append("profileImageURL", this.state.imageFile);
-    if(this.validate(user.firstName,user.lastName,user.contact.toString())){
-        
-        if(data.roleName==='Speaker'){
+    if(this.state.imageFile){
+      data.append("profileImageURL", this.state.imageFile);
+    }else{
+      data.append("profileImageURL", user['profileImageURL']);
+    }
+    if(this.validate(user.firstName,user.lastName,user.contact.toString(),user.facebookProfileURL,user.linkedinProfileURL,user.twitterProfileURL)){
+        if(user.roleName==='Speaker'){
+          console.warn('Inside speaker call',data)
           axios
         .put(`${AppConfig.serverURL}/api/speaker/new/`+this.state.userInfo._id,data)
         .then(response => {
           let userInfo = JSON.stringify(response.data);
-          console.warn("(success)",response);
 
           AsyncStorage.setItem("USER_DETAILS", userInfo);
           ToastAndroid.showWithGravity(
@@ -192,49 +198,58 @@ export class editProfile extends React.Component {
        
         })
         .catch(error => {
-        console.log("(error)", error.response);
     });
         }else{ 
-        //data.delete("info")
         axios
         .put(`${AppConfig.serverURL}/api/attendee/new/`+this.state.userInfo._id, data)
         .then(response => {
           let userInfo = JSON.stringify(response.data);
-          console.warn("(success)",response);
 
           AsyncStorage.setItem("USER_DETAILS", userInfo);
           ToastAndroid.showWithGravity(
             'Your profile has been updated successfully..',
             ToastAndroid.SHORT,
             ToastAndroid.CENTER,
-            
           );
           this.props.navigation.replace('MyProfile');
         })
         .catch(error => {
-         console.warn("(error)", error.response);
     });
   }
 }
 }
-validate=(fname,lname,contact)=>{
-    var hasNumber = /\d/;
-
+validate=(fname,lname,contact,fb,ln,tr)=>{
+  var hasNumber = /\d/;
+  var pattern = /^(http[s]?:\/\/){0,1}(www\.){0,1}[a-zA-Z0-9\.\-]+\.[a-zA-Z]{2,5}[\.]{0,1}/;
     if(fname.length>0 && !hasNumber.test(fname)){
         if(lname.length>0 && !hasNumber.test(lname)){
             if(contact.toString().length==10 && contact.toString().match(/^[0-9]+$/)){    
-                   
+                  if(pattern.test(ln) || ln===""){
+                    if(pattern.test(fb)|| fb===""){
+                      if(pattern.test(tr)|| tr===""){
                         return true;
+                      }else{
+                        this.setState({...this.state,fbError:'',lnError:'', trError:'Please enter valid profile URL',lnameError:'',fnameError:''});
+                        return false;
+                      }
+                    }else{
+                      this.setState({...this.state,lnError:'',trError:'', fbError:'Please enter valid profile URL',lnameError:'',fnameError:''});
+                      return false;
+                    }
+                  }else{
+                    this.setState({...this.state, fbError:'',trError:'',lnError:'Please enter valid profile URL',lnameError:'',fnameError:''});
+                    return false;
+                  }
             }else{
-              this.setState({...this.state, contactError:'Please enter valid contact details',lnameError:'',fnameError:''});
+              this.setState({...this.state,fbError:'',lnError:'',trError:'', contactError:'Please enter valid contact details',lnameError:'',fnameError:''});
                 return false;
             }
         }else{
-          this.setState({...this.state, contactError:'',lnameError:'Please enter valid last name',fnameError:''});
+          this.setState({...this.state, contactError:'',fbError:'',lnError:'',trError:'',lnameError:'Please enter valid last name',fnameError:''});
             return false;
         }
     }else{
-      this.setState({...this.state, contactError:'',lnameError:'',fnameError:'Please enter valid first name'});
+      this.setState({...this.state, contactError:'',lnameError:'',fbError:'',lnError:'',trError:'',fnameError:'Please enter valid first name'});
         return false;
     } 
 }
@@ -304,12 +319,15 @@ validate=(fname,lname,contact)=>{
 
                   <RkText style={{color: '#000',fontSize : 15, textAlign: 'left'}}>Linkedin profile</RkText>
                   <TextInput underlineColorAndroid='transparent' placeholder='Profile url' style={[styles.text]}   value={''+userInfo.linkedinProfileURL} onChangeText={(text) => this.editInput('linkedin',text)} />
-                  
+                  <Text style={[styles.errorStyle]} ref='contact'>{this.state.lnError}</Text>
+
                   <RkText style={{color: '#000',fontSize : 15, textAlign: 'left', marginTop :7}}>Facebook profile</RkText>
                   <TextInput underlineColorAndroid='transparent'  placeholder='Profile url'  style={[styles.text]} value={''+userInfo.facebookProfileURL}  onChangeText={(text) => this.editInput('facebook',text)} />
-                  
+                  <Text style={[styles.errorStyle]} ref='contact'>{this.state.fbError}</Text>
+
                   <RkText style={{color: '#000',fontSize : 15, textAlign: 'left', marginTop :7}}>Twitter profile</RkText>
                   <TextInput underlineColorAndroid='transparent'  placeholder='Profile url'  style={[styles.text]} value={''+userInfo.twitterProfileURL}  onChangeText={(text) => this.editInput('twitter',text)} />
+                  <Text style={[styles.errorStyle]} ref='contact'>{this.state.trError}</Text>
 
              {/* <View style={{ width: Platform.OS === 'ios' ? 300 : 360  ,alignItems:'center', marginTop : 5, marginBottom : 5}} >
              <GradientButton colors={['#f20505', '#f55050']} text='Save' style={{width: Platform.OS === 'ios' ? 130 :150 , alignSelf : 'center', marginRight:10}}
