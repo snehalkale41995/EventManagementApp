@@ -338,16 +338,38 @@ export const MainRoutes = [
     icon: 'md-information-circle',
     screen: Screens.AboutEternus,
     children: []
-  },
+  }
+  // ,
+  //  {
+  //   id: 'backToevent',
+  //   title: 'Events',
+  //   icon: 'md-information-circle',
+  //   screen: Screens.EventMenu,
+  //   children: []
+  // },
 ];
 
+if(Platform.OS === 'ios'){
+MainRoutes.push({
+    id: 'backToevent',
+    title: 'Back To Events',
+    icon: 'ios-arrow-dropleft',
+    screen: Screens.EventMenu,
+    children: []  
+},)
+}
 let menuRoutes = _.cloneDeep(MainRoutes);
+
 menuRoutes.unshift({
   id: 'GridV2',
   title: 'Start',
   screen: HomePageMenuScreen,
   children: []
 }, );
+
+console.warn("menuRoutes", menuRoutes);
+
+
 
 export const MenuRoutes = menuRoutes;
 
