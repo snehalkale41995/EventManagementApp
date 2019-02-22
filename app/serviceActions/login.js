@@ -28,7 +28,20 @@ import {AsyncStorage} from 'react-native';
 
   export const  getUserDetails = (id) =>{
       let promise = new Promise((resolve, reject) => {
-         axios.post(`${AppConfig.serverURL}/api/attendee/`+id)
+         axios.get(`${AppConfig.serverURL}/api/attendee/${id}`)
+         .then(response => {
+           resolve(response.data);
+         })
+         .catch(error => {
+            reject(error.response.data);
+         })
+      })
+        return promise;
+     }
+  
+     export const  getSpeakerDetails = (id) =>{
+      let promise = new Promise((resolve, reject) => {
+         axios.get(`${AppConfig.serverURL}/api/speaker/${id}`)
          .then(response => {
            resolve(response.data);
          })

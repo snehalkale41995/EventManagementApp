@@ -102,34 +102,70 @@ export class UserProfile extends React.Component {
   }
 
   getUserInfo() {
+     let userId;
     loginService.getCurrentUser(userInfo => {
       if (userInfo) {
-        this.setState({
-          userInfo: userInfo,
-          isLoaded: true
-        });
+      userId = userInfo._id;
+      if(userInfo.roleName !=="Speaker"){
+        loginService.getUserDetails(userId).then(response=>{
+         this.setUser(response)
+      }).catch((error)=>{
+         this.setState({ isLoaded: false });
+      })
+      }
+      else{
+        loginService.getSpeakerDetails(userId).then(response=>{
+        this.setUser(response)
+      }).catch((error)=>{
+         this.setState({ isLoaded: false });
+      })
+      }
+       
       } else {
         this.setState({ isLoaded: false });
       }
     });
   }
 
+   setUser(response){
+     let userInformation;
+     this.setState({
+          userInfo: response,
+          isLoaded: true
+        });
+       userInformation = JSON.stringify(response);
+      AsyncStorage.setItem("USER_DETAILS", userInformation);
+   }
+
+
   displayInformation = () => {
     let userInfo = this.state.userInfo;
     let avatar;
     if (userInfo.profileImageURL) {
-      // avatar = (
-      //   <Image
-      //     style={{
-      //       width: 110,
-      //       height: 110,
-      //       borderColor: "#00ffff",
-      //       borderWidth: 2,
-      //       borderRadius: 50
-      //     }}
-      //     source={{ uri: userInfo.profileImageURL }}
-      //   /> );
-       avatar = <Avatar  rkType='big'  imagePath={userInfo.profileImageURL} />
+      
+      Platform.OS === 'ios' ? (   avatar = (
+        <Image
+          style={{
+            width: 110,
+            height: 110,
+            borderColor: "#00ffff",
+            borderWidth: 2,
+            borderRadius: 50
+          }}
+          source={{ uri: userInfo.profileImageURL, CACHE: 'reload' }}
+        /> )) : ( avatar = (
+        <Image
+          style={{
+            width: 110,
+            height: 110,
+            borderColor: "#00ffff",
+            borderWidth: 2,
+            borderRadius: 50
+          }}
+          source={{ uri: userInfo.profileImageURL+ '?rnd=' + Math.random()}}
+        /> ))
+   
+      // avatar = <Avatar  rkType='big'  imagePath={userInfo.profileImageURL} />
     } else {
       avatar = (
         <Image
