@@ -367,10 +367,6 @@ menuRoutes.unshift({
   children: []
 }, );
 
-console.warn("menuRoutes", menuRoutes);
-
-
-
 export const MenuRoutes = menuRoutes;
 
 const styles = RkStyleSheet.create(theme => ({

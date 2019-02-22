@@ -96,12 +96,12 @@ export class AttendeeProfileDetails extends React.Component {
                 </View>
               </View>
               <View style={[styles.roleStyle]}>
-                <RkText  style={{color: '#000',fontSize : 18, textAlign: 'center'}}>
+                <RkText  style={{fontSize : 18, textAlign: 'center'}}>
                   {this.state.attendee.firstName +
                     " " +
                     this.state.attendee.lastName}
                 </RkText>
-                <RkText style={{fontSize : 15,color: '#000', textAlign: 'center'}}>{this.state.attendee.roleName}</RkText>
+                <RkText style={{fontSize : 15, textAlign: 'center'}}>{this.state.attendee.roleName}</RkText>
               </View>
             </View>
           </ImageBackground>

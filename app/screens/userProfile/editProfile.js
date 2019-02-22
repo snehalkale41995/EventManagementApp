@@ -100,7 +100,6 @@ export class editProfile extends React.Component {
       // image.type= `image/${fileType}`;
       // image.uri=result.uri;
       this.setState({imageFile:image});
-      console.warn(this.state.imageFile)
       newUserInfo={...this.state.userInfo};
       newUserInfo.profileImageURL=result.uri;
       this.setState({ userInfo:{...newUserInfo}});

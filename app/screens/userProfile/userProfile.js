@@ -192,8 +192,10 @@ export class UserProfile extends React.Component {
                 <View  style={[styles.column, styles.heading]}>
                   {/* <Image style={{ width: 120, height: 120,borderRadius:100 ,borderColor:'#f20505',borderWidth:1}} source={{ uri: userInfo.profileImageURL }} /> */}
                   {avatar}
-                  <RkText style={{color: '#fff',fontSize : 25, textAlign: 'center'}}>{userInfo.firstName + " " + userInfo.lastName}</RkText>
-                  <RkText style={{fontSize : 18,color: '#fff', textAlign: 'center'}}>{userInfo.roleName}</RkText> 
+                  <View style={[styles.roleStyle]}>
+                  <RkText style={{fontSize : 18, textAlign: 'center'}}>{userInfo.firstName + " " + userInfo.lastName}</RkText>
+                  <RkText style={{fontSize : 15 , textAlign: 'center'}}>{userInfo.roleName}</RkText> 
+                 </View>
                 </View>
                 </View>
                 </ImageBackground>
@@ -318,5 +320,12 @@ let styles = RkStyleSheet.create(theme => ({
     width: 50,
     height: 50,
     padding:8
-  }
+  },
+    roleStyle: {
+    flexDirection: "column",
+    borderColor: theme.colors.border.base,
+    alignItems: "center",
+    marginTop: 15,
+    marginBottom:10
+  },
 }));
