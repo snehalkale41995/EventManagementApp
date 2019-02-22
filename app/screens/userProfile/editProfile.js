@@ -45,7 +45,7 @@ export class editProfile extends React.Component {
       fbError:'',
       lnError:'',
       trError:'',
-      imageFile:{}
+      imageFile:null
     }
   }
   handleBackPress=()=>{
@@ -174,15 +174,18 @@ export class editProfile extends React.Component {
     for (var key in user) {
       if (key != "profileImageURL") data.append(key, user[key]);
     }
-    data.append("profileImageURL", this.state.imageFile);
+    if(this.state.imageFile){
+      data.append("profileImageURL", this.state.imageFile);
+    }else{
+      data.append("profileImageURL", user['profileImageURL']);
+    }
     if(this.validate(user.firstName,user.lastName,user.contact.toString(),user.facebookProfileURL,user.linkedinProfileURL,user.twitterProfileURL)){
-        
-        if(data.roleName==='Speaker'){
+        if(user.roleName==='Speaker'){
+          console.warn('Inside speaker call',data)
           axios
         .put(`${AppConfig.serverURL}/api/speaker/new/`+this.state.userInfo._id,data)
         .then(response => {
           let userInfo = JSON.stringify(response.data);
-          console.warn("(success)",response);
 
           AsyncStorage.setItem("USER_DETAILS", userInfo);
           ToastAndroid.showWithGravity(
@@ -195,27 +198,22 @@ export class editProfile extends React.Component {
        
         })
         .catch(error => {
-        console.log("(error)", error.response);
     });
         }else{ 
-        //data.delete("info")
         axios
         .put(`${AppConfig.serverURL}/api/attendee/new/`+this.state.userInfo._id, data)
         .then(response => {
           let userInfo = JSON.stringify(response.data);
-          console.warn("(success)",response);
 
           AsyncStorage.setItem("USER_DETAILS", userInfo);
           ToastAndroid.showWithGravity(
             'Your profile has been updated successfully..',
             ToastAndroid.SHORT,
             ToastAndroid.CENTER,
-            
           );
           this.props.navigation.replace('MyProfile');
         })
         .catch(error => {
-         console.warn("(error)", error.response);
     });
   }
 }
