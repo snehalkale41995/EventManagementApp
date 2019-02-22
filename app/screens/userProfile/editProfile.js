@@ -165,8 +165,6 @@ export class editProfile extends React.Component {
   submit=()=>
   {
     let user={...this.state.userInfo};
-    console.warn(user)
-
     delete user._id;
     delete user.__v; 
 
@@ -181,31 +179,23 @@ export class editProfile extends React.Component {
     }
     if(this.validate(user.firstName,user.lastName,user.contact.toString(),user.facebookProfileURL,user.linkedinProfileURL,user.twitterProfileURL)){
         if(user.roleName==='Speaker'){
-          console.warn('Inside speaker call',data)
           axios
         .put(`${AppConfig.serverURL}/api/speaker/new/`+this.state.userInfo._id,data)
         .then(response => {
-          let userInfo = JSON.stringify(response.data);
-
-          AsyncStorage.setItem("USER_DETAILS", userInfo);
+          this.props.navigation.replace('MyProfile');
           ToastAndroid.showWithGravity(
             'Your profile has been updated successfully..',
             ToastAndroid.SHORT,
             ToastAndroid.CENTER,
-            
           );
-          this.props.navigation.replace('MyProfile');
-       
         })
         .catch(error => {
+        // console.log("(error)", error.response);
     });
         }else{ 
         axios
         .put(`${AppConfig.serverURL}/api/attendee/new/`+this.state.userInfo._id, data)
         .then(response => {
-          let userInfo = JSON.stringify(response.data);
-
-          AsyncStorage.setItem("USER_DETAILS", userInfo);
           ToastAndroid.showWithGravity(
             'Your profile has been updated successfully..',
             ToastAndroid.SHORT,
@@ -214,6 +204,7 @@ export class editProfile extends React.Component {
           this.props.navigation.replace('MyProfile');
         })
         .catch(error => {
+        // console.warn("(error)", error.response);
     });
   }
 }
@@ -253,13 +244,13 @@ validate=(fname,lname,contact,fb,ln,tr)=>{
         return false;
     } 
 }
-  
       
   getUserInfo(){ 
     loginService.getCurrentUser((userInfo)=>{
       if(userInfo){
+        userInfo.profileImageURL = userInfo.profileImageURL+ '?rnd=' + Math.random();
         this.setState({
-          userInfo : userInfo,
+          userInfo : userInfo,     
           isLoaded : true 
         })
        }
@@ -299,7 +290,6 @@ validate=(fname,lname,contact,fb,ln,tr)=>{
                 <TouchableOpacity key={userInfo.firstName} onPress={() => this._pickImage()}> 
                 <View style={{borderColor:'#999999',borderWidth:2,borderRadius:100}}>
                 {avatar}
-               
                 </View>
                   </TouchableOpacity>
                   </View>

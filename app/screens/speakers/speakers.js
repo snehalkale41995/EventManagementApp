@@ -114,6 +114,7 @@ export class Speakers extends RkComponent {
             let avatar;
             let speakerName = "";
             speakerName = speaker.firstName + " " + speaker.lastName;
+            speaker.profileImageURL =  speaker.profileImageURL+ '?rnd=' + Math.random();
             if (speaker.profileImageURL) {
                 avatar = <Avatar rkType='large' style={{ width: 44, height: 44, borderRadius: 60 }} imagePath={speaker.profileImageURL} />
             } else {

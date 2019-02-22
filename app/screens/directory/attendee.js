@@ -126,10 +126,11 @@ class Attendee extends React.Component{
 
     displayAttendees = () => {
         return this.state.Attendees.map((attendee, index) => {
+            attendee.profileImageURL =  attendee.profileImageURL+ '?rnd=' + new Date();
             if(this.state.searchString.length!=0){
                 if(attendee.roleName===this.props.profile)
                 {
-                    if(attendee.firstName.toLowerCase().includes(this.state.searchString.toLowerCase()) || attendee.lastName.toLowerCase().includes(this.state.searchString.toLowerCase())){ 
+               if(attendee.firstName.toLowerCase().includes(this.state.searchString.toLowerCase()) || attendee.lastName.toLowerCase().includes(this.state.searchString.toLowerCase())){ 
                 let avatar;
                 if (attendee.profileImageURL) {
                     avatar = <Avatar rkType='large' style={{ width: 44, height: 44, borderRadius: 60 }} imagePath={attendee.profileImageURL} />
