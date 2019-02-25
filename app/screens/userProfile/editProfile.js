@@ -293,7 +293,7 @@ validate=(fname,lname,contact,fb,ln,tr)=>{
         <View style={{paddingTop:15}}>
         <View style={[styles.profileImageStyle]} >
                 <TouchableOpacity key={userInfo.firstName} onPress={() => this._pickImage()}> 
-                <View style={{borderColor:'#999999',borderWidth:2,borderRadius:100}}>
+                <View style={{borderColor:'#C4C1BB',borderWidth:1,borderRadius:100}}>
                 {avatar}
                 </View>
                   </TouchableOpacity>

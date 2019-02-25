@@ -148,18 +148,19 @@ export class UserProfile extends React.Component {
           style={{
             width: 110,
             height: 110,
-            borderColor: "#00ffff",
-            borderWidth: 2,
+            borderColor: "#C4C1BB",
+            borderWidth: 1,
             borderRadius: 50
           }}
-          source={{ uri: userInfo.profileImageURL, CACHE: 'reload' }}
+          source={{ uri: userInfo.profileImageURL}}
+           // source={{ uri: userInfo.profileImageURL, CACHE: 'reload' }}
         /> )) : ( avatar = (
         <Image
           style={{
             width: 110,
             height: 110,
-            borderColor: "#00ffff",
-            borderWidth: 2,
+            borderColor: "#C4C1BB",
+            borderWidth: 1,
             borderRadius: 50
           }}
           source={{ uri: userInfo.profileImageURL+ '?rnd=' + Math.random()}}
