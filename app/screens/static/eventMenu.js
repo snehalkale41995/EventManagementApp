@@ -202,7 +202,7 @@ export class EventMenu extends RkComponent {
     }else{
       let pr=this.state.progress;
       this.setState({progress:pr+5})
-      setTimeout(this.startLoading,30)
+      setTimeout(this.startLoading,50)
     }
   
   }
