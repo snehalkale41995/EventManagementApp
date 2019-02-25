@@ -147,6 +147,7 @@ let styles = RkStyleSheet.create(theme => ({
     backgroundColor: theme.colors.screen.base
   },
   image: {
+    marginTop:5
     //height: scaleVertical(77),
     //resizeMode: 'contain'
   },
