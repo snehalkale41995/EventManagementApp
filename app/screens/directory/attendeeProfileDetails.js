@@ -60,16 +60,17 @@ export class AttendeeProfileDetails extends React.Component {
       avatar = <Avatar rkType="big" imagePath={this.state.pictureUrl} />;
     } else {
       avatar = (
-        <Image
-          style={{
-            width: 100,
-            height: 100,
-            borderColor: "#00ffff",
-            borderWidth: 2,
-            borderRadius: 50
-          }}
-          source={require("../../../app/assets/images/defaultUserImg.png")}
-        />
+        <Image style={{ width: 100, height: 100 }} source={require('../../../app/assets/images/defaultUserImg.png')} /> 
+        // <Image
+        //   style={{
+        //     width: 100,
+        //     height: 100,
+        //     borderColor: "#00ffff",
+        //     borderWidth: 2,
+        //     borderRadius: 50
+        //   }}
+        //   source={require("../../../app/assets/images/defaultUserImg.png")}
+        // />
       );
     }
     return (
