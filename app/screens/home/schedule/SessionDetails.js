@@ -46,6 +46,7 @@ export class SessionDetails extends Component {
         currentSessionStart : Moment(this.sessionDetails.startTime).format(),
         currentSessionEnd  :  Moment(this.sessionDetails.endTime).format(),
         sameTimeRegistration : false,
+        limitReached : false,
         isOffline : false,
         isAddingToAgenda :false,
         isLoaded : false ,
@@ -279,6 +280,12 @@ getCurrentUser() {
         });
         Alert.alert("Already registered for same time in other session");
       }
+      else if (this.state.limitReached == true){
+         this.setState({
+          isAddingToAgenda : false
+        });
+        Alert.alert("Registrations are now closed");
+      }
       else{
         let  attendRequest = {
          user : this.state.userObj._id,
@@ -349,6 +356,7 @@ getCurrentUser() {
        
          if(compRef.state.sessionDetails.isRegistrationRequired){
            compRef.checkAlreadyRegistered();
+          
          }
          else{
              compRef.setState({
@@ -400,15 +408,48 @@ getCurrentUser() {
                 compRef.setState({
                   regStatus: "",
                   regId: "",
-                  isLoaded : true
+                //  isLoaded : true
                 })
+             compRef.checkSessionCapacity(sessionId, eventId);
               }
       }).catch((error) => {
           compRef.setState({
           isLoaded : true
         })
       })
+     
   }
+
+ checkSessionCapacity(selectedSessionId, eventId) {
+    let thisRef = this;
+    let sessionCapacity = this.state.sessionDetails.sessionCapacity;
+    let sessionUsers = [];
+    regResponseService.getRegResponseByEventSession(eventId, selectedSessionId).then((response)=>{
+      if(response.length>0){
+       if(response.length >= sessionCapacity )
+      {
+         thisRef.setState({
+         limitReached: true,
+         isLoaded : true
+      });
+      }
+      else{
+       thisRef.setState({
+        isLoaded : true
+        })
+      }
+      }
+      else{
+       thisRef.setState({
+        isLoaded : true
+        })
+     }
+    }).catch((error)=>{
+      thisRef.setState({ isLoaded: true });
+    })
+  }
+
+
 
   render() {
     let myAgendaView = this.props.navigation.state.params.myAgendaView? this.props.navigation.state.params.myAgendaView : false  ;
